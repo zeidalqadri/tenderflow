@@ -1,0 +1,150 @@
+version: '3.8'
+
+services:
+  # PostgreSQL Database
+  postgres:
+    image: postgres:15-alpine
+    container_name: tenderflow-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${DB_USER:-tenderflow}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-tenderflow123}
+      POSTGRES_DB: ${DB_NAME:-tenderflow}
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./database/init:/docker-entrypoint-initdb.d
+    networks:
+      - tenderflow-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-tenderflow} -d ${DB_NAME:-tenderflow}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Redis for BullMQ and Caching
+  redis:
+    image: redis:7-alpine
+    container_name: tenderflow-redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - tenderflow-network
+    command: redis-server --appendonly yes --requirepass ${REDIS_PASSWORD:-redis123}
+    healthcheck:
+      test: ["CMD", "redis-cli", "--raw", "incr", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # MinIO for Object Storage
+  minio:
+    image: minio/minio:latest
+    container_name: tenderflow-minio
+    restart: unless-stopped
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER:-tenderflow}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD:-tenderflow123}
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    volumes:
+      - minio_data:/data
+    networks:
+      - tenderflow-network
+    command: server /data --console-address ":9001"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
+      interval: 30s
+      timeout: 20s
+      retries: 3
+
+  # MinIO Client Setup (runs once to create buckets)
+  minio-setup:
+    image: minio/mc:latest
+    container_name: tenderflow-minio-setup
+    depends_on:
+      - minio
+    networks:
+      - tenderflow-network
+    entrypoint: >
+      /bin/sh -c "
+      until /usr/bin/mc config host add myminio http://minio:9000 ${MINIO_ROOT_USER:-tenderflow} ${MINIO_ROOT_PASSWORD:-tenderflow123}; do
+        echo 'Waiting for MinIO...'
+        sleep 2
+      done;
+      /usr/bin/mc mb myminio/tender-documents --ignore-existing;
+      /usr/bin/mc mb myminio/user-uploads --ignore-existing;
+      /usr/bin/mc mb myminio/system-backups --ignore-existing;
+      /usr/bin/mc policy set public myminio/tender-documents;
+      echo 'MinIO buckets created successfully';
+      "
+
+  # Mailhog for Email Testing (Development)
+  mailhog:
+    image: mailhog/mailhog:latest
+    container_name: tenderflow-mailhog
+    restart: unless-stopped
+    ports:
+      - "1025:1025"  # SMTP
+      - "8025:8025"  # Web UI
+    networks:
+      - tenderflow-network
+
+  # Prometheus for Monitoring (Optional)
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: tenderflow-prometheus
+    restart: unless-stopped
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheus_data:/prometheus
+    networks:
+      - tenderflow-network
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/etc/prometheus/console_libraries'
+      - '--web.console.templates=/etc/prometheus/consoles'
+      - '--storage.tsdb.retention.time=200h'
+      - '--web.enable-lifecycle'
+    profiles:
+      - monitoring
+
+  # Grafana for Metrics Visualization (Optional)
+  grafana:
+    image: grafana/grafana:latest
+    container_name: tenderflow-grafana
+    restart: unless-stopped
+    ports:
+      - "3001:3000"
+    volumes:
+      - grafana_data:/var/lib/grafana
+    networks:
+      - tenderflow-network
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_PASSWORD:-admin123}
+    profiles:
+      - monitoring
+
+volumes:
+  postgres_data:
+    driver: local
+  redis_data:
+    driver: local
+  minio_data:
+    driver: local
+  prometheus_data:
+    driver: local
+  grafana_data:
+    driver: local
+
+networks:
+  tenderflow-network:
+    driver: bridge
