@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TenderFlow - UI Mockups</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 2rem;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .header h1 {
+            color: white;
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header p {
+            color: rgba(255,255,255,0.9);
+            font-size: 1.2rem;
+        }
+
+        .mockup-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .mockup-card {
+            background: white;
+            border-radius: 12px;
+            padding: 2rem;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .mockup-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+        }
+
+        .mockup-icon {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #3b82f6, #1e40af);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1.5rem;
+            font-size: 24px;
+            color: white;
+        }
+
+        .mockup-card h3 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: #1f2937;
+        }
+
+        .mockup-card p {
+            color: #6b7280;
+            line-height: 1.6;
+            margin-bottom: 1rem;
+        }
+
+        .mockup-features {
+            list-style: none;
+            margin-top: 1rem;
+        }
+
+        .mockup-features li {
+            color: #374151;
+            font-size: 0.9rem;
+            padding: 0.25rem 0;
+            position: relative;
+            padding-left: 1.5rem;
+        }
+
+        .mockup-features li::before {
+            content: "✓";
+            position: absolute;
+            left: 0;
+            color: #10b981;
+            font-weight: bold;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .status-complete {
+            background-color: #d1fae5;
+            color: #065f46;
+        }
+
+        .status-interactive {
+            background-color: #dbeafe;
+            color: #1e40af;
+        }
+
+        .footer {
+            text-align: center;
+            color: rgba(255,255,255,0.8);
+            margin-top: 3rem;
+        }
+
+        .workflow-diagram {
+            background: rgba(255,255,255,0.1);
+            border-radius: 12px;
+            padding: 2rem;
+            margin: 2rem 0;
+            color: white;
+        }
+
+        .workflow-steps {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .workflow-step {
+            text-align: center;
+            flex: 1;
+            min-width: 120px;
+        }
+
+        .workflow-step-icon {
+            width: 40px;
+            height: 40px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 0.5rem;
+            font-size: 18px;
+        }
+
+        .workflow-arrow {
+            color: rgba(255,255,255,0.6);
+            font-size: 1.5rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1>🏢 TenderFlow</h1>
+            <p>Professional Tender Management Platform - UI Mockups</p>
+        </header>
+
+        <div class="workflow-diagram">
+            <h3 style="text-align: center; margin-bottom: 1.5rem;">Tender Lifecycle Workflow</h3>
+            <div class="workflow-steps">
+                <div class="workflow-step">
+                    <div class="workflow-step-icon">📥</div>
+                    <div>Scraped</div>
+                </div>
+                <div class="workflow-arrow">→</div>
+                <div class="workflow-step">
+                    <div class="workflow-step-icon">✅</div>
+                    <div>Validated</div>
+                </div>
+                <div class="workflow-arrow">→</div>
+                <div class="workflow-step">
+                    <div class="workflow-step-icon">🏷️</div>
+                    <div>Qualified</div>
+                </div>
+                <div class="workflow-arrow">→</div>
+                <div class="workflow-step">
+                    <div class="workflow-step-icon">💼</div>
+                    <div>In Bid</div>
+                </div>
+                <div class="workflow-arrow">→</div>
+                <div class="workflow-step">
+                    <div class="workflow-step-icon">📤</div>
+                    <div>Submitted</div>
+                </div>
+                <div class="workflow-arrow">→</div>
+                <div class="workflow-step">
+                    <div class="workflow-step-icon">🏆</div>
+                    <div>Won/Lost</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="mockup-grid">
+            <a href="01-inbox.html" class="mockup-card">
+                <div class="mockup-icon">📥</div>
+                <h3>Smart Inbox</h3>
+                <p>Automated tender discovery and organization with AI-powered categorization and filtering capabilities.</p>
+                <span class="status-badge status-interactive">Interactive</span>
+                <ul class="mockup-features">
+                    <li>Real-time tender scraping</li>
+                    <li>Smart filtering & search</li>
+                    <li>Bulk actions & tagging</li>
+                    <li>Priority scoring</li>
+                </ul>
+            </a>
+
+            <a href="02-validation.html" class="mockup-card">
+                <div class="mockup-icon">✅</div>
+                <h3>AI Validation</h3>
+                <p>Intelligent data normalization and field completion with confidence scoring and manual override capabilities.</p>
+                <span class="status-badge status-interactive">Interactive</span>
+                <ul class="mockup-features">
+                    <li>AI-powered data extraction</li>
+                    <li>Confidence scoring</li>
+                    <li>Field-by-field validation</li>
+                    <li>Manual override controls</li>
+                </ul>
+            </a>
+
+            <a href="03-qualification.html" class="mockup-card">
+                <div class="mockup-icon">🏷️</div>
+                <h3>Auto-Categorization</h3>
+                <p>Machine learning-powered tender qualification with customizable scoring criteria and decision workflows.</p>
+                <span class="status-badge status-interactive">Interactive</span>
+                <ul class="mockup-features">
+                    <li>ML categorization engine</li>
+                    <li>Custom scoring criteria</li>
+                    <li>Decision workflows</li>
+                    <li>Team collaboration</li>
+                </ul>
+            </a>
+
+            <a href="04-alerts.html" class="mockup-card">
+                <div class="mockup-icon">🔔</div>
+                <h3>Real-time Alerts</h3>
+                <p>Configurable notification system with multi-channel delivery and escalation rules for critical deadlines.</p>
+                <span class="status-badge status-interactive">Interactive</span>
+                <ul class="mockup-features">
+                    <li>Configurable alert rules</li>
+                    <li>Multi-channel notifications</li>
+                    <li>Escalation workflows</li>
+                    <li>Deadline tracking</li>
+                </ul>
+            </a>
+
+            <a href="05-documents.html" class="mockup-card">
+                <div class="mockup-icon">📄</div>
+                <h3>Document Management</h3>
+                <p>Advanced document processing with OCR capabilities, version control, and collaborative annotation tools.</p>
+                <span class="status-badge status-interactive">Interactive</span>
+                <ul class="mockup-features">
+                    <li>OCR document processing</li>
+                    <li>Version control system</li>
+                    <li>Collaborative annotations</li>
+                    <li>Template management</li>
+                </ul>
+            </a>
+
+            <a href="06-bidworkspace.html" class="mockup-card">
+                <div class="mockup-icon">💼</div>
+                <h3>Bid Workspace</h3>
+                <p>Collaborative proposal development environment with real-time editing, task management, and progress tracking.</p>
+                <span class="status-badge status-interactive">Interactive</span>
+                <ul class="mockup-features">
+                    <li>Real-time collaboration</li>
+                    <li>Task management</li>
+                    <li>Progress tracking</li>
+                    <li>Resource library</li>
+                </ul>
+            </a>
+
+            <a href="07-submission.html" class="mockup-card">
+                <div class="mockup-icon">📤</div>
+                <h3>Submission Portal</h3>
+                <p>Multi-channel submission management with automated tracking, compliance checking, and receipt confirmation.</p>
+                <span class="status-badge status-interactive">Interactive</span>
+                <ul class="mockup-features">
+                    <li>Multi-channel submissions</li>
+                    <li>Compliance checking</li>
+                    <li>Automated tracking</li>
+                    <li>Receipt confirmation</li>
+                </ul>
+            </a>
+
+            <a href="08-outcomes.html" class="mockup-card">
+                <div class="mockup-icon">🏆</div>
+                <h3>Outcome Management</h3>
+                <p>Comprehensive win/loss analysis with performance metrics, feedback collection, and continuous improvement insights.</p>
+                <span class="status-badge status-interactive">Interactive</span>
+                <ul class="mockup-features">
+                    <li>Win/loss analysis</li>
+                    <li>Performance metrics</li>
+                    <li>Feedback collection</li>
+                    <li>Improvement insights</li>
+                </ul>
+            </a>
+
+            <a href="09-reports.html" class="mockup-card">
+                <div class="mockup-icon">📊</div>
+                <h3>Analytics Dashboard</h3>
+                <p>Advanced analytics and reporting with customizable dashboards, predictive insights, and export capabilities.</p>
+                <span class="status-badge status-interactive">Interactive</span>
+                <ul class="mockup-features">
+                    <li>Customizable dashboards</li>
+                    <li>Predictive analytics</li>
+                    <li>Performance forecasting</li>
+                    <li>Export capabilities</li>
+                </ul>
+            </a>
+        </div>
+
+        <footer class="footer">
+            <p>🚀 Built with modern web technologies • React, Next.js, Fastify, PostgreSQL, Redis</p>
+            <p style="margin-top: 0.5rem; font-size: 0.9rem;">Complete tender management solution with multi-tenant architecture</p>
+        </footer>
+    </div>
+</body>
+</html>

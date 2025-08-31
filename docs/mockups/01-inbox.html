@@ -1,0 +1,652 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Inbox - TenderFlow</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: #f8fafc;
+            color: #1f2937;
+        }
+
+        .header {
+            background: white;
+            border-bottom: 1px solid #e5e7eb;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #3b82f6;
+        }
+
+        .user-menu {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .notification-badge {
+            position: relative;
+            cursor: pointer;
+        }
+
+        .notification-badge::after {
+            content: '3';
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background: #ef4444;
+            color: white;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+
+        .main-container {
+            display: flex;
+            min-height: calc(100vh - 73px);
+        }
+
+        .sidebar {
+            width: 280px;
+            background: white;
+            border-right: 1px solid #e5e7eb;
+            padding: 2rem;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem 1rem;
+            margin-bottom: 0.5rem;
+            border-radius: 8px;
+            color: #6b7280;
+            text-decoration: none;
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+
+        .nav-item:hover,
+        .nav-item.active {
+            background-color: #eff6ff;
+            color: #3b82f6;
+        }
+
+        .nav-item.active {
+            font-weight: 500;
+        }
+
+        .content {
+            flex: 1;
+            padding: 2rem;
+        }
+
+        .page-header {
+            display: flex;
+            justify-content: between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        .page-title {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #1f2937;
+            margin-bottom: 0.5rem;
+        }
+
+        .page-subtitle {
+            color: #6b7280;
+        }
+
+        .actions-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .filters {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .filter-select,
+        .search-input {
+            padding: 0.5rem 1rem;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            background: white;
+            font-size: 0.875rem;
+        }
+
+        .search-input {
+            min-width: 250px;
+        }
+
+        .btn {
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 6px;
+            font-size: 0.875rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-primary {
+            background-color: #3b82f6;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: #2563eb;
+        }
+
+        .btn-secondary {
+            background-color: white;
+            color: #374151;
+            border: 1px solid #d1d5db;
+        }
+
+        .btn-secondary:hover {
+            background-color: #f9fafb;
+        }
+
+        .tender-list {
+            background: white;
+            border-radius: 8px;
+            border: 1px solid #e5e7eb;
+            overflow: hidden;
+        }
+
+        .tender-item {
+            padding: 1.5rem;
+            border-bottom: 1px solid #e5e7eb;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+            position: relative;
+        }
+
+        .tender-item:hover {
+            background-color: #f9fafb;
+        }
+
+        .tender-item:last-child {
+            border-bottom: none;
+        }
+
+        .tender-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 0.75rem;
+        }
+
+        .tender-title {
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 0.25rem;
+        }
+
+        .tender-meta {
+            display: flex;
+            gap: 1rem;
+            font-size: 0.875rem;
+            color: #6b7280;
+            margin-bottom: 0.5rem;
+        }
+
+        .tender-description {
+            color: #4b5563;
+            line-height: 1.5;
+            margin-bottom: 1rem;
+        }
+
+        .tender-tags {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .tag {
+            padding: 0.25rem 0.75rem;
+            background-color: #f3f4f6;
+            color: #374151;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+
+        .tag.priority-high {
+            background-color: #fef2f2;
+            color: #dc2626;
+        }
+
+        .tag.priority-medium {
+            background-color: #fff7ed;
+            color: #ea580c;
+        }
+
+        .tag.priority-low {
+            background-color: #f0fdf4;
+            color: #16a34a;
+        }
+
+        .tender-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .tender-value {
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: #059669;
+        }
+
+        .tender-deadline {
+            font-size: 0.875rem;
+            color: #dc2626;
+            font-weight: 500;
+        }
+
+        .status-badge {
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .status-scraped {
+            background-color: #f3f4f6;
+            color: #374151;
+        }
+
+        .status-validated {
+            background-color: #dbeafe;
+            color: #1e40af;
+        }
+
+        .bulk-actions {
+            position: fixed;
+            bottom: 2rem;
+            left: 50%;
+            transform: translateX(-50%);
+            background: white;
+            padding: 1rem 2rem;
+            border-radius: 8px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+            display: none;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .bulk-actions.show {
+            display: flex;
+        }
+
+        .checkbox {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+        }
+
+        .ai-score {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.875rem;
+        }
+
+        .score-bar {
+            width: 60px;
+            height: 4px;
+            background: #e5e7eb;
+            border-radius: 2px;
+            overflow: hidden;
+        }
+
+        .score-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #ef4444 0%, #f59e0b 50%, #10b981 100%);
+            transition: width 0.3s ease;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 4rem 2rem;
+            color: #6b7280;
+            display: none;
+        }
+
+        .stats-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 8px;
+            border: 1px solid #e5e7eb;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #1f2937;
+        }
+
+        .stat-label {
+            color: #6b7280;
+            font-size: 0.875rem;
+            margin-top: 0.5rem;
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="logo">🏢 TenderFlow</div>
+        <div class="user-menu">
+            <div class="notification-badge">🔔</div>
+            <div style="width: 32px; height: 32px; background: #3b82f6; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: 500; cursor: pointer;">JD</div>
+        </div>
+    </header>
+
+    <div class="main-container">
+        <nav class="sidebar">
+            <div class="nav-item active">📥 Smart Inbox</div>
+            <div class="nav-item">✅ Validation Queue</div>
+            <div class="nav-item">🏷️ Qualification</div>
+            <div class="nav-item">🔔 Alerts & Notifications</div>
+            <div class="nav-item">📄 Document Hub</div>
+            <div class="nav-item">💼 Bid Workspace</div>
+            <div class="nav-item">📤 Submission Portal</div>
+            <div class="nav-item">🏆 Outcome Tracking</div>
+            <div class="nav-item">📊 Analytics</div>
+        </nav>
+
+        <main class="content">
+            <div class="page-header">
+                <div>
+                    <h1 class="page-title">Smart Inbox</h1>
+                    <p class="page-subtitle">Automated tender discovery and intelligent organization</p>
+                </div>
+            </div>
+
+            <div class="stats-cards">
+                <div class="stat-card">
+                    <div class="stat-value">47</div>
+                    <div class="stat-label">New Tenders Today</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">156</div>
+                    <div class="stat-label">Pending Review</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">23</div>
+                    <div class="stat-label">High Priority</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">$2.4M</div>
+                    <div class="stat-label">Total Value</div>
+                </div>
+            </div>
+
+            <div class="actions-bar">
+                <div class="filters">
+                    <select class="filter-select">
+                        <option>All Sources</option>
+                        <option>Government Portals</option>
+                        <option>Private Companies</option>
+                        <option>International</option>
+                    </select>
+                    <select class="filter-select">
+                        <option>All Categories</option>
+                        <option>IT Services</option>
+                        <option>Construction</option>
+                        <option>Consulting</option>
+                        <option>Supply Chain</option>
+                    </select>
+                    <select class="filter-select">
+                        <option>All Priorities</option>
+                        <option>High Priority</option>
+                        <option>Medium Priority</option>
+                        <option>Low Priority</option>
+                    </select>
+                    <input type="search" placeholder="Search tenders..." class="search-input">
+                </div>
+                <div style="display: flex; gap: 1rem;">
+                    <button class="btn btn-secondary">🔄 Sync Sources</button>
+                    <button class="btn btn-primary">⚙️ Configure Scraping</button>
+                </div>
+            </div>
+
+            <div class="tender-list">
+                <div class="tender-item" onclick="toggleSelect(this)">
+                    <div class="tender-header">
+                        <input type="checkbox" class="checkbox">
+                        <div style="flex: 1; margin-left: 1rem;">
+                            <div class="tender-title">Cloud Infrastructure Modernization Services</div>
+                            <div class="tender-meta">
+                                <span>🏛️ Government of Canada</span>
+                                <span>📅 Posted 2 hours ago</span>
+                                <span>🕒 Deadline in 21 days</span>
+                            </div>
+                        </div>
+                        <span class="status-badge status-scraped">Scraped</span>
+                    </div>
+                    <div class="tender-description">
+                        The Government of Canada is seeking proposals for comprehensive cloud infrastructure modernization services including migration planning, implementation, and ongoing support for critical government systems.
+                    </div>
+                    <div class="tender-tags">
+                        <span class="tag">Cloud Computing</span>
+                        <span class="tag">IT Services</span>
+                        <span class="tag priority-high">High Priority</span>
+                        <span class="tag">Government</span>
+                    </div>
+                    <div class="tender-footer">
+                        <div>
+                            <div class="tender-value">$850,000 CAD</div>
+                            <div class="ai-score">
+                                🧠 AI Score: 87%
+                                <div class="score-bar">
+                                    <div class="score-fill" style="width: 87%"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="tender-deadline">⏰ Due March 15, 2024</div>
+                    </div>
+                </div>
+
+                <div class="tender-item" onclick="toggleSelect(this)">
+                    <div class="tender-header">
+                        <input type="checkbox" class="checkbox">
+                        <div style="flex: 1; margin-left: 1rem;">
+                            <div class="tender-title">Digital Transformation Consulting</div>
+                            <div class="tender-meta">
+                                <span>🏢 Metro Transit Authority</span>
+                                <span>📅 Posted 5 hours ago</span>
+                                <span>🕒 Deadline in 28 days</span>
+                            </div>
+                        </div>
+                        <span class="status-badge status-validated">Validated</span>
+                    </div>
+                    <div class="tender-description">
+                        Comprehensive digital transformation initiative to modernize transit operations, passenger experience systems, and internal workflows across the metropolitan transit network.
+                    </div>
+                    <div class="tender-tags">
+                        <span class="tag">Digital Transformation</span>
+                        <span class="tag">Consulting</span>
+                        <span class="tag priority-medium">Medium Priority</span>
+                        <span class="tag">Transportation</span>
+                    </div>
+                    <div class="tender-footer">
+                        <div>
+                            <div class="tender-value">$420,000 CAD</div>
+                            <div class="ai-score">
+                                🧠 AI Score: 74%
+                                <div class="score-bar">
+                                    <div class="score-fill" style="width: 74%"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="tender-deadline">⏰ Due March 22, 2024</div>
+                    </div>
+                </div>
+
+                <div class="tender-item" onclick="toggleSelect(this)">
+                    <div class="tender-header">
+                        <input type="checkbox" class="checkbox">
+                        <div style="flex: 1; margin-left: 1rem;">
+                            <div class="tender-title">Enterprise Software Development</div>
+                            <div class="tender-meta">
+                                <span>🏦 Financial Services Corp</span>
+                                <span>📅 Posted 1 day ago</span>
+                                <span>🕒 Deadline in 14 days</span>
+                            </div>
+                        </div>
+                        <span class="status-badge status-scraped">Scraped</span>
+                    </div>
+                    <div class="tender-description">
+                        Development of a custom enterprise software solution for risk management and compliance tracking, including integration with existing banking systems and regulatory reporting.
+                    </div>
+                    <div class="tender-tags">
+                        <span class="tag">Software Development</span>
+                        <span class="tag">Financial Services</span>
+                        <span class="tag priority-high">High Priority</span>
+                        <span class="tag">Enterprise</span>
+                    </div>
+                    <div class="tender-footer">
+                        <div>
+                            <div class="tender-value">$1,200,000 CAD</div>
+                            <div class="ai-score">
+                                🧠 AI Score: 92%
+                                <div class="score-bar">
+                                    <div class="score-fill" style="width: 92%"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="tender-deadline">⏰ Due March 8, 2024</div>
+                    </div>
+                </div>
+
+                <div class="tender-item" onclick="toggleSelect(this)">
+                    <div class="tender-header">
+                        <input type="checkbox" class="checkbox">
+                        <div style="flex: 1; margin-left: 1rem;">
+                            <div class="tender-title">Cybersecurity Assessment and Implementation</div>
+                            <div class="tender-meta">
+                                <span>🏥 Regional Health Authority</span>
+                                <span>📅 Posted 2 days ago</span>
+                                <span>🕒 Deadline in 35 days</span>
+                            </div>
+                        </div>
+                        <span class="status-badge status-scraped">Scraped</span>
+                    </div>
+                    <div class="tender-description">
+                        Comprehensive cybersecurity assessment and implementation services for healthcare information systems, including vulnerability assessment, security architecture design, and compliance monitoring.
+                    </div>
+                    <div class="tender-tags">
+                        <span class="tag">Cybersecurity</span>
+                        <span class="tag">Healthcare</span>
+                        <span class="tag priority-low">Low Priority</span>
+                        <span class="tag">Compliance</span>
+                    </div>
+                    <div class="tender-footer">
+                        <div>
+                            <div class="tender-value">$320,000 CAD</div>
+                            <div class="ai-score">
+                                🧠 AI Score: 65%
+                                <div class="score-bar">
+                                    <div class="score-fill" style="width: 65%"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="tender-deadline">⏰ Due March 29, 2024</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bulk-actions" id="bulkActions">
+                <span id="selectedCount">0 selected</span>
+                <button class="btn btn-secondary">📋 Bulk Validate</button>
+                <button class="btn btn-secondary">🏷️ Tag Selected</button>
+                <button class="btn btn-secondary">📁 Move to Queue</button>
+                <button class="btn btn-secondary">🗑️ Archive</button>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        let selectedCount = 0;
+
+        function toggleSelect(item) {
+            const checkbox = item.querySelector('.checkbox');
+            checkbox.checked = !checkbox.checked;
+            
+            if (checkbox.checked) {
+                selectedCount++;
+                item.style.backgroundColor = '#eff6ff';
+            } else {
+                selectedCount--;
+                item.style.backgroundColor = '';
+            }
+            
+            document.getElementById('selectedCount').textContent = `${selectedCount} selected`;
+            
+            const bulkActions = document.getElementById('bulkActions');
+            if (selectedCount > 0) {
+                bulkActions.classList.add('show');
+            } else {
+                bulkActions.classList.remove('show');
+            }
+        }
+
+        // Auto-refresh demo
+        setInterval(() => {
+            const newCount = Math.floor(Math.random() * 5) + 47;
+            document.querySelector('.stat-card .stat-value').textContent = newCount;
+        }, 10000);
+    </script>
+</body>
+</html>

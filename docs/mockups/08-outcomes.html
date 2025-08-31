@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Outcome Management - TenderFlow</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background-color: #f8fafc; color: #1f2937; }
+        .header { background: white; border-bottom: 1px solid #e5e7eb; padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center; }
+        .logo { display: flex; align-items: center; font-size: 1.5rem; font-weight: 700; color: #3b82f6; }
+        .main-container { display: grid; grid-template-columns: 1fr 300px; gap: 2rem; padding: 2rem; }
+        .content-panel { display: flex; flex-direction: column; gap: 2rem; }
+        .stats-overview { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.5rem; }
+        .stat-card { background: white; border-radius: 8px; border: 1px solid #e5e7eb; padding: 2rem; text-align: center; }
+        .stat-value { font-size: 2.5rem; font-weight: 700; margin-bottom: 0.5rem; }
+        .stat-value.win { color: #10b981; }
+        .stat-value.loss { color: #ef4444; }
+        .stat-value.pending { color: #f59e0b; }
+        .stat-value.revenue { color: #3b82f6; }
+        .stat-label { color: #6b7280; font-size: 0.875rem; text-transform: uppercase; letter-spacing: 0.05em; }
+        .outcomes-list { background: white; border-radius: 8px; border: 1px solid #e5e7eb; }
+        .list-header { padding: 1.5rem; border-bottom: 1px solid #e5e7eb; display: flex; justify-content: space-between; align-items: center; }
+        .list-title { font-size: 1.25rem; font-weight: 600; color: #1f2937; }
+        .outcome-item { padding: 1.5rem; border-bottom: 1px solid #e5e7eb; cursor: pointer; transition: all 0.2s ease; }
+        .outcome-item:hover { background-color: #f9fafb; }
+        .outcome-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1rem; }
+        .outcome-title { font-weight: 600; color: #1f2937; margin-bottom: 0.5rem; }
+        .outcome-meta { font-size: 0.875rem; color: #6b7280; }
+        .outcome-status { padding: 0.25rem 0.75rem; border-radius: 9999px; font-size: 0.75rem; font-weight: 500; text-transform: uppercase; }
+        .status-won { background-color: #d1fae5; color: #065f46; }
+        .status-lost { background-color: #fee2e2; color: #991b1b; }
+        .status-pending { background-color: #fef3c7; color: #92400e; }
+        .outcome-details { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; margin-bottom: 1rem; font-size: 0.875rem; }
+        .detail-item { display: flex; flex-direction: column; }
+        .detail-label { color: #6b7280; margin-bottom: 0.25rem; }
+        .detail-value { font-weight: 500; color: #1f2937; }
+        .outcome-feedback { background: #f9fafb; border-radius: 6px; padding: 1rem; font-size: 0.875rem; color: #4b5563; }
+        .feedback-title { font-weight: 500; color: #1f2937; margin-bottom: 0.5rem; }
+        .sidebar { display: flex; flex-direction: column; gap: 1.5rem; }
+        .filter-panel { background: white; border-radius: 8px; border: 1px solid #e5e7eb; padding: 1.5rem; }
+        .section-title { font-size: 1rem; font-weight: 600; color: #1f2937; margin-bottom: 1rem; }
+        .filter-group { margin-bottom: 1.5rem; }
+        .filter-label { display: block; font-size: 0.875rem; font-weight: 500; color: #374151; margin-bottom: 0.5rem; }
+        .filter-select { width: 100%; padding: 0.5rem; border: 1px solid #d1d5db; border-radius: 6px; font-size: 0.875rem; }
+        .insights-panel { background: white; border-radius: 8px; border: 1px solid #e5e7eb; padding: 1.5rem; }
+        .insight-item { padding: 1rem; background: #f0f9ff; border: 1px solid #e0f2fe; border-radius: 6px; margin-bottom: 1rem; }
+        .insight-title { font-weight: 500; color: #0c4a6e; margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.5rem; }
+        .insight-text { color: #0369a1; font-size: 0.875rem; }
+        .btn { padding: 0.5rem 1rem; border: none; border-radius: 6px; font-size: 0.875rem; font-weight: 500; cursor: pointer; transition: all 0.2s ease; display: inline-flex; align-items: center; gap: 0.5rem; }
+        .btn-primary { background-color: #3b82f6; color: white; }
+        .btn-secondary { background-color: white; color: #374151; border: 1px solid #d1d5db; }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="logo">🏢 TenderFlow</div>
+        <div style="color: #6b7280; font-size: 0.875rem;">Outcome Tracking & Analysis</div>
+    </header>
+
+    <div class="main-container">
+        <div class="content-panel">
+            <div class="stats-overview">
+                <div class="stat-card">
+                    <div class="stat-value win">23</div>
+                    <div class="stat-label">Won</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value loss">18</div>
+                    <div class="stat-label">Lost</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value pending">12</div>
+                    <div class="stat-label">Pending</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value revenue">$3.2M</div>
+                    <div class="stat-label">Won Revenue</div>
+                </div>
+            </div>
+
+            <div class="outcomes-list">
+                <div class="list-header">
+                    <div class="list-title">🏆 Recent Outcomes</div>
+                    <div style="display: flex; gap: 1rem;">
+                        <button class="btn btn-secondary">📊 Export Report</button>
+                        <button class="btn btn-primary">📝 Add Outcome</button>
+                    </div>
+                </div>
+
+                <div class="outcome-item">
+                    <div class="outcome-header">
+                        <div>
+                            <div class="outcome-title">Enterprise Software Development</div>
+                            <div class="outcome-meta">Financial Services Corp • Submitted Feb 20, 2024</div>
+                        </div>
+                        <div class="outcome-status status-won">Won</div>
+                    </div>
+                    <div class="outcome-details">
+                        <div class="detail-item">
+                            <div class="detail-label">Proposal Value</div>
+                            <div class="detail-value">$1,200,000</div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">Final Contract</div>
+                            <div class="detail-value">$1,150,000</div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">Win Margin</div>
+                            <div class="detail-value">4.2%</div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">Decision Date</div>
+                            <div class="detail-value">Mar 1, 2024</div>
+                        </div>
+                    </div>
+                    <div class="outcome-feedback">
+                        <div class="feedback-title">🎯 Key Success Factors</div>
+                        Client appreciated our deep financial services experience and the proposed agile methodology. Our competitive pricing and 24/7 support commitment were decisive factors.
+                    </div>
+                </div>
+
+                <div class="outcome-item">
+                    <div class="outcome-header">
+                        <div>
+                            <div class="outcome-title">Digital Transformation Consulting</div>
+                            <div class="outcome-meta">Metro Transit Authority • Submitted Feb 15, 2024</div>
+                        </div>
+                        <div class="outcome-status status-lost">Lost</div>
+                    </div>
+                    <div class="outcome-details">
+                        <div class="detail-item">
+                            <div class="detail-label">Proposal Value</div>
+                            <div class="detail-value">$420,000</div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">Winning Bid</div>
+                            <div class="detail-value">$385,000</div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">Price Gap</div>
+                            <div class="detail-value">9.1%</div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">Decision Date</div>
+                            <div class="detail-value">Feb 28, 2024</div>
+                        </div>
+                    </div>
+                    <div class="outcome-feedback">
+                        <div class="feedback-title">📝 Lessons Learned</div>
+                        Lost due to higher pricing and insufficient local transit experience. Winner had 3 similar projects. Need to build more transit sector credentials and improve cost competitiveness.
+                    </div>
+                </div>
+
+                <div class="outcome-item">
+                    <div class="outcome-header">
+                        <div>
+                            <div class="outcome-title">Cloud Infrastructure Modernization</div>
+                            <div class="outcome-meta">Government of Canada • Submitted Mar 8, 2024</div>
+                        </div>
+                        <div class="outcome-status status-pending">Pending</div>
+                    </div>
+                    <div class="outcome-details">
+                        <div class="detail-item">
+                            <div class="detail-label">Proposal Value</div>
+                            <div class="detail-value">$850,000</div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">Decision Expected</div>
+                            <div class="detail-value">Mar 20, 2024</div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">Estimated Win %</div>
+                            <div class="detail-value">73%</div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">Competition</div>
+                            <div class="detail-value">6 bidders</div>
+                        </div>
+                    </div>
+                    <div class="outcome-feedback">
+                        <div class="feedback-title">🔍 Current Status</div>
+                        Proposal submitted successfully. Client confirmed all documents received. Technical evaluation in progress. Expect verbal feedback by March 18.
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="sidebar">
+            <div class="filter-panel">
+                <div class="section-title">🔍 Filters</div>
+                <div class="filter-group">
+                    <label class="filter-label">Outcome Status</label>
+                    <select class="filter-select">
+                        <option>All Outcomes</option>
+                        <option>Won</option>
+                        <option>Lost</option>
+                        <option>Pending</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label class="filter-label">Industry Sector</label>
+                    <select class="filter-select">
+                        <option>All Sectors</option>
+                        <option>Government</option>
+                        <option>Healthcare</option>
+                        <option>Financial</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="insights-panel">
+                <div class="section-title">💡 AI Insights</div>
+                <div class="insight-item">
+                    <div class="insight-title">🎯 Win Rate Trend</div>
+                    <div class="insight-text">Your win rate increased 15% this quarter. Government sector shows strongest performance at 67% win rate.</div>
+                </div>
+                <div class="insight-item">
+                    <div class="insight-title">💰 Pricing Strategy</div>
+                    <div class="insight-text">Lost bids are 12% higher priced on average. Consider more competitive pricing for transit/transport sector.</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        setInterval(() => {
+            const pendingItems = document.querySelectorAll('.status-pending');
+            if (pendingItems.length > 0 && Math.random() < 0.1) {
+                const randomItem = pendingItems[Math.floor(Math.random() * pendingItems.length)];
+                if (Math.random() < 0.6) {
+                    randomItem.textContent = 'Won';
+                    randomItem.className = 'outcome-status status-won';
+                } else {
+                    randomItem.textContent = 'Lost';
+                    randomItem.className = 'outcome-status status-lost';
+                }
+            }
+        }, 20000);
+    </script>
+</body>
+</html>

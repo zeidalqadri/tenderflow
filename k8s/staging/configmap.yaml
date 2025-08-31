@@ -1,0 +1,39 @@
+# ConfigMap for TenderFlow staging environment
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: tenderflow-config
+  namespace: staging
+  labels:
+    app: tenderflow
+    environment: staging
+data:
+  # Application configuration
+  NODE_ENV: "staging"
+  LOG_LEVEL: "info"
+  
+  # API configuration
+  API_PORT: "3000"
+  API_HOST: "0.0.0.0"
+  CORS_ORIGIN: "https://staging.tenderflow.com"
+  
+  # Web configuration
+  NEXT_PUBLIC_API_URL: "https://staging-api.tenderflow.com/api/v1"
+  
+  # Database configuration (non-sensitive)
+  DB_HOST: "postgres-service"
+  DB_PORT: "5432"
+  DB_NAME: "tenderflow_staging"
+  
+  # Redis configuration
+  REDIS_HOST: "redis-service"
+  REDIS_PORT: "6379"
+  
+  # AWS configuration
+  AWS_REGION: "us-east-1"
+  S3_BUCKET_NAME: "tenderflow-staging"
+  
+  # Email configuration
+  SMTP_HOST: "smtp.sendgrid.net"
+  SMTP_PORT: "587"
+  SMTP_SECURE: "false"

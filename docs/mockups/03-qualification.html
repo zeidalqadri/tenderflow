@@ -1,0 +1,913 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Auto-Categorization - TenderFlow</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: #f8fafc;
+            color: #1f2937;
+        }
+
+        .header {
+            background: white;
+            border-bottom: 1px solid #e5e7eb;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #3b82f6;
+        }
+
+        .breadcrumb {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: #6b7280;
+            font-size: 0.875rem;
+        }
+
+        .breadcrumb a {
+            color: #3b82f6;
+            text-decoration: none;
+        }
+
+        .main-container {
+            display: grid;
+            grid-template-columns: 350px 1fr 300px;
+            gap: 2rem;
+            padding: 2rem;
+            min-height: calc(100vh - 73px);
+        }
+
+        .sidebar-left {
+            background: white;
+            border-radius: 8px;
+            border: 1px solid #e5e7eb;
+            padding: 1.5rem;
+            height: fit-content;
+            position: sticky;
+            top: 95px;
+        }
+
+        .qualification-panel {
+            background: white;
+            border-radius: 8px;
+            border: 1px solid #e5e7eb;
+        }
+
+        .sidebar-right {
+            background: white;
+            border-radius: 8px;
+            border: 1px solid #e5e7eb;
+            padding: 1.5rem;
+            height: fit-content;
+            position: sticky;
+            top: 95px;
+        }
+
+        .tender-header {
+            padding: 2rem;
+            border-bottom: 1px solid #e5e7eb;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 8px 8px 0 0;
+        }
+
+        .tender-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+
+        .tender-meta {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            opacity: 0.9;
+        }
+
+        .meta-item {
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+        }
+
+        .meta-label {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            opacity: 0.8;
+        }
+
+        .meta-value {
+            font-size: 1rem;
+            font-weight: 500;
+        }
+
+        .qualification-content {
+            padding: 2rem;
+        }
+
+        .scoring-section {
+            margin-bottom: 3rem;
+        }
+
+        .section-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .score-overview {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .score-card {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 1.5rem;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .score-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .score-value {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .score-value.excellent {
+            color: #10b981;
+        }
+
+        .score-value.good {
+            color: #3b82f6;
+        }
+
+        .score-value.fair {
+            color: #f59e0b;
+        }
+
+        .score-value.poor {
+            color: #ef4444;
+        }
+
+        .score-label {
+            font-size: 0.875rem;
+            color: #6b7280;
+            font-weight: 500;
+        }
+
+        .criteria-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .criteria-item {
+            background: #fff;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 1.5rem;
+            transition: all 0.2s ease;
+        }
+
+        .criteria-item:hover {
+            border-color: #3b82f6;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+
+        .criteria-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .criteria-title {
+            font-weight: 600;
+            color: #1f2937;
+            font-size: 1rem;
+        }
+
+        .criteria-score {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .score-badge {
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.875rem;
+            font-weight: 600;
+        }
+
+        .score-badge.excellent {
+            background-color: #d1fae5;
+            color: #065f46;
+        }
+
+        .score-badge.good {
+            background-color: #dbeafe;
+            color: #1e40af;
+        }
+
+        .score-badge.fair {
+            background-color: #fef3c7;
+            color: #92400e;
+        }
+
+        .score-badge.poor {
+            background-color: #fee2e2;
+            color: #991b1b;
+        }
+
+        .score-bar {
+            width: 100px;
+            height: 8px;
+            background: #e5e7eb;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .score-fill {
+            height: 100%;
+            border-radius: 4px;
+            transition: width 0.5s ease;
+        }
+
+        .criteria-description {
+            color: #6b7280;
+            margin-bottom: 1rem;
+            line-height: 1.5;
+        }
+
+        .criteria-details {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            font-size: 0.875rem;
+        }
+
+        .detail-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.5rem 0;
+            border-bottom: 1px solid #f3f4f6;
+        }
+
+        .detail-item:last-child {
+            border-bottom: none;
+        }
+
+        .detail-label {
+            color: #6b7280;
+        }
+
+        .detail-value {
+            font-weight: 500;
+            color: #1f2937;
+        }
+
+        .recommendation-section {
+            background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+            border: 1px solid #bae6fd;
+            border-radius: 12px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .recommendation-header {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .recommendation-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #0c4a6e;
+        }
+
+        .recommendation-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .recommendation-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.75rem;
+            padding: 0.75rem;
+            background: white;
+            border-radius: 8px;
+            border: 1px solid #e0f2fe;
+        }
+
+        .recommendation-icon {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.875rem;
+            flex-shrink: 0;
+        }
+
+        .recommendation-icon.positive {
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        .recommendation-icon.warning {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .recommendation-icon.negative {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .recommendation-content {
+            flex: 1;
+        }
+
+        .recommendation-text {
+            color: #0c4a6e;
+            margin-bottom: 0.25rem;
+        }
+
+        .recommendation-reason {
+            font-size: 0.875rem;
+            color: #0369a1;
+            opacity: 0.8;
+        }
+
+        .action-buttons {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 2rem;
+            border-top: 1px solid #e5e7eb;
+            background: #f9fafb;
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 6px;
+            font-size: 0.875rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-primary {
+            background-color: #3b82f6;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: #2563eb;
+        }
+
+        .btn-success {
+            background-color: #10b981;
+            color: white;
+        }
+
+        .btn-success:hover {
+            background-color: #059669;
+        }
+
+        .btn-secondary {
+            background-color: white;
+            color: #374151;
+            border: 1px solid #d1d5db;
+        }
+
+        .btn-secondary:hover {
+            background-color: #f9fafb;
+        }
+
+        .btn-danger {
+            background-color: #dc2626;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background-color: #b91c1c;
+        }
+
+        .filter-panel h3 {
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: #1f2937;
+        }
+
+        .filter-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .filter-label {
+            display: block;
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: #374151;
+            margin-bottom: 0.5rem;
+        }
+
+        .filter-select {
+            width: 100%;
+            padding: 0.5rem;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            background: white;
+            font-size: 0.875rem;
+        }
+
+        .queue-item {
+            padding: 1rem;
+            border: 1px solid #e5e7eb;
+            border-radius: 6px;
+            margin-bottom: 0.5rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .queue-item:hover {
+            border-color: #3b82f6;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+
+        .queue-item.active {
+            border-color: #3b82f6;
+            background: #eff6ff;
+        }
+
+        .queue-item-title {
+            font-weight: 500;
+            font-size: 0.875rem;
+            color: #1f2937;
+            margin-bottom: 0.25rem;
+        }
+
+        .queue-item-meta {
+            font-size: 0.75rem;
+            color: #6b7280;
+            margin-bottom: 0.5rem;
+        }
+
+        .queue-score {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.75rem;
+        }
+
+        .mini-score-bar {
+            width: 60px;
+            height: 4px;
+            background: #e5e7eb;
+            border-radius: 2px;
+            overflow: hidden;
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="logo">🏢 TenderFlow</div>
+        <div class="breadcrumb">
+            <a href="01-inbox.html">Smart Inbox</a> <span>></span> 
+            <a href="02-validation.html">AI Validation</a> <span>></span> 
+            <span>Auto-Categorization</span>
+        </div>
+    </header>
+
+    <div class="main-container">
+        <div class="sidebar-left">
+            <h3>🎯 Qualification Queue</h3>
+            
+            <div class="queue-item active">
+                <div class="queue-item-title">Cloud Infrastructure Modernization</div>
+                <div class="queue-item-meta">Government • $850K • IT Services</div>
+                <div class="queue-score">
+                    Overall: 87%
+                    <div class="mini-score-bar">
+                        <div class="score-fill" style="width: 87%; background: #10b981;"></div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="queue-item">
+                <div class="queue-item-title">Digital Transformation Consulting</div>
+                <div class="queue-item-meta">Transit • $420K • Consulting</div>
+                <div class="queue-score">
+                    Overall: 74%
+                    <div class="mini-score-bar">
+                        <div class="score-fill" style="width: 74%; background: #3b82f6;"></div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="queue-item">
+                <div class="queue-item-title">Enterprise Software Development</div>
+                <div class="queue-item-meta">Financial • $1.2M • Software</div>
+                <div class="queue-score">
+                    Overall: 92%
+                    <div class="mini-score-bar">
+                        <div class="score-fill" style="width: 92%; background: #10b981;"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="filter-panel" style="margin-top: 2rem;">
+                <h3>🔧 Filters</h3>
+                
+                <div class="filter-group">
+                    <label class="filter-label">Score Range</label>
+                    <select class="filter-select">
+                        <option>All Scores</option>
+                        <option>90-100% (Excellent)</option>
+                        <option>75-89% (Good)</option>
+                        <option>50-74% (Fair)</option>
+                        <option>Below 50% (Poor)</option>
+                    </select>
+                </div>
+                
+                <div class="filter-group">
+                    <label class="filter-label">Category</label>
+                    <select class="filter-select">
+                        <option>All Categories</option>
+                        <option>IT Services</option>
+                        <option>Consulting</option>
+                        <option>Software Development</option>
+                        <option>Cloud Computing</option>
+                    </select>
+                </div>
+                
+                <div class="filter-group">
+                    <label class="filter-label">Value Range</label>
+                    <select class="filter-select">
+                        <option>All Values</option>
+                        <option>$1M+ (Large)</option>
+                        <option>$500K-1M (Medium)</option>
+                        <option>$100K-500K (Small)</option>
+                        <option>Under $100K (Micro)</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <div class="qualification-panel">
+            <div class="tender-header">
+                <div class="tender-title">Cloud Infrastructure Modernization Services</div>
+                <div class="tender-meta">
+                    <div class="meta-item">
+                        <div class="meta-label">Organization</div>
+                        <div class="meta-value">Government of Canada</div>
+                    </div>
+                    <div class="meta-item">
+                        <div class="meta-label">Value</div>
+                        <div class="meta-value">$850,000 CAD</div>
+                    </div>
+                    <div class="meta-item">
+                        <div class="meta-label">Deadline</div>
+                        <div class="meta-value">March 15, 2024</div>
+                    </div>
+                    <div class="meta-item">
+                        <div class="meta-label">Duration</div>
+                        <div class="meta-value">24 months</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="qualification-content">
+                <div class="scoring-section">
+                    <div class="section-title">🎯 Qualification Scoring</div>
+                    
+                    <div class="score-overview">
+                        <div class="score-card">
+                            <div class="score-value excellent">87%</div>
+                            <div class="score-label">Overall Score</div>
+                        </div>
+                        <div class="score-card">
+                            <div class="score-value good">82%</div>
+                            <div class="score-label">Capability Match</div>
+                        </div>
+                        <div class="score-card">
+                            <div class="score-value excellent">94%</div>
+                            <div class="score-label">Requirements Fit</div>
+                        </div>
+                        <div class="score-card">
+                            <div class="score-value fair">73%</div>
+                            <div class="score-label">Win Probability</div>
+                        </div>
+                    </div>
+
+                    <div class="criteria-list">
+                        <div class="criteria-item">
+                            <div class="criteria-header">
+                                <div class="criteria-title">Technical Capability Alignment</div>
+                                <div class="criteria-score">
+                                    <div class="score-bar">
+                                        <div class="score-fill" style="width: 94%; background: #10b981;"></div>
+                                    </div>
+                                    <span class="score-badge excellent">94%</span>
+                                </div>
+                            </div>
+                            <div class="criteria-description">
+                                Evaluation of how well your team's technical skills and experience match the tender requirements.
+                            </div>
+                            <div class="criteria-details">
+                                <div class="detail-item">
+                                    <span class="detail-label">Cloud Platforms</span>
+                                    <span class="detail-value">✅ AWS, Azure, GCP</span>
+                                </div>
+                                <div class="detail-item">
+                                    <span class="detail-label">Government Experience</span>
+                                    <span class="detail-value">✅ 8 projects</span>
+                                </div>
+                                <div class="detail-item">
+                                    <span class="detail-label">Security Clearance</span>
+                                    <span class="detail-value">✅ Available</span>
+                                </div>
+                                <div class="detail-item">
+                                    <span class="detail-label">Team Size</span>
+                                    <span class="detail-value">✅ 12 certified engineers</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="criteria-item">
+                            <div class="criteria-header">
+                                <div class="criteria-title">Financial Viability</div>
+                                <div class="criteria-score">
+                                    <div class="score-bar">
+                                        <div class="score-fill" style="width: 88%; background: #10b981;"></div>
+                                    </div>
+                                    <span class="score-badge excellent">88%</span>
+                                </div>
+                            </div>
+                            <div class="criteria-description">
+                                Analysis of project profitability, resource requirements, and financial risk factors.
+                            </div>
+                            <div class="criteria-details">
+                                <div class="detail-item">
+                                    <span class="detail-label">Estimated Margin</span>
+                                    <span class="detail-value">22-28%</span>
+                                </div>
+                                <div class="detail-item">
+                                    <span class="detail-label">Resource Availability</span>
+                                    <span class="detail-value">✅ Q2 2024</span>
+                                </div>
+                                <div class="detail-item">
+                                    <span class="detail-label">Risk Level</span>
+                                    <span class="detail-value">Low-Medium</span>
+                                </div>
+                                <div class="detail-item">
+                                    <span class="detail-label">Payment Terms</span>
+                                    <span class="detail-value">✅ Favorable</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="criteria-item">
+                            <div class="criteria-header">
+                                <div class="criteria-title">Strategic Alignment</div>
+                                <div class="criteria-score">
+                                    <div class="score-bar">
+                                        <div class="score-fill" style="width: 76%; background: #3b82f6;"></div>
+                                    </div>
+                                    <span class="score-badge good">76%</span>
+                                </div>
+                            </div>
+                            <div class="criteria-description">
+                                How well this opportunity aligns with your business goals and strategic priorities.
+                            </div>
+                            <div class="criteria-details">
+                                <div class="detail-item">
+                                    <span class="detail-label">Market Segment</span>
+                                    <span class="detail-value">✅ Target: Government</span>
+                                </div>
+                                <div class="detail-item">
+                                    <span class="detail-label">Service Line</span>
+                                    <span class="detail-value">✅ Core: Cloud Migration</span>
+                                </div>
+                                <div class="detail-item">
+                                    <span class="detail-label">Brand Building</span>
+                                    <span class="detail-value">High potential</span>
+                                </div>
+                                <div class="detail-item">
+                                    <span class="detail-label">Partnership Opportunity</span>
+                                    <span class="detail-value">⚠️ Limited</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="criteria-item">
+                            <div class="criteria-header">
+                                <div class="criteria-title">Competitive Landscape</div>
+                                <div class="criteria-score">
+                                    <div class="score-bar">
+                                        <div class="score-fill" style="width: 65%; background: #f59e0b;"></div>
+                                    </div>
+                                    <span class="score-badge fair">65%</span>
+                                </div>
+                            </div>
+                            <div class="criteria-description">
+                                Assessment of competition intensity and your competitive advantages.
+                            </div>
+                            <div class="criteria-details">
+                                <div class="detail-item">
+                                    <span class="detail-label">Expected Bidders</span>
+                                    <span class="detail-value">6-8 companies</span>
+                                </div>
+                                <div class="detail-item">
+                                    <span class="detail-label">Win Rate (Similar)</span>
+                                    <span class="detail-value">35% (3 of 8)</span>
+                                </div>
+                                <div class="detail-item">
+                                    <span class="detail-label">Unique Advantages</span>
+                                    <span class="detail-value">✅ Bilingual team</span>
+                                </div>
+                                <div class="detail-item">
+                                    <span class="detail-label">Relationship</span>
+                                    <span class="detail-value">⚠️ New client</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="recommendation-section">
+                    <div class="recommendation-header">
+                        <div class="recommendation-title">🤖 AI Recommendations</div>
+                    </div>
+                    <ul class="recommendation-list">
+                        <li class="recommendation-item">
+                            <div class="recommendation-icon positive">✓</div>
+                            <div class="recommendation-content">
+                                <div class="recommendation-text"><strong>PURSUE:</strong> Strong technical alignment and favorable financials</div>
+                                <div class="recommendation-reason">Similar project success rate: 78% | Estimated ROI: 24%</div>
+                            </div>
+                        </li>
+                        <li class="recommendation-item">
+                            <div class="recommendation-icon warning">!</div>
+                            <div class="recommendation-content">
+                                <div class="recommendation-text"><strong>ENHANCE:</strong> Strengthen competitive position with strategic partnerships</div>
+                                <div class="recommendation-reason">Consider partnering with local firms for better client relationship</div>
+                            </div>
+                        </li>
+                        <li class="recommendation-item">
+                            <div class="recommendation-icon positive">+</div>
+                            <div class="recommendation-content">
+                                <div class="recommendation-text"><strong>LEVERAGE:</strong> Highlight bilingual capabilities and government expertise</div>
+                                <div class="recommendation-reason">Key differentiator identified in 73% of government wins</div>
+                            </div>
+                        </li>
+                        <li class="recommendation-item">
+                            <div class="recommendation-icon warning">⏱</div>
+                            <div class="recommendation-content">
+                                <div class="recommendation-text"><strong>TIMING:</strong> Allocate 45-60 hours for comprehensive proposal</div>
+                                <div class="recommendation-reason">Based on similar government tenders and complexity analysis</div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="action-buttons">
+                <div>
+                    <button class="btn btn-danger">🗑️ Decline & Archive</button>
+                    <button class="btn btn-secondary">⏸️ Save for Later</button>
+                </div>
+                <div style="display: flex; gap: 1rem;">
+                    <button class="btn btn-secondary">📊 Detailed Analysis</button>
+                    <button class="btn btn-success">✅ Qualify & Start Bid</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="sidebar-right">
+            <h3>📈 Analytics</h3>
+            
+            <div style="margin-bottom: 2rem;">
+                <h4 style="margin-bottom: 1rem; font-size: 0.875rem; color: #1f2937;">This Quarter</h4>
+                <div style="display: flex; flex-direction: column; gap: 0.75rem; font-size: 0.875rem;">
+                    <div class="detail-item">
+                        <span class="detail-label">Tenders Qualified</span>
+                        <span class="detail-value">23</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Avg Score</span>
+                        <span class="detail-value">78.5%</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Win Rate</span>
+                        <span class="detail-value">34%</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Pipeline Value</span>
+                        <span class="detail-value">$3.2M</span>
+                    </div>
+                </div>
+            </div>
+
+            <h4 style="margin-bottom: 1rem; font-size: 0.875rem; color: #1f2937;">🎯 Scoring Rules</h4>
+            
+            <div style="display: flex; flex-direction: column; gap: 0.5rem; margin-bottom: 1.5rem;">
+                <button class="btn btn-secondary" style="justify-content: flex-start; font-size: 0.75rem;">⚙️ Configure Criteria</button>
+                <button class="btn btn-secondary" style="justify-content: flex-start; font-size: 0.75rem;">📊 Adjust Weightings</button>
+                <button class="btn btn-secondary" style="justify-content: flex-start; font-size: 0.75rem;">🧠 Retrain Model</button>
+            </div>
+
+            <h4 style="margin-bottom: 1rem; font-size: 0.875rem; color: #1f2937;">📋 Quick Actions</h4>
+            
+            <div style="display: flex; flex-direction: column; gap: 0.5rem;">
+                <button class="btn btn-secondary" style="justify-content: flex-start; font-size: 0.75rem;">📄 Export Analysis</button>
+                <button class="btn btn-secondary" style="justify-content: flex-start; font-size: 0.75rem;">📧 Share with Team</button>
+                <button class="btn btn-secondary" style="justify-content: flex-start; font-size: 0.75rem;">🔍 Similar Tenders</button>
+                <button class="btn btn-secondary" style="justify-content: flex-start; font-size: 0.75rem;">📅 Schedule Review</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Animate score bars on page load
+        window.addEventListener('load', () => {
+            document.querySelectorAll('.score-fill').forEach((fill, index) => {
+                setTimeout(() => {
+                    fill.style.width = fill.style.width || '0%';
+                }, index * 200);
+            });
+        });
+
+        // Queue item selection
+        document.querySelectorAll('.queue-item').forEach(item => {
+            item.addEventListener('click', () => {
+                document.querySelectorAll('.queue-item').forEach(i => i.classList.remove('active'));
+                item.classList.add('active');
+            });
+        });
+
+        // Dynamic score updates
+        setInterval(() => {
+            const winProbability = document.querySelector('.score-overview .score-card:last-child .score-value');
+            const currentScore = parseInt(winProbability.textContent);
+            const newScore = Math.max(65, Math.min(80, currentScore + (Math.random() - 0.5) * 4));
+            winProbability.textContent = Math.round(newScore) + '%';
+            
+            if (newScore >= 75) {
+                winProbability.className = 'score-value good';
+            } else {
+                winProbability.className = 'score-value fair';
+            }
+        }, 15000);
+    </script>
+</body>
+</html>

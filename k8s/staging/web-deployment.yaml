@@ -1,0 +1,137 @@
+# Web Deployment for TenderFlow staging environment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: tenderflow-web
+  namespace: staging
+  labels:
+    app: tenderflow
+    component: web
+    environment: staging
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: tenderflow
+      component: web
+  template:
+    metadata:
+      labels:
+        app: tenderflow
+        component: web
+        environment: staging
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "3000"
+        prometheus.io/path: "/api/metrics"
+    spec:
+      serviceAccountName: tenderflow-web
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1001
+        fsGroup: 1001
+      containers:
+      - name: web
+        image: ghcr.io/tenderflow/tenderflow-web:IMAGE_TAG
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 3000
+          name: http
+          protocol: TCP
+        env:
+        - name: PORT
+          value: "3000"
+        - name: HOSTNAME
+          value: "0.0.0.0"
+        envFrom:
+        - configMapRef:
+            name: tenderflow-config
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "250m"
+          limits:
+            memory: "512Mi"
+            cpu: "500m"
+        livenessProbe:
+          httpGet:
+            path: /api/health
+            port: http
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 3
+        readinessProbe:
+          httpGet:
+            path: /api/health
+            port: http
+          initialDelaySeconds: 10
+          periodSeconds: 5
+          timeoutSeconds: 3
+          failureThreshold: 3
+        startupProbe:
+          httpGet:
+            path: /api/health
+            port: http
+          initialDelaySeconds: 10
+          periodSeconds: 5
+          timeoutSeconds: 3
+          failureThreshold: 30
+        volumeMounts:
+        - name: logs
+          mountPath: /app/logs
+        - name: tmp
+          mountPath: /tmp
+      volumes:
+      - name: logs
+        emptyDir: {}
+      - name: tmp
+        emptyDir: {}
+      restartPolicy: Always
+      terminationGracePeriodSeconds: 30
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 100
+            podAffinityTerm:
+              labelSelector:
+                matchExpressions:
+                - key: component
+                  operator: In
+                  values:
+                  - web
+              topologyKey: kubernetes.io/hostname
+
+---
+# Web Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: tenderflow-web-service
+  namespace: staging
+  labels:
+    app: tenderflow
+    component: web
+    environment: staging
+spec:
+  type: ClusterIP
+  ports:
+  - port: 80
+    targetPort: http
+    protocol: TCP
+    name: http
+  selector:
+    app: tenderflow
+    component: web
+
+---
+# Service Account for Web
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: tenderflow-web
+  namespace: staging
+  labels:
+    app: tenderflow
+    component: web
+    environment: staging

@@ -1,0 +1,723 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Validation - TenderFlow</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: #f8fafc;
+            color: #1f2937;
+        }
+
+        .header {
+            background: white;
+            border-bottom: 1px solid #e5e7eb;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #3b82f6;
+        }
+
+        .breadcrumb {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: #6b7280;
+            font-size: 0.875rem;
+        }
+
+        .breadcrumb a {
+            color: #3b82f6;
+            text-decoration: none;
+        }
+
+        .main-container {
+            display: flex;
+            min-height: calc(100vh - 73px);
+            gap: 2rem;
+            padding: 2rem;
+        }
+
+        .validation-panel {
+            flex: 1;
+            max-width: 800px;
+        }
+
+        .sidebar-right {
+            width: 350px;
+            background: white;
+            border-radius: 8px;
+            border: 1px solid #e5e7eb;
+            padding: 1.5rem;
+            height: fit-content;
+            position: sticky;
+            top: 95px;
+        }
+
+        .tender-card {
+            background: white;
+            border-radius: 8px;
+            border: 1px solid #e5e7eb;
+            margin-bottom: 2rem;
+        }
+
+        .tender-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid #e5e7eb;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+        }
+
+        .tender-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 0.5rem;
+        }
+
+        .tender-source {
+            color: #6b7280;
+            font-size: 0.875rem;
+        }
+
+        .confidence-badge {
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .confidence-high {
+            background-color: #d1fae5;
+            color: #065f46;
+        }
+
+        .confidence-medium {
+            background-color: #fef3c7;
+            color: #92400e;
+        }
+
+        .confidence-low {
+            background-color: #fee2e2;
+            color: #991b1b;
+        }
+
+        .validation-form {
+            padding: 1.5rem;
+        }
+
+        .form-section {
+            margin-bottom: 2rem;
+        }
+
+        .section-title {
+            font-size: 1rem;
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .field-group {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .field-group.full {
+            grid-template-columns: 1fr;
+        }
+
+        .form-field {
+            position: relative;
+        }
+
+        .field-label {
+            display: block;
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: #374151;
+            margin-bottom: 0.5rem;
+        }
+
+        .field-input {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            font-size: 0.875rem;
+            transition: border-color 0.2s ease;
+        }
+
+        .field-input:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
+        .field-textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        .ai-suggestion {
+            position: absolute;
+            right: 8px;
+            top: 32px;
+            background: #3b82f6;
+            color: white;
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            cursor: pointer;
+            opacity: 0.8;
+            transition: opacity 0.2s ease;
+        }
+
+        .ai-suggestion:hover {
+            opacity: 1;
+        }
+
+        .confidence-indicator {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-top: 0.5rem;
+            font-size: 0.75rem;
+        }
+
+        .confidence-bar {
+            flex: 1;
+            height: 4px;
+            background: #e5e7eb;
+            border-radius: 2px;
+            overflow: hidden;
+        }
+
+        .confidence-fill {
+            height: 100%;
+            transition: width 0.3s ease;
+        }
+
+        .confidence-fill.high {
+            background: #10b981;
+        }
+
+        .confidence-fill.medium {
+            background: #f59e0b;
+        }
+
+        .confidence-fill.low {
+            background: #ef4444;
+        }
+
+        .validation-actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.5rem;
+            border-top: 1px solid #e5e7eb;
+            background: #f9fafb;
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 6px;
+            font-size: 0.875rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-primary {
+            background-color: #3b82f6;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: #2563eb;
+        }
+
+        .btn-secondary {
+            background-color: white;
+            color: #374151;
+            border: 1px solid #d1d5db;
+        }
+
+        .btn-secondary:hover {
+            background-color: #f9fafb;
+        }
+
+        .btn-danger {
+            background-color: #dc2626;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background-color: #b91c1c;
+        }
+
+        .progress-indicator {
+            margin-bottom: 1rem;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: #e5e7eb;
+            border-radius: 4px;
+            overflow: hidden;
+            margin-bottom: 0.5rem;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #3b82f6, #10b981);
+            transition: width 0.5s ease;
+        }
+
+        .progress-text {
+            font-size: 0.875rem;
+            color: #6b7280;
+            text-align: center;
+        }
+
+        .ai-insights {
+            background: #f0f9ff;
+            border: 1px solid #bae6fd;
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .ai-insights h4 {
+            color: #0369a1;
+            font-size: 0.875rem;
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .insight-list {
+            list-style: none;
+            font-size: 0.875rem;
+        }
+
+        .insight-list li {
+            padding: 0.25rem 0;
+            color: #0c4a6e;
+            position: relative;
+            padding-left: 1.5rem;
+        }
+
+        .insight-list li::before {
+            content: "💡";
+            position: absolute;
+            left: 0;
+        }
+
+        .validation-queue {
+            margin-bottom: 1.5rem;
+        }
+
+        .queue-item {
+            padding: 1rem;
+            border: 1px solid #e5e7eb;
+            border-radius: 6px;
+            margin-bottom: 0.5rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .queue-item:hover {
+            border-color: #3b82f6;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+
+        .queue-item.active {
+            border-color: #3b82f6;
+            background: #eff6ff;
+        }
+
+        .queue-item-title {
+            font-weight: 500;
+            font-size: 0.875rem;
+            color: #1f2937;
+            margin-bottom: 0.25rem;
+        }
+
+        .queue-item-meta {
+            font-size: 0.75rem;
+            color: #6b7280;
+        }
+
+        .error-field {
+            border-color: #ef4444 !important;
+        }
+
+        .error-message {
+            color: #ef4444;
+            font-size: 0.75rem;
+            margin-top: 0.25rem;
+        }
+
+        .suggestion-tooltip {
+            position: absolute;
+            background: #1f2937;
+            color: white;
+            padding: 0.5rem;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            z-index: 10;
+            display: none;
+            max-width: 200px;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .processing {
+            animation: pulse 2s infinite;
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="logo">🏢 TenderFlow</div>
+        <div class="breadcrumb">
+            <a href="01-inbox.html">Smart Inbox</a> <span>></span> <span>AI Validation</span>
+        </div>
+    </header>
+
+    <div class="main-container">
+        <div class="validation-panel">
+            <div class="progress-indicator">
+                <div class="progress-bar">
+                    <div class="progress-fill" style="width: 65%"></div>
+                </div>
+                <div class="progress-text">Processing 3 of 12 tenders • 65% Complete</div>
+            </div>
+
+            <div class="tender-card">
+                <div class="tender-header">
+                    <div>
+                        <div class="tender-title">Cloud Infrastructure Modernization Services</div>
+                        <div class="tender-source">🏛️ Government of Canada • PWGSC-2024-IT-001</div>
+                    </div>
+                    <div class="confidence-badge confidence-high">
+                        🧠 AI Confidence: 87%
+                    </div>
+                </div>
+
+                <div class="ai-insights">
+                    <h4>🤖 AI Analysis Insights</h4>
+                    <ul class="insight-list">
+                        <li>High-value government contract with clear requirements</li>
+                        <li>Matches your cloud computing expertise profile</li>
+                        <li>Similar to 3 previous successful bids</li>
+                        <li>Estimated bid preparation time: 40-60 hours</li>
+                    </ul>
+                </div>
+
+                <form class="validation-form">
+                    <div class="form-section">
+                        <div class="section-title">📋 Basic Information</div>
+                        <div class="field-group">
+                            <div class="form-field">
+                                <label class="field-label">Tender ID</label>
+                                <input type="text" class="field-input" value="PWGSC-2024-IT-001" readonly>
+                            </div>
+                            <div class="form-field">
+                                <label class="field-label">Source Portal</label>
+                                <input type="text" class="field-input" value="BuyandSell.gc.ca" readonly>
+                            </div>
+                        </div>
+                        <div class="field-group">
+                            <div class="form-field">
+                                <label class="field-label">Publishing Date</label>
+                                <input type="date" class="field-input" value="2024-02-24">
+                            </div>
+                            <div class="form-field">
+                                <label class="field-label">Closing Date</label>
+                                <input type="date" class="field-input" value="2024-03-15">
+                                <div class="ai-suggestion" onclick="applySuggestion(this, '2024-03-16')">AI: Mar 16</div>
+                            </div>
+                        </div>
+                        <div class="field-group full">
+                            <div class="form-field">
+                                <label class="field-label">Title</label>
+                                <input type="text" class="field-input" value="Cloud Infrastructure Modernization Services">
+                                <div class="confidence-indicator">
+                                    <span>Confidence:</span>
+                                    <div class="confidence-bar">
+                                        <div class="confidence-fill high" style="width: 95%"></div>
+                                    </div>
+                                    <span>95%</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-section">
+                        <div class="section-title">💰 Financial Details</div>
+                        <div class="field-group">
+                            <div class="form-field">
+                                <label class="field-label">Estimated Value</label>
+                                <input type="number" class="field-input" value="850000" step="1000">
+                                <div class="ai-suggestion" onclick="applySuggestion(this, '875000')">AI: $875K</div>
+                                <div class="confidence-indicator">
+                                    <span>Confidence:</span>
+                                    <div class="confidence-bar">
+                                        <div class="confidence-fill medium" style="width: 72%"></div>
+                                    </div>
+                                    <span>72%</span>
+                                </div>
+                            </div>
+                            <div class="form-field">
+                                <label class="field-label">Currency</label>
+                                <select class="field-input">
+                                    <option value="CAD" selected>CAD - Canadian Dollar</option>
+                                    <option value="USD">USD - US Dollar</option>
+                                    <option value="EUR">EUR - Euro</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="field-group">
+                            <div class="form-field">
+                                <label class="field-label">Contract Duration</label>
+                                <input type="text" class="field-input" value="24 months">
+                                <div class="confidence-indicator">
+                                    <span>Confidence:</span>
+                                    <div class="confidence-bar">
+                                        <div class="confidence-fill high" style="width: 88%"></div>
+                                    </div>
+                                    <span>88%</span>
+                                </div>
+                            </div>
+                            <div class="form-field">
+                                <label class="field-label">Payment Terms</label>
+                                <input type="text" class="field-input" value="Monthly milestone payments">
+                                <div class="ai-suggestion" onclick="applySuggestion(this, 'Quarterly milestone payments')">AI: Quarterly</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-section">
+                        <div class="section-title">🏷️ Categorization</div>
+                        <div class="field-group">
+                            <div class="form-field">
+                                <label class="field-label">Primary Category</label>
+                                <select class="field-input">
+                                    <option value="IT Services" selected>IT Services</option>
+                                    <option value="Cloud Computing">Cloud Computing</option>
+                                    <option value="Consulting">Consulting</option>
+                                    <option value="Software Development">Software Development</option>
+                                </select>
+                                <div class="confidence-indicator">
+                                    <span>Confidence:</span>
+                                    <div class="confidence-bar">
+                                        <div class="confidence-fill high" style="width: 94%"></div>
+                                    </div>
+                                    <span>94%</span>
+                                </div>
+                            </div>
+                            <div class="form-field">
+                                <label class="field-label">Industry Sector</label>
+                                <select class="field-input">
+                                    <option value="Government" selected>Government</option>
+                                    <option value="Healthcare">Healthcare</option>
+                                    <option value="Financial">Financial</option>
+                                    <option value="Education">Education</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="field-group full">
+                            <div class="form-field">
+                                <label class="field-label">Keywords/Tags</label>
+                                <input type="text" class="field-input" value="cloud, infrastructure, modernization, government, migration">
+                                <div class="ai-suggestion" onclick="applySuggestion(this, 'cloud, infrastructure, modernization, government, migration, AWS, Azure')">AI: +AWS, Azure</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-section">
+                        <div class="section-title">📄 Description & Requirements</div>
+                        <div class="field-group full">
+                            <div class="form-field">
+                                <label class="field-label">Description</label>
+                                <textarea class="field-input field-textarea">The Government of Canada is seeking proposals for comprehensive cloud infrastructure modernization services including migration planning, implementation, and ongoing support for critical government systems.</textarea>
+                                <div class="confidence-indicator">
+                                    <span>Confidence:</span>
+                                    <div class="confidence-bar">
+                                        <div class="confidence-fill high" style="width: 91%"></div>
+                                    </div>
+                                    <span>91%</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="field-group full">
+                            <div class="form-field">
+                                <label class="field-label">Key Requirements</label>
+                                <textarea class="field-input field-textarea">• Minimum 5 years cloud infrastructure experience
+• Government security clearance required
+• Experience with AWS/Azure government clouds
+• 24/7 support capabilities
+• Bilingual documentation (English/French)</textarea>
+                                <div class="ai-suggestion" onclick="applySuggestion(this, 'Enhanced requirements extracted')">AI: Enhanced</div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+
+                <div class="validation-actions">
+                    <div>
+                        <button class="btn btn-danger">🗑️ Archive</button>
+                        <button class="btn btn-secondary">⏸️ Save Draft</button>
+                    </div>
+                    <div style="display: flex; gap: 1rem;">
+                        <button class="btn btn-secondary">⏭️ Skip for Now</button>
+                        <button class="btn btn-primary">✅ Validate & Continue</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="sidebar-right">
+            <h3 style="margin-bottom: 1rem; font-size: 1rem; color: #1f2937;">Validation Queue</h3>
+            
+            <div class="validation-queue">
+                <div class="queue-item active">
+                    <div class="queue-item-title">Cloud Infrastructure Modernization</div>
+                    <div class="queue-item-meta">Government • $850K • 87% confidence</div>
+                </div>
+                
+                <div class="queue-item">
+                    <div class="queue-item-title">Digital Transformation Consulting</div>
+                    <div class="queue-item-meta">Transit Authority • $420K • 74% confidence</div>
+                </div>
+                
+                <div class="queue-item">
+                    <div class="queue-item-title">Enterprise Software Development</div>
+                    <div class="queue-item-meta">Financial Corp • $1.2M • 92% confidence</div>
+                </div>
+                
+                <div class="queue-item">
+                    <div class="queue-item-title">Cybersecurity Assessment</div>
+                    <div class="queue-item-meta">Health Authority • $320K • 65% confidence</div>
+                </div>
+            </div>
+
+            <h4 style="margin: 1.5rem 0 1rem; font-size: 0.875rem; color: #1f2937;">🔧 Validation Tools</h4>
+            
+            <div style="display: flex; flex-direction: column; gap: 0.5rem;">
+                <button class="btn btn-secondary" style="justify-content: flex-start;">🤖 Auto-Complete Fields</button>
+                <button class="btn btn-secondary" style="justify-content: flex-start;">📊 Similar Tenders</button>
+                <button class="btn btn-secondary" style="justify-content: flex-start;">🔍 Verify Source Data</button>
+                <button class="btn btn-secondary" style="justify-content: flex-start;">📋 Export for Review</button>
+            </div>
+
+            <h4 style="margin: 1.5rem 0 1rem; font-size: 0.875rem; color: #1f2937;">⚙️ Validation Settings</h4>
+            
+            <div style="display: flex; flex-direction: column; gap: 0.75rem; font-size: 0.875rem;">
+                <label style="display: flex; align-items: center; gap: 0.5rem;">
+                    <input type="checkbox" checked> Auto-accept high confidence fields
+                </label>
+                <label style="display: flex; align-items: center; gap: 0.5rem;">
+                    <input type="checkbox" checked> Flag missing critical fields
+                </label>
+                <label style="display: flex; align-items: center; gap: 0.5rem;">
+                    <input type="checkbox"> Require manual review for values >$1M
+                </label>
+                <label style="display: flex; align-items: center; gap: 0.5rem;">
+                    <input type="checkbox" checked> Show confidence indicators
+                </label>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function applySuggestion(element, value) {
+            const input = element.parentElement.querySelector('.field-input');
+            const oldValue = input.value;
+            input.value = value;
+            input.style.backgroundColor = '#f0f9ff';
+            
+            // Animate confidence change
+            const confidenceBar = element.parentElement.querySelector('.confidence-fill');
+            if (confidenceBar) {
+                confidenceBar.style.width = '95%';
+                confidenceBar.className = 'confidence-fill high';
+            }
+            
+            // Show tooltip
+            const tooltip = document.createElement('div');
+            tooltip.className = 'suggestion-tooltip';
+            tooltip.textContent = `Applied AI suggestion: ${oldValue} → ${value}`;
+            tooltip.style.display = 'block';
+            element.parentElement.appendChild(tooltip);
+            
+            setTimeout(() => {
+                input.style.backgroundColor = '';
+                if (tooltip.parentElement) {
+                    tooltip.parentElement.removeChild(tooltip);
+                }
+                element.style.display = 'none';
+            }, 2000);
+        }
+
+        // Simulate processing animation
+        setInterval(() => {
+            const progressFill = document.querySelector('.progress-fill');
+            const currentWidth = parseInt(progressFill.style.width);
+            if (currentWidth < 100) {
+                progressFill.style.width = `${currentWidth + 1}%`;
+                document.querySelector('.progress-text').textContent = 
+                    `Processing 3 of 12 tenders • ${currentWidth + 1}% Complete`;
+            }
+        }, 5000);
+
+        // Queue item selection
+        document.querySelectorAll('.queue-item').forEach(item => {
+            item.addEventListener('click', () => {
+                document.querySelectorAll('.queue-item').forEach(i => i.classList.remove('active'));
+                item.classList.add('active');
+            });
+        });
+    </script>
+</body>
+</html>

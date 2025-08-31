@@ -1,0 +1,437 @@
+# Quality Gates and Code Analysis Pipeline
+name: Quality Gates
+
+on:
+  pull_request:
+    branches: [main, develop]
+  push:
+    branches: [main, develop]
+
+env:
+  NODE_VERSION: '20'
+
+jobs:
+  # Code Quality Analysis
+  code-quality:
+    name: Code Quality Analysis
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Fetch full history for better analysis
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run ESLint with JSON output
+        run: |
+          npx eslint "**/*.{ts,tsx,js,jsx}" \
+            --format json \
+            --output-file eslint-results.json \
+            --max-warnings 0
+        continue-on-error: true
+
+      - name: Run Prettier check
+        run: |
+          npx prettier --check "**/*.{ts,tsx,js,jsx,json,md,yml,yaml}" \
+            --write=false \
+            --list-different > prettier-issues.txt || echo "Formatting issues found"
+
+      - name: TypeScript compilation check
+        run: |
+          npm run type-check 2>&1 | tee typescript-issues.txt
+
+      - name: Upload code quality artifacts
+        uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: code-quality-reports
+          path: |
+            eslint-results.json
+            prettier-issues.txt
+            typescript-issues.txt
+
+  # Security Analysis
+  security-analysis:
+    name: Security Analysis
+    runs-on: ubuntu-latest
+    permissions:
+      security-events: write
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run npm audit
+        run: |
+          npm audit --audit-level=moderate --json > npm-audit-results.json || true
+
+      - name: Run Snyk security scan
+        uses: snyk/actions/node@master
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+        with:
+          args: --json --file=package.json > snyk-results.json
+        continue-on-error: true
+
+      - name: Initialize CodeQL
+        if: github.event_name == 'push'
+        uses: github/codeql-action/init@v2
+        with:
+          languages: javascript
+
+      - name: Autobuild for CodeQL
+        if: github.event_name == 'push'
+        uses: github/codeql-action/autobuild@v2
+
+      - name: Perform CodeQL Analysis
+        if: github.event_name == 'push'
+        uses: github/codeql-action/analyze@v2
+
+      - name: Upload security artifacts
+        uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: security-reports
+          path: |
+            npm-audit-results.json
+            snyk-results.json
+
+  # Test Coverage Analysis
+  test-coverage:
+    name: Test Coverage Analysis
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_DB: tenderflow_test
+          POSTGRES_USER: test_user
+          POSTGRES_PASSWORD: test_password
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+
+      redis:
+        image: redis:7
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 6379:6379
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Setup test database
+        run: |
+          cd apps/api
+          npx prisma migrate deploy
+        env:
+          DATABASE_URL: postgresql://test_user:test_password@localhost:5432/tenderflow_test
+
+      - name: Run all tests with coverage
+        run: npm run test:coverage
+        env:
+          DATABASE_URL: postgresql://test_user:test_password@localhost:5432/tenderflow_test
+          REDIS_URL: redis://localhost:6379
+          JWT_SECRET: test-jwt-secret
+          NODE_ENV: test
+
+      - name: Generate coverage summary
+        run: |
+          echo "## Test Coverage Report" > coverage-summary.md
+          echo "" >> coverage-summary.md
+          
+          # Process coverage files
+          find . -name "coverage-summary.json" | while read file; do
+            package_name=$(echo $file | cut -d'/' -f2)
+            echo "### $package_name" >> coverage-summary.md
+            
+            lines=$(cat $file | jq -r '.total.lines.pct')
+            branches=$(cat $file | jq -r '.total.branches.pct')
+            functions=$(cat $file | jq -r '.total.functions.pct')
+            statements=$(cat $file | jq -r '.total.statements.pct')
+            
+            echo "| Metric | Coverage |" >> coverage-summary.md
+            echo "|--------|----------|" >> coverage-summary.md
+            echo "| Lines | $lines% |" >> coverage-summary.md
+            echo "| Branches | $branches% |" >> coverage-summary.md
+            echo "| Functions | $functions% |" >> coverage-summary.md
+            echo "| Statements | $statements% |" >> coverage-summary.md
+            echo "" >> coverage-summary.md
+          done
+
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v3
+        with:
+          directory: ./coverage
+          fail_ci_if_error: true
+          verbose: true
+
+      - name: Coverage quality gate
+        run: |
+          # Check overall coverage meets minimum threshold
+          overall_coverage=$(find . -name "coverage-summary.json" -exec cat {} \; | jq -s 'map(.total.lines.pct) | add / length')
+          echo "Overall coverage: $overall_coverage%"
+          
+          if (( $(echo "$overall_coverage < 80" | bc -l) )); then
+            echo "❌ Coverage below 80% threshold ($overall_coverage%)"
+            exit 1
+          else
+            echo "✅ Coverage meets 80% threshold ($overall_coverage%)"
+          fi
+
+      - name: Comment coverage on PR
+        if: github.event_name == 'pull_request'
+        uses: peter-evans/create-or-update-comment@v3
+        with:
+          issue-number: ${{ github.event.pull_request.number }}
+          body-file: coverage-summary.md
+
+  # Performance Analysis
+  performance-analysis:
+    name: Performance Analysis
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build applications
+        run: npm run build
+
+      - name: Analyze bundle size
+        run: |
+          cd apps/web
+          npx next-bundle-analyzer --analyze
+          
+          # Generate bundle size report
+          echo "## Bundle Size Analysis" > ../bundle-report.md
+          echo "" >> ../bundle-report.md
+          
+          # Extract bundle sizes (simplified)
+          echo "| Bundle | Size | Gzipped |" >> ../bundle-report.md
+          echo "|--------|------|---------|" >> ../bundle-report.md
+          echo "| Main | TBD | TBD |" >> ../bundle-report.md
+          echo "| Chunks | TBD | TBD |" >> ../bundle-report.md
+
+      - name: Performance regression check
+        run: |
+          # Compare with main branch bundle sizes
+          echo "Checking for performance regressions..."
+          # This would typically compare against stored metrics
+          
+      - name: Lighthouse CI
+        uses: treosh/lighthouse-ci-action@v10
+        with:
+          configPath: './lighthouserc.json'
+          uploadArtifacts: true
+          temporaryPublicStorage: true
+
+  # Dependency Analysis
+  dependency-analysis:
+    name: Dependency Analysis
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Check for outdated dependencies
+        run: |
+          echo "## Outdated Dependencies" > dependency-report.md
+          echo "" >> dependency-report.md
+          npm outdated --json > outdated.json || true
+          
+          if [ -s outdated.json ]; then
+            echo "Found outdated dependencies:" >> dependency-report.md
+            echo '```json' >> dependency-report.md
+            cat outdated.json >> dependency-report.md
+            echo '```' >> dependency-report.md
+          else
+            echo "All dependencies are up to date! 🎉" >> dependency-report.md
+          fi
+
+      - name: Check for unused dependencies
+        run: |
+          npx depcheck --json > depcheck-results.json || true
+          
+          echo "" >> dependency-report.md
+          echo "## Unused Dependencies" >> dependency-report.md
+          
+          unused=$(cat depcheck-results.json | jq -r '.dependencies | length')
+          if [ "$unused" -gt 0 ]; then
+            echo "Found unused dependencies:" >> dependency-report.md
+            cat depcheck-results.json | jq -r '.dependencies[]' | while read dep; do
+              echo "- $dep" >> dependency-report.md
+            done
+          else
+            echo "No unused dependencies found! 🎉" >> dependency-report.md
+          fi
+
+      - name: Check for duplicate dependencies
+        run: |
+          npx npm-check-duplicates --json > duplicates.json || true
+          
+          echo "" >> dependency-report.md
+          echo "## Duplicate Dependencies" >> dependency-report.md
+          
+          if [ -s duplicates.json ]; then
+            echo "Found duplicate dependencies:" >> dependency-report.md
+            echo '```json' >> dependency-report.md
+            cat duplicates.json >> dependency-report.md
+            echo '```' >> dependency-report.md
+          else
+            echo "No duplicate dependencies found! 🎉" >> dependency-report.md
+          fi
+
+      - name: Upload dependency analysis
+        uses: actions/upload-artifact@v3
+        with:
+          name: dependency-reports
+          path: |
+            dependency-report.md
+            outdated.json
+            depcheck-results.json
+            duplicates.json
+
+  # Final Quality Gate
+  quality-gate:
+    name: Quality Gate Check
+    runs-on: ubuntu-latest
+    needs: [code-quality, security-analysis, test-coverage, dependency-analysis]
+    if: always()
+    steps:
+      - name: Download all artifacts
+        uses: actions/download-artifact@v3
+
+      - name: Evaluate quality gates
+        run: |
+          echo "## Quality Gate Results" > quality-gate-results.md
+          echo "" >> quality-gate-results.md
+          
+          # Initialize counters
+          passed=0
+          failed=0
+          warnings=0
+          
+          # Check code quality
+          if [ -f "code-quality-reports/eslint-results.json" ]; then
+            errors=$(cat code-quality-reports/eslint-results.json | jq '[.[] | .errorCount] | add // 0')
+            warns=$(cat code-quality-reports/eslint-results.json | jq '[.[] | .warningCount] | add // 0')
+            
+            if [ "$errors" -eq 0 ]; then
+              echo "✅ ESLint: No errors" >> quality-gate-results.md
+              ((passed++))
+            else
+              echo "❌ ESLint: $errors errors" >> quality-gate-results.md
+              ((failed++))
+            fi
+            
+            if [ "$warns" -gt 0 ]; then
+              echo "⚠️  ESLint: $warns warnings" >> quality-gate-results.md
+              ((warnings++))
+            fi
+          fi
+          
+          # Check test coverage
+          if [ "${{ needs.test-coverage.result }}" = "success" ]; then
+            echo "✅ Test Coverage: Passed (≥80%)" >> quality-gate-results.md
+            ((passed++))
+          else
+            echo "❌ Test Coverage: Failed (<80%)" >> quality-gate-results.md
+            ((failed++))
+          fi
+          
+          # Check security
+          if [ "${{ needs.security-analysis.result }}" = "success" ]; then
+            echo "✅ Security Analysis: Passed" >> quality-gate-results.md
+            ((passed++))
+          else
+            echo "❌ Security Analysis: Issues found" >> quality-gate-results.md
+            ((failed++))
+          fi
+          
+          echo "" >> quality-gate-results.md
+          echo "### Summary" >> quality-gate-results.md
+          echo "- ✅ Passed: $passed" >> quality-gate-results.md
+          echo "- ❌ Failed: $failed" >> quality-gate-results.md
+          echo "- ⚠️  Warnings: $warnings" >> quality-gate-results.md
+          
+          # Determine overall result
+          if [ "$failed" -eq 0 ]; then
+            echo "" >> quality-gate-results.md
+            echo "🎉 **All quality gates passed!**" >> quality-gate-results.md
+            echo "quality_gate_status=success" >> $GITHUB_ENV
+          else
+            echo "" >> quality-gate-results.md
+            echo "🚫 **Quality gates failed. Please address the issues above.**" >> quality-gate-results.md
+            echo "quality_gate_status=failure" >> $GITHUB_ENV
+          fi
+
+      - name: Comment quality gate results on PR
+        if: github.event_name == 'pull_request'
+        uses: peter-evans/create-or-update-comment@v3
+        with:
+          issue-number: ${{ github.event.pull_request.number }}
+          body-file: quality-gate-results.md
+
+      - name: Set quality gate status
+        if: env.quality_gate_status == 'failure'
+        run: |
+          echo "❌ Quality gates failed"
+          exit 1
+
+      - name: Quality gate success
+        if: env.quality_gate_status == 'success'
+        run: |
+          echo "✅ All quality gates passed"

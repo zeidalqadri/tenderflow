@@ -1,0 +1,136 @@
+# Docker Compose configuration for TenderFlow testing environment
+version: '3.8'
+
+services:
+  # Test PostgreSQL Database
+  postgres-test:
+    image: postgres:15-alpine
+    container_name: tenderflow-postgres-test
+    environment:
+      POSTGRES_DB: tenderflow_test
+      POSTGRES_USER: test_user
+      POSTGRES_PASSWORD: test_password
+      POSTGRES_HOST_AUTH_METHOD: trust
+    ports:
+      - "5433:5432"
+    volumes:
+      - postgres_test_data:/var/lib/postgresql/data
+      - ./scripts/test-db-init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - tenderflow-test
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U test_user -d tenderflow_test"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # Test Redis Cache
+  redis-test:
+    image: redis:7-alpine
+    container_name: tenderflow-redis-test
+    ports:
+      - "6380:6379"
+    networks:
+      - tenderflow-test
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # LocalStack for AWS services testing
+  localstack:
+    image: localstack/localstack:3.0
+    container_name: tenderflow-localstack
+    environment:
+      SERVICES: s3,sqs,ses,secretsmanager
+      DEBUG: 1
+      DATA_DIR: /tmp/localstack/data
+      DOCKER_HOST: unix:///var/run/docker.sock
+      AWS_DEFAULT_REGION: us-east-1
+      AWS_ACCESS_KEY_ID: test
+      AWS_SECRET_ACCESS_KEY: test
+    ports:
+      - "4566:4566"
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock"
+      - localstack_data:/tmp/localstack
+    networks:
+      - tenderflow-test
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:4566/_localstack/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Test SMTP server (MailHog)
+  mailhog:
+    image: mailhog/mailhog:v1.0.1
+    container_name: tenderflow-mailhog
+    ports:
+      - "1025:1025"  # SMTP
+      - "8025:8025"  # Web UI
+    networks:
+      - tenderflow-test
+
+  # Test API service
+  api-test:
+    build:
+      context: ./apps/api
+      dockerfile: Dockerfile.test
+    container_name: tenderflow-api-test
+    environment:
+      NODE_ENV: test
+      DATABASE_URL: postgresql://test_user:test_password@postgres-test:5432/tenderflow_test
+      REDIS_URL: redis://redis-test:6379
+      JWT_SECRET: test-jwt-secret-key
+      AWS_ENDPOINT_URL: http://localstack:4566
+      AWS_ACCESS_KEY_ID: test
+      AWS_SECRET_ACCESS_KEY: test
+      AWS_DEFAULT_REGION: us-east-1
+      S3_BUCKET_NAME: test-bucket
+      SMTP_HOST: mailhog
+      SMTP_PORT: 1025
+      SMTP_SECURE: false
+      SMTP_USER: ""
+      SMTP_PASSWORD: ""
+    ports:
+      - "3001:3000"
+    depends_on:
+      postgres-test:
+        condition: service_healthy
+      redis-test:
+        condition: service_healthy
+      localstack:
+        condition: service_healthy
+    networks:
+      - tenderflow-test
+    volumes:
+      - ./apps/api/src:/app/src
+      - ./apps/api/prisma:/app/prisma
+
+  # Test Web service
+  web-test:
+    build:
+      context: ./apps/web
+      dockerfile: Dockerfile.test
+    container_name: tenderflow-web-test
+    environment:
+      NODE_ENV: test
+      NEXT_PUBLIC_API_URL: http://api-test:3000
+    ports:
+      - "3001:3000"
+    depends_on:
+      - api-test
+    networks:
+      - tenderflow-test
+    volumes:
+      - ./apps/web/src:/app/src
+
+volumes:
+  postgres_test_data:
+  localstack_data:
+
+networks:
+  tenderflow-test:
+    driver: bridge

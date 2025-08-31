@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Submission Portal - TenderFlow</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background-color: #f8fafc; color: #1f2937; }
+        .header { background: white; border-bottom: 1px solid #e5e7eb; padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100; }
+        .logo { display: flex; align-items: center; font-size: 1.5rem; font-weight: 700; color: #3b82f6; }
+        .main-container { display: grid; grid-template-columns: 1fr 350px; gap: 2rem; padding: 2rem; min-height: calc(100vh - 73px); }
+        .submission-panel { background: white; border-radius: 8px; border: 1px solid #e5e7eb; }
+        .panel-header { padding: 2rem; border-bottom: 1px solid #e5e7eb; background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; border-radius: 8px 8px 0 0; }
+        .panel-title { font-size: 1.5rem; font-weight: 600; margin-bottom: 0.5rem; }
+        .panel-subtitle { opacity: 0.9; }
+        .submission-form { padding: 2rem; }
+        .form-section { margin-bottom: 2rem; }
+        .section-title { font-size: 1rem; font-weight: 600; color: #1f2937; margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem; }
+        .form-group { margin-bottom: 1rem; }
+        .form-label { display: block; font-size: 0.875rem; font-weight: 500; color: #374151; margin-bottom: 0.5rem; }
+        .form-input, .form-select, .form-textarea { width: 100%; padding: 0.75rem; border: 1px solid #d1d5db; border-radius: 6px; font-size: 0.875rem; }
+        .form-textarea { min-height: 100px; resize: vertical; }
+        .btn { padding: 0.75rem 1.5rem; border: none; border-radius: 6px; font-size: 0.875rem; font-weight: 500; cursor: pointer; transition: all 0.2s ease; display: inline-flex; align-items: center; gap: 0.5rem; }
+        .btn-primary { background-color: #3b82f6; color: white; }
+        .btn-success { background-color: #10b981; color: white; }
+        .btn-secondary { background-color: white; color: #374151; border: 1px solid #d1d5db; }
+        .file-upload-area { border: 2px dashed #d1d5db; border-radius: 8px; padding: 2rem; text-align: center; transition: all 0.2s ease; cursor: pointer; }
+        .file-upload-area:hover { border-color: #3b82f6; background-color: #f8fafc; }
+        .upload-icon { font-size: 3rem; margin-bottom: 1rem; color: #6b7280; }
+        .checklist-item { display: flex; align-items: center; gap: 0.75rem; padding: 0.75rem; border: 1px solid #e5e7eb; border-radius: 6px; margin-bottom: 0.5rem; }
+        .checklist-checkbox { width: 18px; height: 18px; cursor: pointer; }
+        .checklist-text { flex: 1; font-size: 0.875rem; }
+        .status-badge { padding: 0.25rem 0.75rem; border-radius: 9999px; font-size: 0.75rem; font-weight: 500; text-transform: uppercase; }
+        .status-ready { background-color: #d1fae5; color: #065f46; }
+        .status-pending { background-color: #fef3c7; color: #92400e; }
+        .status-error { background-color: #fee2e2; color: #991b1b; }
+        .sidebar { display: flex; flex-direction: column; gap: 1.5rem; }
+        .info-card { background: white; border-radius: 8px; border: 1px solid #e5e7eb; padding: 1.5rem; }
+        .countdown-timer { text-align: center; padding: 2rem; background: linear-gradient(135deg, #fef7f0, #fed7aa); border-radius: 8px; margin-bottom: 1.5rem; }
+        .timer-value { font-size: 2.5rem; font-weight: 700; color: #ea580c; margin-bottom: 0.5rem; }
+        .timer-label { color: #9a3412; font-weight: 500; }
+        .submission-methods { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1.5rem; }
+        .method-card { padding: 1rem; border: 1px solid #e5e7eb; border-radius: 6px; cursor: pointer; transition: all 0.2s ease; text-align: center; }
+        .method-card:hover, .method-card.selected { border-color: #3b82f6; background-color: #eff6ff; }
+        .method-icon { font-size: 2rem; margin-bottom: 0.5rem; }
+        .method-title { font-weight: 500; margin-bottom: 0.25rem; }
+        .method-description { font-size: 0.75rem; color: #6b7280; }
+        .progress-tracker { margin-bottom: 1.5rem; }
+        .progress-step { display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1rem; }
+        .step-indicator { width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; color: white; flex-shrink: 0; }
+        .step-indicator.completed { background: #10b981; }
+        .step-indicator.current { background: #3b82f6; }
+        .step-indicator.pending { background: #d1d5db; }
+        .step-content { flex: 1; }
+        .step-title { font-weight: 500; color: #1f2937; margin-bottom: 0.25rem; font-size: 0.875rem; }
+        .step-description { font-size: 0.75rem; color: #6b7280; }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="logo">🏢 TenderFlow</div>
+        <div style="color: #6b7280; font-size: 0.875rem;">Cloud Infrastructure Modernization • Final Submission</div>
+    </header>
+
+    <div class="main-container">
+        <div class="submission-panel">
+            <div class="panel-header">
+                <div class="panel-title">📤 Final Submission Portal</div>
+                <div class="panel-subtitle">Ready to submit your proposal for Cloud Infrastructure Modernization Services</div>
+            </div>
+
+            <div class="submission-form">
+                <div class="form-section">
+                    <div class="section-title">🎯 Submission Method</div>
+                    <div class="submission-methods">
+                        <div class="method-card selected" onclick="selectMethod(this)">
+                            <div class="method-icon">🌐</div>
+                            <div class="method-title">Online Portal</div>
+                            <div class="method-description">Direct upload to client system</div>
+                        </div>
+                        <div class="method-card" onclick="selectMethod(this)">
+                            <div class="method-icon">📧</div>
+                            <div class="method-title">Email Submission</div>
+                            <div class="method-description">Secure encrypted email</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <div class="section-title">📋 Pre-Submission Checklist</div>
+                    <div class="checklist-item">
+                        <input type="checkbox" class="checklist-checkbox" checked>
+                        <div class="checklist-text">Executive Summary (PDF, 2 pages max)</div>
+                        <div class="status-badge status-ready">Ready</div>
+                    </div>
+                    <div class="checklist-item">
+                        <input type="checkbox" class="checklist-checkbox" checked>
+                        <div class="checklist-text">Technical Approach (PDF, 15 pages max)</div>
+                        <div class="status-badge status-ready">Ready</div>
+                    </div>
+                    <div class="checklist-item">
+                        <input type="checkbox" class="checklist-checkbox" checked>
+                        <div class="checklist-text">Financial Proposal (Excel + PDF)</div>
+                        <div class="status-badge status-ready">Ready</div>
+                    </div>
+                    <div class="checklist-item">
+                        <input type="checkbox" class="checklist-checkbox" checked>
+                        <div class="checklist-text">Team Profiles & Certifications</div>
+                        <div class="status-badge status-ready">Ready</div>
+                    </div>
+                    <div class="checklist-item">
+                        <input type="checkbox" class="checklist-checkbox">
+                        <div class="checklist-text">Company Insurance Certificate</div>
+                        <div class="status-badge status-pending">Pending</div>
+                    </div>
+                    <div class="checklist-item">
+                        <input type="checkbox" class="checklist-checkbox" checked>
+                        <div class="checklist-text">Security Clearance Documentation</div>
+                        <div class="status-badge status-ready">Ready</div>
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <div class="section-title">📁 Final Document Package</div>
+                    <div class="file-upload-area">
+                        <div class="upload-icon">📦</div>
+                        <div style="font-weight: 500; margin-bottom: 0.5rem;">Complete Proposal Package</div>
+                        <div style="color: #6b7280; font-size: 0.875rem; margin-bottom: 1rem;">
+                            All documents compiled into submission-ready format
+                        </div>
+                        <div style="background: #f3f4f6; padding: 0.75rem; border-radius: 6px; margin-bottom: 1rem;">
+                            📄 TechCorp_CloudInfra_Proposal_v3.2_FINAL.zip (12.4 MB)
+                        </div>
+                        <button class="btn btn-secondary">🔄 Update Package</button>
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <div class="section-title">✍️ Submission Details</div>
+                    <div class="form-group">
+                        <label class="form-label">Submitter Name</label>
+                        <input type="text" class="form-input" value="John Doe" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Company Representative Title</label>
+                        <input type="text" class="form-input" value="Senior Project Manager">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Contact Information</label>
+                        <input type="email" class="form-input" value="john.doe@techcorp.com">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Additional Comments (Optional)</label>
+                        <textarea class="form-textarea" placeholder="Any additional information or clarifications..."></textarea>
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <div class="section-title">🔒 Legal Attestation</div>
+                    <div style="background: #f9fafb; border: 1px solid #d1d5db; border-radius: 6px; padding: 1rem; margin-bottom: 1rem; font-size: 0.875rem; color: #4b5563; line-height: 1.5;">
+                        By submitting this proposal, I certify that all information provided is accurate and complete. I acknowledge that any false statements may result in disqualification. This proposal represents our best and final offer for the requested services.
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1.5rem;">
+                        <input type="checkbox" id="attestation" style="width: 18px; height: 18px;">
+                        <label for="attestation" style="font-size: 0.875rem; color: #1f2937;">
+                            I agree to the terms and conditions stated above
+                        </label>
+                    </div>
+                </div>
+
+                <div style="display: flex; justify-content: space-between; align-items: center; padding-top: 1.5rem; border-top: 1px solid #e5e7eb;">
+                    <button class="btn btn-secondary">💾 Save Draft</button>
+                    <button class="btn btn-success" onclick="submitProposal()" style="font-size: 1rem; padding: 1rem 2rem;">
+                        📤 Submit Proposal
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div class="sidebar">
+            <div class="countdown-timer">
+                <div class="timer-value" id="countdown">07:23:45</div>
+                <div class="timer-label">Time Remaining</div>
+            </div>
+
+            <div class="info-card">
+                <div class="section-title">📊 Submission Summary</div>
+                <div style="display: flex; flex-direction: column; gap: 0.75rem; font-size: 0.875rem;">
+                    <div style="display: flex; justify-content: space-between;">
+                        <span style="color: #6b7280;">RFP Number:</span>
+                        <span style="font-weight: 500;">PWGSC-2024-IT-001</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between;">
+                        <span style="color: #6b7280;">Deadline:</span>
+                        <span style="font-weight: 500;">March 15, 2:00 PM EST</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between;">
+                        <span style="color: #6b7280;">Proposal Value:</span>
+                        <span style="font-weight: 500; color: #059669;">$850,000 CAD</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between;">
+                        <span style="color: #6b7280;">Document Count:</span>
+                        <span style="font-weight: 500;">12 files</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between;">
+                        <span style="color: #6b7280;">Package Size:</span>
+                        <span style="font-weight: 500;">12.4 MB</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="info-card">
+                <div class="section-title">📈 Submission Progress</div>
+                <div class="progress-tracker">
+                    <div class="progress-step">
+                        <div class="step-indicator completed">✓</div>
+                        <div class="step-content">
+                            <div class="step-title">Document Preparation</div>
+                            <div class="step-description">All documents compiled and reviewed</div>
+                        </div>
+                    </div>
+                    <div class="progress-step">
+                        <div class="step-indicator completed">✓</div>
+                        <div class="step-content">
+                            <div class="step-title">Quality Assurance</div>
+                            <div class="step-description">Final review completed</div>
+                        </div>
+                    </div>
+                    <div class="progress-step">
+                        <div class="step-indicator current">3</div>
+                        <div class="step-content">
+                            <div class="step-title">Final Submission</div>
+                            <div class="step-description">Ready for submission</div>
+                        </div>
+                    </div>
+                    <div class="progress-step">
+                        <div class="step-indicator pending">4</div>
+                        <div class="step-content">
+                            <div class="step-title">Confirmation</div>
+                            <div class="step-description">Await receipt confirmation</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="info-card">
+                <div class="section-title">🆘 Support</div>
+                <div style="font-size: 0.875rem; color: #6b7280; margin-bottom: 1rem;">
+                    Need help with your submission?
+                </div>
+                <div style="display: flex; flex-direction: column; gap: 0.5rem;">
+                    <button class="btn btn-secondary" style="justify-content: flex-start; font-size: 0.875rem;">📞 Contact Support</button>
+                    <button class="btn btn-secondary" style="justify-content: flex-start; font-size: 0.875rem;">📖 Submission Guide</button>
+                    <button class="btn btn-secondary" style="justify-content: flex-start; font-size: 0.875rem;">💬 Live Chat</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function selectMethod(element) {
+            document.querySelectorAll('.method-card').forEach(card => card.classList.remove('selected'));
+            element.classList.add('selected');
+        }
+
+        function submitProposal() {
+            const attestation = document.getElementById('attestation');
+            if (!attestation.checked) {
+                alert('Please confirm the legal attestation before submitting.');
+                return;
+            }
+            
+            // Simulate submission process
+            const button = event.target;
+            button.innerHTML = '⏳ Submitting...';
+            button.disabled = true;
+            
+            setTimeout(() => {
+                button.innerHTML = '✅ Submitted Successfully!';
+                setTimeout(() => {
+                    alert('Proposal submitted successfully! Confirmation ID: SUB-2024-03-001');
+                }, 1000);
+            }, 3000);
+        }
+
+        // Countdown timer
+        function updateCountdown() {
+            const countdownElement = document.getElementById('countdown');
+            const deadline = new Date('2024-03-15T14:00:00');
+            const now = new Date();
+            const timeLeft = deadline - now;
+            
+            if (timeLeft > 0) {
+                const days = Math.floor(timeLeft / (1000 * 60 * 60 * 24));
+                const hours = Math.floor((timeLeft % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                const minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
+                const seconds = Math.floor((timeLeft % (1000 * 60)) / 1000);
+                
+                // For demo purposes, show a static countdown
+                let displayHours = parseInt(countdownElement.textContent.split(':')[0]);
+                let displayMinutes = parseInt(countdownElement.textContent.split(':')[1]);
+                let displaySeconds = parseInt(countdownElement.textContent.split(':')[2]);
+                
+                displaySeconds--;
+                if (displaySeconds < 0) {
+                    displaySeconds = 59;
+                    displayMinutes--;
+                    if (displayMinutes < 0) {
+                        displayMinutes = 59;
+                        displayHours--;
+                    }
+                }
+                
+                countdownElement.textContent = 
+                    `${displayHours.toString().padStart(2, '0')}:${displayMinutes.toString().padStart(2, '0')}:${displaySeconds.toString().padStart(2, '0')}`;
+            }
+        }
+        
+        setInterval(updateCountdown, 1000);
+    </script>
+</body>
+</html>

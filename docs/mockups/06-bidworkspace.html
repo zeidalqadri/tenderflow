@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bid Workspace - TenderFlow</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background-color: #f8fafc; color: #1f2937; }
+        .header { background: white; border-bottom: 1px solid #e5e7eb; padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100; }
+        .logo { display: flex; align-items: center; font-size: 1.5rem; font-weight: 700; color: #3b82f6; }
+        .workspace-info { display: flex; align-items: center; gap: 1rem; }
+        .status-indicator { display: flex; align-items: center; gap: 0.5rem; padding: 0.5rem 1rem; background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 6px; font-size: 0.875rem; color: #1e40af; }
+        .main-container { display: grid; grid-template-columns: 280px 1fr 300px; gap: 1.5rem; padding: 1.5rem; min-height: calc(100vh - 73px); }
+        .sidebar { background: white; border-radius: 8px; border: 1px solid #e5e7eb; padding: 1.5rem; height: fit-content; position: sticky; top: 95px; }
+        .workspace-panel { display: flex; flex-direction: column; gap: 1.5rem; }
+        .right-panel { background: white; border-radius: 8px; border: 1px solid #e5e7eb; padding: 1.5rem; height: fit-content; position: sticky; top: 95px; }
+        .section-title { font-size: 1rem; font-weight: 600; color: #1f2937; margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem; }
+        .progress-card { background: white; border-radius: 8px; border: 1px solid #e5e7eb; padding: 2rem; }
+        .progress-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; }
+        .progress-title { font-size: 1.25rem; font-weight: 600; color: #1f2937; }
+        .progress-percentage { font-size: 2rem; font-weight: 700; color: #10b981; }
+        .progress-bar { width: 100%; height: 12px; background: #e5e7eb; border-radius: 6px; overflow: hidden; margin-bottom: 2rem; }
+        .progress-fill { height: 100%; background: linear-gradient(90deg, #3b82f6, #10b981); transition: width 0.5s ease; border-radius: 6px; }
+        .milestone-list { display: flex; flex-direction: column; gap: 1rem; }
+        .milestone-item { display: flex; align-items: center; gap: 1rem; padding: 1rem; border: 1px solid #e5e7eb; border-radius: 6px; transition: all 0.2s ease; }
+        .milestone-item:hover { border-color: #3b82f6; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+        .milestone-status { width: 20px; height: 20px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; color: white; flex-shrink: 0; }
+        .milestone-status.completed { background: #10b981; }
+        .milestone-status.current { background: #3b82f6; }
+        .milestone-status.pending { background: #d1d5db; }
+        .milestone-content { flex: 1; }
+        .milestone-title { font-weight: 500; color: #1f2937; margin-bottom: 0.25rem; }
+        .milestone-meta { font-size: 0.75rem; color: #6b7280; }
+        .task-board { background: white; border-radius: 8px; border: 1px solid #e5e7eb; }
+        .board-header { padding: 1.5rem; border-bottom: 1px solid #e5e7eb; display: flex; justify-content: space-between; align-items: center; }
+        .board-title { font-size: 1.25rem; font-weight: 600; color: #1f2937; }
+        .board-actions { display: flex; gap: 1rem; }
+        .kanban-board { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; padding: 1.5rem; min-height: 500px; }
+        .kanban-column { background: #f8fafc; border-radius: 6px; padding: 1rem; }
+        .column-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; }
+        .column-title { font-weight: 600; color: #374151; font-size: 0.875rem; text-transform: uppercase; letter-spacing: 0.05em; }
+        .task-count { background: #6b7280; color: white; border-radius: 9999px; padding: 0.25rem 0.5rem; font-size: 0.75rem; }
+        .task-list { display: flex; flex-direction: column; gap: 0.75rem; }
+        .task-card { background: white; border-radius: 6px; padding: 1rem; box-shadow: 0 1px 3px rgba(0,0,0,0.1); cursor: pointer; transition: all 0.2s ease; }
+        .task-card:hover { box-shadow: 0 4px 12px rgba(0,0,0,0.15); transform: translateY(-1px); }
+        .task-title { font-weight: 500; color: #1f2937; margin-bottom: 0.5rem; font-size: 0.875rem; }
+        .task-meta { display: flex; justify-content: space-between; align-items: center; font-size: 0.75rem; color: #6b7280; }
+        .task-assignee { width: 24px; height: 24px; border-radius: 50%; background: #3b82f6; color: white; display: flex; align-items: center; justify-content: center; font-weight: 500; }
+        .task-priority { padding: 0.125rem 0.5rem; border-radius: 9999px; font-size: 0.625rem; font-weight: 500; text-transform: uppercase; }
+        .priority-high { background: #fee2e2; color: #991b1b; }
+        .priority-medium { background: #fef3c7; color: #92400e; }
+        .priority-low { background: #d1fae5; color: #065f46; }
+        .team-section { margin-bottom: 2rem; }
+        .team-member { display: flex; align-items: center; gap: 0.75rem; padding: 0.75rem; border-radius: 6px; transition: all 0.2s ease; margin-bottom: 0.5rem; }
+        .team-member:hover { background: #f9fafb; }
+        .member-avatar { width: 36px; height: 36px; border-radius: 50%; background: #3b82f6; color: white; display: flex; align-items: center; justify-content: center; font-weight: 500; }
+        .member-info { flex: 1; }
+        .member-name { font-weight: 500; color: #1f2937; font-size: 0.875rem; }
+        .member-role { color: #6b7280; font-size: 0.75rem; }
+        .member-status { width: 8px; height: 8px; border-radius: 50%; }
+        .status-online { background: #10b981; }
+        .status-away { background: #f59e0b; }
+        .status-offline { background: #d1d5db; }
+        .btn { padding: 0.5rem 1rem; border: none; border-radius: 6px; font-size: 0.875rem; font-weight: 500; cursor: pointer; transition: all 0.2s ease; text-decoration: none; display: inline-flex; align-items: center; gap: 0.5rem; }
+        .btn-primary { background-color: #3b82f6; color: white; }
+        .btn-primary:hover { background-color: #2563eb; }
+        .btn-secondary { background-color: white; color: #374151; border: 1px solid #d1d5db; }
+        .btn-secondary:hover { background-color: #f9fafb; }
+        .btn-xs { padding: 0.25rem 0.5rem; font-size: 0.75rem; }
+        .resource-library { margin-bottom: 2rem; }
+        .resource-item { display: flex; align-items: center; gap: 0.75rem; padding: 0.75rem; border: 1px solid #e5e7eb; border-radius: 6px; margin-bottom: 0.5rem; cursor: pointer; transition: all 0.2s ease; }
+        .resource-item:hover { border-color: #3b82f6; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+        .resource-icon { width: 32px; height: 32px; border-radius: 4px; display: flex; align-items: center; justify-content: center; color: white; font-size: 14px; }
+        .resource-icon.template { background: #3b82f6; }
+        .resource-icon.example { background: #10b981; }
+        .resource-icon.guide { background: #f59e0b; }
+        .resource-content { flex: 1; }
+        .resource-title { font-weight: 500; color: #1f2937; font-size: 0.875rem; }
+        .resource-description { color: #6b7280; font-size: 0.75rem; }
+        .chat-panel { border-top: 1px solid #e5e7eb; }
+        .chat-messages { max-height: 300px; overflow-y: auto; padding: 1rem; }
+        .chat-message { margin-bottom: 1rem; }
+        .message-header { display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.25rem; }
+        .message-author { font-weight: 500; font-size: 0.875rem; color: #1f2937; }
+        .message-time { font-size: 0.75rem; color: #6b7280; }
+        .message-content { color: #4b5563; font-size: 0.875rem; line-height: 1.4; }
+        .chat-input { display: flex; gap: 0.5rem; padding: 1rem; border-top: 1px solid #e5e7eb; }
+        .chat-input input { flex: 1; padding: 0.5rem; border: 1px solid #d1d5db; border-radius: 6px; font-size: 0.875rem; }
+        .chat-input button { padding: 0.5rem; }
+        .deadline-alert { background: #fef7f0; border: 1px solid #fed7aa; border-radius: 8px; padding: 1rem; margin-bottom: 1.5rem; }
+        .alert-content { display: flex; align-items: center; gap: 0.75rem; }
+        .alert-icon { color: #ea580c; font-size: 1.25rem; }
+        .alert-text { color: #9a3412; font-size: 0.875rem; }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="logo">🏢 TenderFlow</div>
+        <div class="workspace-info">
+            <div class="status-indicator">
+                <div style="width: 8px; height: 8px; background: #10b981; border-radius: 50%; animation: pulse 2s infinite;"></div>
+                <span>Live Collaboration Active</span>
+            </div>
+            <div style="color: #6b7280; font-size: 0.875rem;">Cloud Infrastructure Modernization</div>
+        </div>
+    </header>
+
+    <div class="main-container">
+        <div class="sidebar">
+            <div class="section-title">📋 Navigation</div>
+            <div style="display: flex; flex-direction: column; gap: 0.5rem; margin-bottom: 2rem;">
+                <div style="padding: 0.75rem; background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 6px; color: #1e40af; font-weight: 500; font-size: 0.875rem;">💼 Bid Workspace</div>
+                <div style="padding: 0.75rem; color: #6b7280; font-size: 0.875rem; cursor: pointer;">📄 Documents</div>
+                <div style="padding: 0.75rem; color: #6b7280; font-size: 0.875rem; cursor: pointer;">✅ Requirements</div>
+                <div style="padding: 0.75rem; color: #6b7280; font-size: 0.875rem; cursor: pointer;">💰 Pricing</div>
+                <div style="padding: 0.75rem; color: #6b7280; font-size: 0.875rem; cursor: pointer;">📤 Submission</div>
+            </div>
+
+            <div class="deadline-alert">
+                <div class="alert-content">
+                    <div class="alert-icon">⏰</div>
+                    <div>
+                        <div style="font-weight: 600; color: #9a3412; margin-bottom: 0.25rem;">Deadline Alert</div>
+                        <div class="alert-text">Final submission in 8 days</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="team-section">
+                <div class="section-title">👥 Team Members</div>
+                <div class="team-member">
+                    <div class="member-avatar">JD</div>
+                    <div class="member-info">
+                        <div class="member-name">John Doe</div>
+                        <div class="member-role">Project Lead</div>
+                    </div>
+                    <div class="member-status status-online"></div>
+                </div>
+                <div class="team-member">
+                    <div class="member-avatar">SC</div>
+                    <div class="member-info">
+                        <div class="member-name">Sarah Chen</div>
+                        <div class="member-role">Technical Writer</div>
+                    </div>
+                    <div class="member-status status-online"></div>
+                </div>
+                <div class="team-member">
+                    <div class="member-avatar">MJ</div>
+                    <div class="member-info">
+                        <div class="member-name">Mike Johnson</div>
+                        <div class="member-role">Financial Analyst</div>
+                    </div>
+                    <div class="member-status status-away"></div>
+                </div>
+                <div class="team-member">
+                    <div class="member-avatar">EW</div>
+                    <div class="member-info">
+                        <div class="member-name">Emma Wilson</div>
+                        <div class="member-role">Subject Matter Expert</div>
+                    </div>
+                    <div class="member-status status-offline"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="workspace-panel">
+            <div class="progress-card">
+                <div class="progress-header">
+                    <div class="progress-title">📈 Proposal Progress</div>
+                    <div class="progress-percentage">73%</div>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-fill" style="width: 73%"></div>
+                </div>
+                <div class="milestone-list">
+                    <div class="milestone-item">
+                        <div class="milestone-status completed">✓</div>
+                        <div class="milestone-content">
+                            <div class="milestone-title">Project Understanding & Requirements Analysis</div>
+                            <div class="milestone-meta">Completed 3 days ago • John Doe</div>
+                        </div>
+                    </div>
+                    <div class="milestone-item">
+                        <div class="milestone-status completed">✓</div>
+                        <div class="milestone-content">
+                            <div class="milestone-title">Technical Solution Design</div>
+                            <div class="milestone-meta">Completed 2 days ago • Sarah Chen</div>
+                        </div>
+                    </div>
+                    <div class="milestone-item" style="border-color: #3b82f6; background: #eff6ff;">
+                        <div class="milestone-status current">◐</div>
+                        <div class="milestone-content">
+                            <div class="milestone-title">Financial Proposal & Pricing Model</div>
+                            <div class="milestone-meta">In Progress • Due tomorrow • Mike Johnson</div>
+                        </div>
+                    </div>
+                    <div class="milestone-item">
+                        <div class="milestone-status pending">○</div>
+                        <div class="milestone-content">
+                            <div class="milestone-title">Executive Summary & Presentation</div>
+                            <div class="milestone-meta">Pending • Due March 12 • Emma Wilson</div>
+                        </div>
+                    </div>
+                    <div class="milestone-item">
+                        <div class="milestone-status pending">○</div>
+                        <div class="milestone-content">
+                            <div class="milestone-title">Final Review & Quality Assurance</div>
+                            <div class="milestone-meta">Pending • Due March 14 • John Doe</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="task-board">
+                <div class="board-header">
+                    <div class="board-title">📋 Task Board</div>
+                    <div class="board-actions">
+                        <button class="btn btn-secondary btn-xs">🔍 Filter</button>
+                        <button class="btn btn-primary btn-xs">➕ Add Task</button>
+                    </div>
+                </div>
+                <div class="kanban-board">
+                    <div class="kanban-column">
+                        <div class="column-header">
+                            <div class="column-title">To Do</div>
+                            <div class="task-count">3</div>
+                        </div>
+                        <div class="task-list">
+                            <div class="task-card">
+                                <div class="task-title">Update security compliance section</div>
+                                <div class="task-meta">
+                                    <div class="task-priority priority-high">High</div>
+                                    <div class="task-assignee">SC</div>
+                                </div>
+                            </div>
+                            <div class="task-card">
+                                <div class="task-title">Review cloud architecture diagrams</div>
+                                <div class="task-meta">
+                                    <div class="task-priority priority-medium">Medium</div>
+                                    <div class="task-assignee">EW</div>
+                                </div>
+                            </div>
+                            <div class="task-card">
+                                <div class="task-title">Gather team certifications</div>
+                                <div class="task-meta">
+                                    <div class="task-priority priority-low">Low</div>
+                                    <div class="task-assignee">JD</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="kanban-column">
+                        <div class="column-header">
+                            <div class="column-title">In Progress</div>
+                            <div class="task-count">4</div>
+                        </div>
+                        <div class="task-list">
+                            <div class="task-card">
+                                <div class="task-title">Cost analysis and pricing model</div>
+                                <div class="task-meta">
+                                    <div class="task-priority priority-high">High</div>
+                                    <div class="task-assignee">MJ</div>
+                                </div>
+                            </div>
+                            <div class="task-card">
+                                <div class="task-title">Implementation timeline planning</div>
+                                <div class="task-meta">
+                                    <div class="task-priority priority-medium">Medium</div>
+                                    <div class="task-assignee">SC</div>
+                                </div>
+                            </div>
+                            <div class="task-card">
+                                <div class="task-title">Risk assessment documentation</div>
+                                <div class="task-meta">
+                                    <div class="task-priority priority-medium">Medium</div>
+                                    <div class="task-assignee">EW</div>
+                                </div>
+                            </div>
+                            <div class="task-card">
+                                <div class="task-title">Technical specifications review</div>
+                                <div class="task-meta">
+                                    <div class="task-priority priority-low">Low</div>
+                                    <div class="task-assignee">JD</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="kanban-column">
+                        <div class="column-header">
+                            <div class="column-title">Review</div>
+                            <div class="task-count">2</div>
+                        </div>
+                        <div class="task-list">
+                            <div class="task-card">
+                                <div class="task-title">Executive summary draft</div>
+                                <div class="task-meta">
+                                    <div class="task-priority priority-high">High</div>
+                                    <div class="task-assignee">EW</div>
+                                </div>
+                            </div>
+                            <div class="task-card">
+                                <div class="task-title">Technical approach section</div>
+                                <div class="task-meta">
+                                    <div class="task-priority priority-medium">Medium</div>
+                                    <div class="task-assignee">SC</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="kanban-column">
+                        <div class="column-header">
+                            <div class="column-title">Complete</div>
+                            <div class="task-count">8</div>
+                        </div>
+                        <div class="task-list">
+                            <div class="task-card" style="opacity: 0.7;">
+                                <div class="task-title">Requirements analysis</div>
+                                <div class="task-meta">
+                                    <div class="task-priority priority-medium">Medium</div>
+                                    <div class="task-assignee">JD</div>
+                                </div>
+                            </div>
+                            <div class="task-card" style="opacity: 0.7;">
+                                <div class="task-title">Stakeholder interviews</div>
+                                <div class="task-meta">
+                                    <div class="task-priority priority-high">High</div>
+                                    <div class="task-assignee">SC</div>
+                                </div>
+                            </div>
+                            <div class="task-card" style="opacity: 0.7;">
+                                <div class="task-title">Solution architecture design</div>
+                                <div class="task-meta">
+                                    <div class="task-priority priority-high">High</div>
+                                    <div class="task-assignee">EW</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="right-panel">
+            <div class="resource-library">
+                <div class="section-title">📚 Resource Library</div>
+                <div class="resource-item">
+                    <div class="resource-icon template">📋</div>
+                    <div class="resource-content">
+                        <div class="resource-title">Government RFP Template</div>
+                        <div class="resource-description">Standard template for govt proposals</div>
+                    </div>
+                </div>
+                <div class="resource-item">
+                    <div class="resource-icon example">💡</div>
+                    <div class="resource-content">
+                        <div class="resource-title">Winning Proposal Example</div>
+                        <div class="resource-description">Similar cloud migration project</div>
+                    </div>
+                </div>
+                <div class="resource-item">
+                    <div class="resource-icon guide">📖</div>
+                    <div class="resource-content">
+                        <div class="resource-title">Pricing Guidelines</div>
+                        <div class="resource-description">Best practices for govt pricing</div>
+                    </div>
+                </div>
+                <div class="resource-item">
+                    <div class="resource-icon template">📊</div>
+                    <div class="resource-content">
+                        <div class="resource-title">Project Plan Template</div>
+                        <div class="resource-description">Standard 24-month timeline</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="chat-panel">
+                <div class="section-title">💬 Team Chat</div>
+                <div class="chat-messages">
+                    <div class="chat-message">
+                        <div class="message-header">
+                            <div class="message-author">Mike Johnson</div>
+                            <div class="message-time">2 min ago</div>
+                        </div>
+                        <div class="message-content">Just finished the cost analysis. Looks like we can come in at $820K while maintaining our target margin.</div>
+                    </div>
+                    <div class="chat-message">
+                        <div class="message-header">
+                            <div class="message-author">Sarah Chen</div>
+                            <div class="message-time">5 min ago</div>
+                        </div>
+                        <div class="message-content">Great! That leaves us room for some contingency. I'll update the technical sections to align with the budget.</div>
+                    </div>
+                    <div class="chat-message">
+                        <div class="message-header">
+                            <div class="message-author">John Doe</div>
+                            <div class="message-time">8 min ago</div>
+                        </div>
+                        <div class="message-content">Team meeting tomorrow at 10 AM to review final sections before submission.</div>
+                    </div>
+                </div>
+                <div class="chat-input">
+                    <input type="text" placeholder="Type a message..." onkeypress="if(event.key==='Enter') sendMessage(this)">
+                    <button class="btn btn-primary btn-xs">Send</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function sendMessage(input) {
+            if (input.value.trim()) {
+                console.log('Message sent:', input.value);
+                input.value = '';
+            }
+        }
+
+        // Simulate progress updates
+        setInterval(() => {
+            const progressFill = document.querySelector('.progress-fill');
+            const progressPercentage = document.querySelector('.progress-percentage');
+            let currentProgress = parseInt(progressPercentage.textContent);
+            
+            if (currentProgress < 85 && Math.random() < 0.3) {
+                currentProgress += 1;
+                progressFill.style.width = currentProgress + '%';
+                progressPercentage.textContent = currentProgress + '%';
+            }
+        }, 10000);
+
+        // Drag and drop for kanban board
+        document.querySelectorAll('.task-card').forEach(card => {
+            card.draggable = true;
+            card.addEventListener('dragstart', (e) => {
+                e.dataTransfer.setData('text/plain', e.target.innerHTML);
+                e.target.style.opacity = '0.5';
+            });
+            card.addEventListener('dragend', (e) => {
+                e.target.style.opacity = '1';
+            });
+        });
+
+        document.querySelectorAll('.kanban-column').forEach(column => {
+            column.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                column.style.backgroundColor = '#f0f9ff';
+            });
+            
+            column.addEventListener('dragleave', () => {
+                column.style.backgroundColor = '#f8fafc';
+            });
+            
+            column.addEventListener('drop', (e) => {
+                e.preventDefault();
+                column.style.backgroundColor = '#f8fafc';
+                // Handle task movement
+            });
+        });
+    </script>
+</body>
+</html>

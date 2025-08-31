@@ -1,0 +1,42 @@
+# Test Dockerfile for TenderFlow Web
+
+FROM node:20-alpine
+
+# Install testing dependencies
+RUN apk add --no-cache curl
+
+# Set working directory
+WORKDIR /app
+
+# Copy package files
+COPY package*.json ./
+COPY apps/web/package*.json ./apps/web/
+COPY packages/shared/package*.json ./packages/shared/
+COPY packages/ui/package*.json ./packages/ui/
+
+# Install all dependencies (including dev)
+RUN npm ci
+
+# Copy source code
+COPY apps/web/ ./apps/web/
+COPY packages/shared/ ./packages/shared/
+COPY packages/ui/ ./packages/ui/
+COPY tsconfig.json ./
+COPY turbo.json ./
+
+# Set working directory to web app
+WORKDIR /app/apps/web
+
+# Expose port
+EXPOSE 3000
+
+# Set environment variables
+ENV PORT 3000
+ENV NODE_ENV test
+
+# Health check for testing
+HEALTHCHECK --interval=10s --timeout=3s --start-period=10s --retries=3 \
+  CMD curl -f http://localhost:3000 || exit 1
+
+# Start the application in development mode
+CMD ["npm", "run", "dev"]

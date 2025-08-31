@@ -1,0 +1,915 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Real-time Alerts - TenderFlow</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: #f8fafc;
+            color: #1f2937;
+        }
+
+        .header {
+            background: white;
+            border-bottom: 1px solid #e5e7eb;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #3b82f6;
+        }
+
+        .alert-counter {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            font-size: 0.875rem;
+            color: #6b7280;
+        }
+
+        .live-indicator {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .pulse {
+            width: 8px;
+            height: 8px;
+            background: #ef4444;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.5; transform: scale(1.2); }
+        }
+
+        .main-container {
+            display: grid;
+            grid-template-columns: 350px 1fr;
+            gap: 2rem;
+            padding: 2rem;
+            min-height: calc(100vh - 73px);
+        }
+
+        .sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .alert-stats {
+            background: white;
+            border-radius: 8px;
+            border: 1px solid #e5e7eb;
+            padding: 1.5rem;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        .stat-item {
+            text-align: center;
+            padding: 1rem;
+            background: #f8fafc;
+            border-radius: 6px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 0.25rem;
+        }
+
+        .stat-value.critical { color: #dc2626; }
+        .stat-value.warning { color: #ea580c; }
+        .stat-value.info { color: #3b82f6; }
+        .stat-value.success { color: #059669; }
+
+        .stat-label {
+            font-size: 0.75rem;
+            color: #6b7280;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .filter-panel {
+            background: white;
+            border-radius: 8px;
+            border: 1px solid #e5e7eb;
+            padding: 1.5rem;
+        }
+
+        .filter-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .filter-label {
+            display: block;
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: #374151;
+            margin-bottom: 0.5rem;
+        }
+
+        .filter-select,
+        .filter-input {
+            width: 100%;
+            padding: 0.5rem;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            background: white;
+            font-size: 0.875rem;
+        }
+
+        .alert-types {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            margin-top: 0.75rem;
+        }
+
+        .alert-type-checkbox {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.875rem;
+        }
+
+        .alert-type-checkbox input {
+            cursor: pointer;
+        }
+
+        .content-panel {
+            background: white;
+            border-radius: 8px;
+            border: 1px solid #e5e7eb;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .panel-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid #e5e7eb;
+            display: flex;
+            justify-content: between;
+            align-items: center;
+        }
+
+        .panel-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #1f2937;
+        }
+
+        .alert-actions {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .btn {
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 6px;
+            font-size: 0.875rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-primary {
+            background-color: #3b82f6;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: #2563eb;
+        }
+
+        .btn-secondary {
+            background-color: white;
+            color: #374151;
+            border: 1px solid #d1d5db;
+        }
+
+        .btn-secondary:hover {
+            background-color: #f9fafb;
+        }
+
+        .alerts-list {
+            flex: 1;
+            overflow-y: auto;
+        }
+
+        .alert-item {
+            padding: 1.5rem;
+            border-bottom: 1px solid #e5e7eb;
+            transition: all 0.2s ease;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .alert-item:hover {
+            background-color: #f9fafb;
+        }
+
+        .alert-item.unread {
+            background-color: #fef7f0;
+            border-left: 4px solid #ea580c;
+        }
+
+        .alert-item.critical {
+            border-left: 4px solid #dc2626;
+        }
+
+        .alert-item.warning {
+            border-left: 4px solid #ea580c;
+        }
+
+        .alert-item.info {
+            border-left: 4px solid #3b82f6;
+        }
+
+        .alert-item.success {
+            border-left: 4px solid #059669;
+        }
+
+        .alert-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 0.75rem;
+        }
+
+        .alert-title {
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 0.25rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .alert-icon {
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            color: white;
+            flex-shrink: 0;
+        }
+
+        .alert-icon.critical { background: #dc2626; }
+        .alert-icon.warning { background: #ea580c; }
+        .alert-icon.info { background: #3b82f6; }
+        .alert-icon.success { background: #059669; }
+
+        .alert-timestamp {
+            font-size: 0.75rem;
+            color: #6b7280;
+        }
+
+        .alert-message {
+            color: #4b5563;
+            line-height: 1.5;
+            margin-bottom: 0.75rem;
+        }
+
+        .alert-metadata {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.875rem;
+        }
+
+        .alert-source {
+            color: #6b7280;
+        }
+
+        .alert-priority {
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            text-transform: uppercase;
+        }
+
+        .priority-critical {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .priority-high {
+            background: #fed7aa;
+            color: #c2410c;
+        }
+
+        .priority-medium {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .priority-low {
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        .alert-actions-inline {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 0.75rem;
+        }
+
+        .btn-xs {
+            padding: 0.25rem 0.5rem;
+            font-size: 0.75rem;
+            border-radius: 4px;
+        }
+
+        .empty-state {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 4rem 2rem;
+            color: #6b7280;
+            text-align: center;
+        }
+
+        .empty-state.show {
+            display: flex;
+        }
+
+        .notification-toast {
+            position: fixed;
+            top: 100px;
+            right: 2rem;
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 1rem 1.5rem;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+            display: none;
+            max-width: 400px;
+            z-index: 1000;
+            animation: slideIn 0.3s ease;
+        }
+
+        .notification-toast.show {
+            display: block;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        .toast-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+
+        .toast-title {
+            font-weight: 600;
+            color: #1f2937;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .toast-close {
+            background: none;
+            border: none;
+            font-size: 1.25rem;
+            cursor: pointer;
+            color: #6b7280;
+            padding: 0;
+            line-height: 1;
+        }
+
+        .toast-message {
+            color: #4b5563;
+            font-size: 0.875rem;
+        }
+
+        .config-panel {
+            background: white;
+            border-radius: 8px;
+            border: 1px solid #e5e7eb;
+            padding: 1.5rem;
+        }
+
+        .config-section {
+            margin-bottom: 1.5rem;
+        }
+
+        .config-section h4 {
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 0.75rem;
+        }
+
+        .config-option {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.5rem 0;
+            border-bottom: 1px solid #f3f4f6;
+        }
+
+        .config-option:last-child {
+            border-bottom: none;
+        }
+
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 44px;
+            height: 24px;
+        }
+
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 24px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 18px;
+            width: 18px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+        input:checked + .slider {
+            background-color: #3b82f6;
+        }
+
+        input:checked + .slider:before {
+            transform: translateX(20px);
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="logo">🏢 TenderFlow</div>
+        <div class="alert-counter">
+            <div class="live-indicator">
+                <div class="pulse"></div>
+                <span>Live Monitoring</span>
+            </div>
+            <span>•</span>
+            <span>23 Active Alerts</span>
+        </div>
+    </header>
+
+    <div class="main-container">
+        <div class="sidebar">
+            <div class="alert-stats">
+                <h3 style="margin-bottom: 1rem; color: #1f2937; font-size: 1rem;">📊 Alert Statistics</h3>
+                <div class="stats-grid">
+                    <div class="stat-item">
+                        <div class="stat-value critical">3</div>
+                        <div class="stat-label">Critical</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value warning">7</div>
+                        <div class="stat-label">Warning</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value info">11</div>
+                        <div class="stat-label">Info</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value success">2</div>
+                        <div class="stat-label">Success</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="filter-panel">
+                <h3 style="margin-bottom: 1rem; color: #1f2937; font-size: 1rem;">🔍 Filters</h3>
+                
+                <div class="filter-group">
+                    <label class="filter-label">Priority Level</label>
+                    <select class="filter-select" onchange="filterAlerts()">
+                        <option value="all">All Priorities</option>
+                        <option value="critical">Critical Only</option>
+                        <option value="warning">Warning & Above</option>
+                        <option value="info">Info & Above</option>
+                    </select>
+                </div>
+
+                <div class="filter-group">
+                    <label class="filter-label">Time Range</label>
+                    <select class="filter-select">
+                        <option value="all">All Time</option>
+                        <option value="today">Today</option>
+                        <option value="week">This Week</option>
+                        <option value="month">This Month</option>
+                    </select>
+                </div>
+
+                <div class="filter-group">
+                    <label class="filter-label">Alert Types</label>
+                    <div class="alert-types">
+                        <label class="alert-type-checkbox">
+                            <input type="checkbox" checked> Deadline Warnings
+                        </label>
+                        <label class="alert-type-checkbox">
+                            <input type="checkbox" checked> Status Changes
+                        </label>
+                        <label class="alert-type-checkbox">
+                            <input type="checkbox" checked> Assignment Updates
+                        </label>
+                        <label class="alert-type-checkbox">
+                            <input type="checkbox" checked> Document Updates
+                        </label>
+                        <label class="alert-type-checkbox">
+                            <input type="checkbox"> System Events
+                        </label>
+                    </div>
+                </div>
+
+                <div class="filter-group">
+                    <label class="filter-label">Search</label>
+                    <input type="text" class="filter-input" placeholder="Search alerts...">
+                </div>
+            </div>
+
+            <div class="config-panel">
+                <h3 style="margin-bottom: 1rem; color: #1f2937; font-size: 1rem;">⚙️ Configuration</h3>
+                
+                <div class="config-section">
+                    <h4>Notification Preferences</h4>
+                    <div class="config-option">
+                        <span style="font-size: 0.875rem;">Email Notifications</span>
+                        <label class="toggle-switch">
+                            <input type="checkbox" checked>
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                    <div class="config-option">
+                        <span style="font-size: 0.875rem;">Push Notifications</span>
+                        <label class="toggle-switch">
+                            <input type="checkbox" checked>
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                    <div class="config-option">
+                        <span style="font-size: 0.875rem;">SMS Alerts</span>
+                        <label class="toggle-switch">
+                            <input type="checkbox">
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="config-section">
+                    <h4>Alert Timing</h4>
+                    <div class="config-option">
+                        <span style="font-size: 0.875rem;">Real-time Updates</span>
+                        <label class="toggle-switch">
+                            <input type="checkbox" checked>
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                    <div class="config-option">
+                        <span style="font-size: 0.875rem;">Daily Digest</span>
+                        <label class="toggle-switch">
+                            <input type="checkbox" checked>
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="content-panel">
+            <div class="panel-header">
+                <h2 class="panel-title">🔔 Active Alerts</h2>
+                <div class="alert-actions">
+                    <button class="btn btn-secondary">✓ Mark All Read</button>
+                    <button class="btn btn-primary">⚙️ Configure Rules</button>
+                </div>
+            </div>
+
+            <div class="alerts-list" id="alertsList">
+                <div class="alert-item critical unread" onclick="markAsRead(this)">
+                    <div class="alert-header">
+                        <div class="alert-title">
+                            <div class="alert-icon critical">!</div>
+                            Critical Deadline Approaching
+                        </div>
+                        <div class="alert-timestamp">2 minutes ago</div>
+                    </div>
+                    <div class="alert-message">
+                        <strong>Cloud Infrastructure Modernization Services</strong> deadline is in 2 days (March 15, 2024). Final submission window closes at 2:00 PM EST.
+                    </div>
+                    <div class="alert-metadata">
+                        <div class="alert-source">📅 Deadline Monitor</div>
+                        <div class="alert-priority priority-critical">Critical</div>
+                    </div>
+                    <div class="alert-actions-inline">
+                        <button class="btn btn-xs btn-primary">📝 Open Tender</button>
+                        <button class="btn btn-xs btn-secondary">⏰ Extend Deadline</button>
+                        <button class="btn btn-xs btn-secondary">📧 Notify Team</button>
+                    </div>
+                </div>
+
+                <div class="alert-item warning unread" onclick="markAsRead(this)">
+                    <div class="alert-header">
+                        <div class="alert-title">
+                            <div class="alert-icon warning">⚠</div>
+                            Document Upload Required
+                        </div>
+                        <div class="alert-timestamp">15 minutes ago</div>
+                    </div>
+                    <div class="alert-message">
+                        <strong>Digital Transformation Consulting</strong> is missing required compliance certificates. Upload needed before qualification review.
+                    </div>
+                    <div class="alert-metadata">
+                        <div class="alert-source">📄 Document System</div>
+                        <div class="alert-priority priority-high">High</div>
+                    </div>
+                    <div class="alert-actions-inline">
+                        <button class="btn btn-xs btn-primary">📤 Upload Documents</button>
+                        <button class="btn btn-xs btn-secondary">📋 View Requirements</button>
+                    </div>
+                </div>
+
+                <div class="alert-item info unread" onclick="markAsRead(this)">
+                    <div class="alert-header">
+                        <div class="alert-title">
+                            <div class="alert-icon info">i</div>
+                            New Tender Assignment
+                        </div>
+                        <div class="alert-timestamp">1 hour ago</div>
+                    </div>
+                    <div class="alert-message">
+                        You've been assigned as <strong>Contributor</strong> to <strong>Enterprise Software Development</strong>. Review project details and confirm availability.
+                    </div>
+                    <div class="alert-metadata">
+                        <div class="alert-source">👥 Team Management</div>
+                        <div class="alert-priority priority-medium">Medium</div>
+                    </div>
+                    <div class="alert-actions-inline">
+                        <button class="btn btn-xs btn-primary">✓ Accept Assignment</button>
+                        <button class="btn btn-xs btn-secondary">📅 Check Calendar</button>
+                    </div>
+                </div>
+
+                <div class="alert-item success" onclick="markAsRead(this)">
+                    <div class="alert-header">
+                        <div class="alert-title">
+                            <div class="alert-icon success">✓</div>
+                            Tender Successfully Submitted
+                        </div>
+                        <div class="alert-timestamp">3 hours ago</div>
+                    </div>
+                    <div class="alert-message">
+                        <strong>Cybersecurity Assessment</strong> has been successfully submitted via the online portal. Confirmation ID: SUB-2024-03-001.
+                    </div>
+                    <div class="alert-metadata">
+                        <div class="alert-source">📤 Submission Portal</div>
+                        <div class="alert-priority priority-low">Low</div>
+                    </div>
+                    <div class="alert-actions-inline">
+                        <button class="btn btn-xs btn-secondary">📄 View Receipt</button>
+                        <button class="btn btn-xs btn-secondary">📊 Track Status</button>
+                    </div>
+                </div>
+
+                <div class="alert-item warning" onclick="markAsRead(this)">
+                    <div class="alert-header">
+                        <div class="alert-title">
+                            <div class="alert-icon warning">⚠</div>
+                            Team Member Availability Alert
+                        </div>
+                        <div class="alert-timestamp">5 hours ago</div>
+                    </div>
+                    <div class="alert-message">
+                        <strong>Sarah Chen</strong> has marked herself unavailable for <strong>Cloud Infrastructure Modernization</strong> due to conflicting project deadlines.
+                    </div>
+                    <div class="alert-metadata">
+                        <div class="alert-source">👥 Resource Planning</div>
+                        <div class="alert-priority priority-high">High</div>
+                    </div>
+                    <div class="alert-actions-inline">
+                        <button class="btn btn-xs btn-primary">🔄 Reassign Tasks</button>
+                        <button class="btn btn-xs btn-secondary">📞 Contact Sarah</button>
+                    </div>
+                </div>
+
+                <div class="alert-item info" onclick="markAsRead(this)">
+                    <div class="alert-header">
+                        <div class="alert-title">
+                            <div class="alert-icon info">i</div>
+                            New Tender Opportunity Detected
+                        </div>
+                        <div class="alert-timestamp">8 hours ago</div>
+                    </div>
+                    <div class="alert-message">
+                        AI scraper found <strong>Smart City Infrastructure Project</strong> matching your expertise criteria. Value: $1.2M CAD, Deadline: April 20, 2024.
+                    </div>
+                    <div class="alert-metadata">
+                        <div class="alert-source">🤖 AI Scraper</div>
+                        <div class="alert-priority priority-medium">Medium</div>
+                    </div>
+                    <div class="alert-actions-inline">
+                        <button class="btn btn-xs btn-primary">👀 Review Tender</button>
+                        <button class="btn btn-xs btn-secondary">🏷️ Quick Qualify</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="empty-state" id="emptyState">
+                <div style="font-size: 3rem; margin-bottom: 1rem;">🎉</div>
+                <h3 style="margin-bottom: 0.5rem;">All Caught Up!</h3>
+                <p>No active alerts at the moment. We'll notify you when something needs your attention.</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="notification-toast" id="notificationToast">
+        <div class="toast-header">
+            <div class="toast-title">
+                <div class="alert-icon warning">⚠</div>
+                New Alert
+            </div>
+            <button class="toast-close" onclick="closeToast()">&times;</button>
+        </div>
+        <div class="toast-message" id="toastMessage">
+            Your alert message will appear here...
+        </div>
+    </div>
+
+    <script>
+        let alertCount = 23;
+        const alertTypes = [
+            {
+                icon: 'warning',
+                title: 'Document Missing',
+                message: 'Required document not uploaded for tender qualification.',
+                priority: 'high'
+            },
+            {
+                icon: 'info',
+                title: 'Status Update',
+                message: 'Tender status changed to "Under Review" by client.',
+                priority: 'medium'
+            },
+            {
+                icon: 'critical',
+                title: 'Urgent Deadline',
+                message: 'Final submission deadline in 24 hours.',
+                priority: 'critical'
+            }
+        ];
+
+        function markAsRead(alertElement) {
+            alertElement.classList.remove('unread');
+            alertElement.style.opacity = '0.7';
+            
+            // Update stats
+            const iconClass = alertElement.querySelector('.alert-icon').className;
+            if (iconClass.includes('critical')) {
+                updateStatValue('critical', -1);
+            } else if (iconClass.includes('warning')) {
+                updateStatValue('warning', -1);
+            } else if (iconClass.includes('info')) {
+                updateStatValue('info', -1);
+            }
+        }
+
+        function updateStatValue(type, change) {
+            const statElement = document.querySelector(`.stat-value.${type}`);
+            const currentValue = parseInt(statElement.textContent);
+            const newValue = Math.max(0, currentValue + change);
+            statElement.textContent = newValue;
+        }
+
+        function filterAlerts() {
+            const filterValue = document.querySelector('.filter-select').value;
+            const alerts = document.querySelectorAll('.alert-item');
+            
+            alerts.forEach(alert => {
+                const priority = alert.querySelector('.alert-priority').className;
+                let show = true;
+                
+                if (filterValue === 'critical') {
+                    show = priority.includes('critical');
+                } else if (filterValue === 'warning') {
+                    show = priority.includes('critical') || priority.includes('high');
+                } else if (filterValue === 'info') {
+                    show = !priority.includes('low');
+                }
+                
+                alert.style.display = show ? 'block' : 'none';
+            });
+        }
+
+        function showNewAlertToast() {
+            const randomAlert = alertTypes[Math.floor(Math.random() * alertTypes.length)];
+            document.getElementById('toastMessage').textContent = randomAlert.message;
+            document.getElementById('notificationToast').classList.add('show');
+            
+            setTimeout(() => {
+                closeToast();
+            }, 5000);
+        }
+
+        function closeToast() {
+            document.getElementById('notificationToast').classList.remove('show');
+        }
+
+        // Simulate new alerts
+        setInterval(() => {
+            if (Math.random() < 0.3) { // 30% chance every interval
+                showNewAlertToast();
+                alertCount++;
+                document.querySelector('.alert-counter span:last-child').textContent = `${alertCount} Active Alerts`;
+            }
+        }, 15000);
+
+        // Auto-update timestamps
+        setInterval(() => {
+            document.querySelectorAll('.alert-timestamp').forEach(timestamp => {
+                // Simple demo - just cycle through some values
+                const times = ['just now', '2 minutes ago', '5 minutes ago', '10 minutes ago'];
+                const currentText = timestamp.textContent;
+                const currentIndex = times.indexOf(currentText);
+                if (currentIndex >= 0 && currentIndex < times.length - 1) {
+                    timestamp.textContent = times[currentIndex + 1];
+                }
+            });
+        }, 30000);
+
+        // Pulse animation for live indicator
+        setInterval(() => {
+            const pulse = document.querySelector('.pulse');
+            pulse.style.animation = 'none';
+            setTimeout(() => {
+                pulse.style.animation = 'pulse 2s infinite';
+            }, 10);
+        }, 10000);
+    </script>
+</body>
+</html>

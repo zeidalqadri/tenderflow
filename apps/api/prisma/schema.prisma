@@ -1,0 +1,466 @@
+// TenderFlow Prisma Schema
+// Complete database schema for the TenderFlow tender management system
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/prisma"
+  binaryTargets = ["native", "linux-musl-openssl-3.0.x"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ============================================================================
+// ENUMS
+// ============================================================================
+
+enum TenderStatus {
+  SCRAPED
+  VALIDATED
+  QUALIFIED
+  IN_BID
+  SUBMITTED
+  WON
+  LOST
+  ARCHIVED
+}
+
+enum TenderCategory {
+  CONSTRUCTION
+  IT_SERVICES
+  CONSULTING
+  SUPPLIES
+  MAINTENANCE
+  RESEARCH
+  TRAINING
+  OTHER
+}
+
+enum UserRole {
+  admin
+  member
+  viewer
+}
+
+enum TenderRole {
+  owner
+  contributor
+  viewer
+}
+
+enum DocumentType {
+  RFP
+  TECHNICAL_SPEC
+  COMMERCIAL
+  LEGAL
+  SUBMISSION
+  RECEIPT
+  SUPPORT
+}
+
+enum SubmissionMethod {
+  PORTAL
+  EMAIL
+  PHYSICAL
+  OTHER
+}
+
+enum NotificationType {
+  TENDER_ASSIGNED
+  TENDER_STATUS_CHANGED
+  SUBMISSION_DUE
+  BID_UPDATED
+  DOCUMENT_UPLOADED
+  COMMENT_ADDED
+  SYSTEM_ALERT
+}
+
+enum AuditAction {
+  CREATE
+  UPDATE
+  DELETE
+  VIEW
+  DOWNLOAD
+  UPLOAD
+  TRANSITION
+  ASSIGN
+  UNASSIGN
+  LOGIN
+  LOGOUT
+}
+
+// ============================================================================
+// CORE MODELS
+// ============================================================================
+
+model Tenant {
+  id          String   @id @default(uuid())
+  name        String
+  subdomain   String   @unique
+  settings    Json     @default("{}")
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  deletedAt   DateTime?
+
+  // Relations
+  users       User[]
+  tenders     Tender[]
+  audits      AuditLog[]
+  apiKeys     ApiKey[]
+
+  @@index([subdomain])
+  @@index([isActive])
+  @@map("tenants")
+}
+
+model User {
+  id          String    @id @default(uuid())
+  tenantId    String
+  email       String
+  firstName   String
+  lastName    String
+  role        UserRole  @default(member)
+  isActive    Boolean   @default(true)
+  lastLoginAt DateTime?
+  settings    Json      @default("{}")
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  deletedAt   DateTime?
+
+  // Relations
+  tenant          Tenant             @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  tenderAssignments TenderAssignment[]
+  createdTenders  Tender[]           @relation("TenderCreator")
+  ownedBids       Bid[]              @relation("BidOwner")
+  documents       Document[]         @relation("DocumentUploader")
+  submissions     Submission[]       @relation("SubmissionCreator")
+  comments        Comment[]
+  notifications   Notification[]
+  audits          AuditLog[]         @relation("AuditUser")
+
+  @@unique([tenantId, email])
+  @@index([tenantId, role])
+  @@index([email])
+  @@index([isActive])
+  @@map("users")
+}
+
+model Tender {
+  id              String         @id @default(uuid())
+  tenantId        String
+  title           String
+  description     String?
+  status          TenderStatus   @default(SCRAPED)
+  category        TenderCategory @default(OTHER)
+  publishedAt     DateTime?
+  deadline        DateTime?
+  estimatedValue  Decimal?       @db.Decimal(15, 2)
+  currency        String         @default("USD")
+  source          String?        // Source portal/system
+  externalId      String?        // ID from source system
+  metadata        Json           @default("{}")
+  requirements    Json           @default("{}") // Structured requirements
+  createdBy       String
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+  deletedAt       DateTime?
+
+  // Relations
+  tenant          Tenant             @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  creator         User               @relation("TenderCreator", fields: [createdBy], references: [id])
+  assignments     TenderAssignment[]
+  documents       Document[]
+  bids            Bid[]
+  submissions     Submission[]
+  validations     TenderValidation[]
+  stateTransitions StateTransition[]
+  comments        Comment[]
+  notifications   Notification[]
+
+  @@index([tenantId, status])
+  @@index([category])
+  @@index([deadline])
+  @@index([publishedAt])
+  @@index([externalId])
+  @@index([createdBy])
+  @@map("tenders")
+}
+
+model TenderAssignment {
+  id        String     @id @default(uuid())
+  tenderId  String
+  userId    String
+  role      TenderRole
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+
+  // Relations
+  tender    Tender     @relation(fields: [tenderId], references: [id], onDelete: Cascade)
+  user      User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([tenderId, userId])
+  @@index([tenderId, role])
+  @@index([userId])
+  @@map("tender_assignments")
+}
+
+model Document {
+  id          String       @id @default(uuid())
+  tenderId    String
+  uploadedBy  String
+  filename    String
+  originalName String
+  mimeType    String
+  size        Int
+  s3Key       String       @unique
+  s3Bucket    String
+  type        DocumentType
+  metadata    Json         @default("{}")
+  isDeleted   Boolean      @default(false)
+  uploadedAt  DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+
+  // Relations
+  tender      Tender       @relation(fields: [tenderId], references: [id], onDelete: Cascade)
+  uploader    User         @relation("DocumentUploader", fields: [uploadedBy], references: [id])
+
+  @@index([tenderId, type])
+  @@index([uploadedBy])
+  @@index([s3Key])
+  @@index([isDeleted])
+  @@map("documents")
+}
+
+model Bid {
+  id              String    @id @default(uuid())
+  tenderId        String    @unique
+  ownerId         String?
+  totalAmount     Decimal?  @db.Decimal(15, 2)
+  currency        String    @default("USD")
+  tasks           Json      @default("{}")    // Technical tasks completion
+  timeline        Json      @default("{}")    // Project timeline
+  methodology     Json      @default("{}")    // Approach and methodology
+  team            Json      @default("{}")    // Team composition
+  assumptions     Json      @default("{}")    // Assumptions and constraints
+  riskAssessment  Json      @default("{}")    // Risk analysis
+  qualityPlan     Json      @default("{}")    // Quality assurance plan
+  deliverables    Json      @default("{}")    // Expected deliverables
+  notes           String?
+  isSubmitted     Boolean   @default(false)
+  submittedAt     DateTime?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  // Relations
+  tender          Tender    @relation(fields: [tenderId], references: [id], onDelete: Cascade)
+  owner           User?     @relation("BidOwner", fields: [ownerId], references: [id])
+
+  @@index([tenderId])
+  @@index([ownerId])
+  @@index([isSubmitted])
+  @@map("bids")
+}
+
+model Submission {
+  id              String           @id @default(uuid())
+  tenderId        String
+  method          SubmissionMethod
+  submittedAt     DateTime
+  submittedBy     String
+  externalRef     String?          // External reference/receipt number
+  receiptKey      String?          // S3 key for receipt file
+  parsed          Json?            // Parsed receipt metadata
+  parsedAt        DateTime?
+  parseVersion    String?          // Parser version for tracking
+  amount          Decimal?         @db.Decimal(15, 2)
+  currency        String?
+  status          String?          // Submission status from portal
+  portalData      Json             @default("{}")  // Additional portal-specific data
+  notes           String?
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+
+  // Relations
+  tender          Tender           @relation(fields: [tenderId], references: [id], onDelete: Cascade)
+  submitter       User             @relation("SubmissionCreator", fields: [submittedBy], references: [id])
+
+  @@index([tenderId])
+  @@index([externalRef])
+  @@index([submittedBy])
+  @@index([submittedAt])
+  @@map("submissions")
+}
+
+model TenderValidation {
+  id            String    @id @default(uuid())
+  tenderId      String
+  criteria      Json      // Validation criteria and results
+  score         Decimal?  @db.Decimal(5, 2)  // Validation score (0-100)
+  isValid       Boolean   @default(false)
+  validatedBy   String?   // User who performed validation
+  validatedAt   DateTime?
+  notes         String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  // Relations
+  tender        Tender    @relation(fields: [tenderId], references: [id], onDelete: Cascade)
+
+  @@index([tenderId])
+  @@index([isValid])
+  @@map("tender_validations")
+}
+
+model StateTransition {
+  id          String       @id @default(uuid())
+  tenderId    String
+  fromStatus  TenderStatus?
+  toStatus    TenderStatus
+  triggeredBy String
+  reason      String?
+  metadata    Json         @default("{}")
+  createdAt   DateTime     @default(now())
+
+  // Relations
+  tender      Tender       @relation(fields: [tenderId], references: [id], onDelete: Cascade)
+
+  @@index([tenderId])
+  @@index([createdAt])
+  @@map("state_transitions")
+}
+
+model Comment {
+  id        String   @id @default(uuid())
+  tenderId  String
+  authorId  String
+  content   String
+  metadata  Json     @default("{}")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  deletedAt DateTime?
+
+  // Relations
+  tender    Tender   @relation(fields: [tenderId], references: [id], onDelete: Cascade)
+  author    User     @relation(fields: [authorId], references: [id], onDelete: Cascade)
+
+  @@index([tenderId])
+  @@index([authorId])
+  @@index([createdAt])
+  @@map("comments")
+}
+
+model Notification {
+  id        String           @id @default(uuid())
+  userId    String
+  tenderId  String?
+  type      NotificationType
+  title     String
+  message   String
+  data      Json             @default("{}")
+  isRead    Boolean          @default(false)
+  readAt    DateTime?
+  createdAt DateTime         @default(now())
+
+  // Relations
+  user      User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tender    Tender?          @relation(fields: [tenderId], references: [id], onDelete: Cascade)
+
+  @@index([userId, isRead])
+  @@index([tenderId])
+  @@index([createdAt])
+  @@map("notifications")
+}
+
+model AuditLog {
+  id          String      @id @default(uuid())
+  tenantId    String
+  userId      String?
+  action      AuditAction
+  resource    String      // Resource type (tender, document, etc.)
+  resourceId  String      // ID of the affected resource
+  oldValues   Json?       // Previous values for updates
+  newValues   Json?       // New values for updates
+  metadata    Json        @default("{}")
+  ipAddress   String?
+  userAgent   String?
+  timestamp   DateTime    @default(now())
+
+  // Relations
+  tenant      Tenant      @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  user        User?       @relation("AuditUser", fields: [userId], references: [id])
+
+  @@index([tenantId, timestamp])
+  @@index([userId])
+  @@index([resource, resourceId])
+  @@index([action])
+  @@map("audit_logs")
+}
+
+// ============================================================================
+// SYSTEM MODELS
+// ============================================================================
+
+model SystemConfig {
+  id          String   @id @default(uuid())
+  key         String   @unique
+  value       Json
+  description String?
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([key])
+  @@index([isActive])
+  @@map("system_config")
+}
+
+model JobQueue {
+  id          String    @id @default(uuid())
+  name        String
+  data        Json
+  priority    Int       @default(0)
+  attempts    Int       @default(0)
+  maxAttempts Int       @default(3)
+  status      String    @default("waiting")
+  processedAt DateTime?
+  failedAt    DateTime?
+  error       String?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@index([name, status])
+  @@index([createdAt])
+  @@map("job_queue")
+}
+
+model ApiKey {
+  id          String    @id @default(uuid())
+  tenantId    String?
+  name        String
+  key         String    @unique
+  permissions Json      @default("[]")
+  isActive    Boolean   @default(true)
+  lastUsedAt  DateTime?
+  expiresAt   DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  // Relations
+  tenant      Tenant?   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@index([key])
+  @@index([tenantId])
+  @@index([isActive])
+  @@map("api_keys")
+}
+
+// ============================================================================
+// FULL-TEXT SEARCH INDEXES
+// ============================================================================
+
+// Note: These would be created via raw SQL in migrations
+// CREATE INDEX CONCURRENTLY tender_search_idx ON tenders USING GIN(to_tsvector('english', title || ' ' || COALESCE(description, '')));
+// CREATE INDEX CONCURRENTLY document_search_idx ON documents USING GIN(to_tsvector('english', filename || ' ' || original_name));

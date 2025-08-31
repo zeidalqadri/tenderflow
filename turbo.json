@@ -22,7 +22,37 @@
     },
     "test": {
       "dependsOn": ["^build"],
+      "outputs": ["coverage/**", "test-results/**", "playwright-report/**"]
+    },
+    "test:unit": {
+      "dependsOn": ["^build"],
       "outputs": ["coverage/**"]
+    },
+    "test:integration": {
+      "dependsOn": ["^build", "db:test:setup"],
+      "outputs": ["coverage/**", "test-results/**"]
+    },
+    "test:e2e": {
+      "dependsOn": ["^build"],
+      "outputs": ["playwright-report/**", "test-results/**"]
+    },
+    "test:watch": {
+      "cache": false,
+      "persistent": true
+    },
+    "test:security": {
+      "outputs": ["security-reports/**"]
+    },
+    "test:performance": {
+      "dependsOn": ["^build"],
+      "outputs": ["performance-reports/**"]
+    },
+    "test:db": {
+      "dependsOn": ["db:test:setup"],
+      "outputs": ["coverage/**"]
+    },
+    "test:setup": {
+      "cache": false
     },
     "db:generate": {
       "cache": false
@@ -36,6 +66,12 @@
     "db:studio": {
       "cache": false,
       "persistent": true
+    },
+    "db:test:setup": {
+      "cache": false
+    },
+    "db:test:teardown": {
+      "cache": false
     }
   }
 }

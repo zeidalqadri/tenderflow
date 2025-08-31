@@ -1,0 +1,8 @@
+# Namespace for TenderFlow staging environment
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: staging
+  labels:
+    environment: staging
+    app: tenderflow

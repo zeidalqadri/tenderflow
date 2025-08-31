@@ -1,0 +1,137 @@
+# API Deployment for TenderFlow staging environment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: tenderflow-api
+  namespace: staging
+  labels:
+    app: tenderflow
+    component: api
+    environment: staging
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: tenderflow
+      component: api
+  template:
+    metadata:
+      labels:
+        app: tenderflow
+        component: api
+        environment: staging
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "3000"
+        prometheus.io/path: "/api/v1/metrics"
+    spec:
+      serviceAccountName: tenderflow-api
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1001
+        fsGroup: 1001
+      containers:
+      - name: api
+        image: ghcr.io/tenderflow/tenderflow-api:IMAGE_TAG
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 3000
+          name: http
+          protocol: TCP
+        env:
+        - name: PORT
+          value: "3000"
+        envFrom:
+        - configMapRef:
+            name: tenderflow-config
+        - secretRef:
+            name: tenderflow-secrets
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "250m"
+          limits:
+            memory: "512Mi"
+            cpu: "500m"
+        livenessProbe:
+          httpGet:
+            path: /api/v1/health
+            port: http
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 3
+        readinessProbe:
+          httpGet:
+            path: /api/v1/health/ready
+            port: http
+          initialDelaySeconds: 10
+          periodSeconds: 5
+          timeoutSeconds: 3
+          failureThreshold: 3
+        startupProbe:
+          httpGet:
+            path: /api/v1/health
+            port: http
+          initialDelaySeconds: 10
+          periodSeconds: 5
+          timeoutSeconds: 3
+          failureThreshold: 30
+        volumeMounts:
+        - name: logs
+          mountPath: /app/logs
+        - name: tmp
+          mountPath: /tmp
+      volumes:
+      - name: logs
+        emptyDir: {}
+      - name: tmp
+        emptyDir: {}
+      restartPolicy: Always
+      terminationGracePeriodSeconds: 30
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 100
+            podAffinityTerm:
+              labelSelector:
+                matchExpressions:
+                - key: component
+                  operator: In
+                  values:
+                  - api
+              topologyKey: kubernetes.io/hostname
+
+---
+# API Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: tenderflow-api-service
+  namespace: staging
+  labels:
+    app: tenderflow
+    component: api
+    environment: staging
+spec:
+  type: ClusterIP
+  ports:
+  - port: 80
+    targetPort: http
+    protocol: TCP
+    name: http
+  selector:
+    app: tenderflow
+    component: api
+
+---
+# Service Account for API
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: tenderflow-api
+  namespace: staging
+  labels:
+    app: tenderflow
+    component: api
+    environment: staging
