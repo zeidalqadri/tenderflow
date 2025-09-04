@@ -8,12 +8,12 @@ import swaggerUi from '@fastify/swagger-ui';
 import websocket from '@fastify/websocket';
 import multipart from '@fastify/multipart';
 
-import { jwtPlugin } from './plugins/jwt';
-import { tenantPlugin } from './plugins/tenant';
-import { aclPlugin } from './plugins/acl';
-import { errorHandlerPlugin } from './plugins/error-handler';
-import { auditPlugin } from './plugins/audit';
-import { validationPlugin } from './plugins/validation';
+import jwtPlugin from './plugins/jwt';
+import tenantPlugin from './plugins/tenant';
+import aclPlugin from './plugins/acl';
+import errorHandlerPlugin from './plugins/error-handler';
+import auditPlugin from './plugins/audit';
+import validationPlugin from './plugins/validation';
 
 import authRoutes from './routes/auth';
 import tenderRoutes from './routes/tenders';
@@ -25,6 +25,7 @@ import bidRoutes from './routes/bids';
 import submissionRoutes from './routes/submissions';
 import outcomeRoutes from './routes/outcomes';
 import exportRoutes from './routes/exports';
+import { scraperRoutes } from './routes/scraper';
 
 export interface ServerConfig {
   port: number;
@@ -220,7 +221,7 @@ export async function createServer(config: ServerConfig) {
 
   fastify.get('/health/ready', {
     schema: {
-      description: 'Readiness check endpoint',
+      description: 'Readiness check endpoint with dependency health checks',
       tags: ['Health'],
       response: {
         200: {
@@ -230,9 +231,9 @@ export async function createServer(config: ServerConfig) {
             checks: {
               type: 'object',
               properties: {
-                database: { type: 'string' },
-                redis: { type: 'string' },
-                s3: { type: 'string' },
+                database: { type: 'object' },
+                redis: { type: 'object' },
+                queues: { type: 'object' },
               },
             },
           },
@@ -240,14 +241,52 @@ export async function createServer(config: ServerConfig) {
       },
     },
   }, async () => {
-    // TODO: Add actual health checks for dependencies
+    const results: any = {
+      database: { status: 'unknown' },
+      redis: { status: 'unknown' },
+      queues: { status: 'unknown' },
+    };
+
+    try {
+      // Check database health
+      const { healthCheck } = await import('./database/client');
+      results.database = await healthCheck();
+    } catch (error) {
+      results.database = {
+        status: 'unhealthy',
+        details: error instanceof Error ? error.message : 'Database check failed',
+      };
+    }
+
+    try {
+      // Check Redis health
+      const { checkRedisHealth } = await import('./services/redis');
+      results.redis = await checkRedisHealth();
+    } catch (error) {
+      results.redis = {
+        status: 'unhealthy',
+        details: error instanceof Error ? error.message : 'Redis check failed',
+      };
+    }
+
+    try {
+      // Check queue health
+      const { checkQueuesHealth } = await import('./services/queue');
+      results.queues = await checkQueuesHealth();
+    } catch (error) {
+      results.queues = {
+        status: 'unhealthy',
+        details: error instanceof Error ? error.message : 'Queue check failed',
+      };
+    }
+
+    const overallStatus = Object.values(results).every(
+      (check: any) => check.status === 'healthy'
+    ) ? 'ready' : 'not ready';
+
     return {
-      status: 'ready',
-      checks: {
-        database: 'ok',
-        redis: 'ok',
-        s3: 'ok',
-      },
+      status: overallStatus,
+      checks: results,
     };
   });
 
@@ -262,16 +301,15 @@ export async function createServer(config: ServerConfig) {
   await fastify.register(submissionRoutes, { prefix: '/api/v1/submissions' });
   await fastify.register(outcomeRoutes, { prefix: '/api/v1/outcomes' });
   await fastify.register(exportRoutes, { prefix: '/api/v1/exports' });
+  await fastify.register(scraperRoutes, { prefix: '/api/v1/scraper' });
 
-  // WebSocket endpoint for real-time notifications
-  fastify.register(async function (fastify) {
-    fastify.get('/api/v1/ws', { websocket: true }, (connection, req) => {
-      connection.socket.on('message', message => {
-        // Handle incoming WebSocket messages
-        connection.socket.send('echo: ' + message);
-      });
-    });
-  });
+  // WebSocket service setup
+  const WebSocketService = (await import('./services/websocket')).WebSocketService;
+  const webSocketService = new WebSocketService(fastify);
+  webSocketService.registerRoutes();
+
+  // Store WebSocket service in fastify instance for access in routes
+  fastify.decorate('websocket', webSocketService);
 
   // Global error handling
   fastify.setNotFoundHandler({

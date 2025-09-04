@@ -83,7 +83,7 @@ class ApiClient {
 
   // Auth endpoints
   async login(email: string, password: string): Promise<APIResponse<{ user: User; token: string }>> {
-    return this.request('/api/auth/login', {
+    return this.request('/api/v1/auth/login', {
       method: 'POST',
       body: JSON.stringify({ email, password }),
     })
@@ -94,22 +94,22 @@ class ApiClient {
     email: string
     password: string
   }): Promise<APIResponse<{ user: User; token: string }>> {
-    return this.request('/api/auth/register', {
+    return this.request('/api/v1/auth/register', {
       method: 'POST',
       body: JSON.stringify(userData),
     })
   }
 
   async refreshToken(): Promise<APIResponse<{ token: string }>> {
-    return this.request('/api/auth/refresh', { method: 'POST' })
+    return this.request('/api/v1/auth/refresh', { method: 'POST' })
   }
 
   async logout(): Promise<APIResponse<void>> {
-    return this.request('/api/auth/logout', { method: 'POST' })
+    return this.request('/api/v1/auth/logout', { method: 'POST' })
   }
 
   async me(): Promise<APIResponse<User>> {
-    return this.request('/api/auth/me')
+    return this.request('/api/v1/auth/me')
   }
 
   // Tender endpoints
@@ -126,15 +126,15 @@ class ApiClient {
       }
     })
 
-    return this.request(`/api/tenders?${searchParams}`)
+    return this.request(`/api/v1/tenders?${searchParams}`)
   }
 
   async getTender(id: string): Promise<APIResponse<Tender>> {
-    return this.request(`/api/tenders/${id}`)
+    return this.request(`/api/v1/tenders/${id}`)
   }
 
   async createTender(tender: Omit<Tender, 'id' | 'createdAt' | 'updatedAt' | 'createdBy' | 'documents' | 'participants'>): Promise<APIResponse<Tender>> {
-    return this.request('/api/tenders', {
+    return this.request('/api/v1/tenders', {
       method: 'POST',
       body: JSON.stringify(tender),
     })
@@ -144,14 +144,14 @@ class ApiClient {
     id: string, 
     updates: Partial<Omit<Tender, 'id' | 'createdAt' | 'updatedAt' | 'createdBy'>>
   ): Promise<APIResponse<Tender>> {
-    return this.request(`/api/tenders/${id}`, {
+    return this.request(`/api/v1/tenders/${id}`, {
       method: 'PATCH',
       body: JSON.stringify(updates),
     })
   }
 
   async deleteTender(id: string): Promise<APIResponse<void>> {
-    return this.request(`/api/tenders/${id}`, { method: 'DELETE' })
+    return this.request(`/api/v1/tenders/${id}`, { method: 'DELETE' })
   }
 
   // Document endpoints
@@ -201,7 +201,7 @@ class ApiClient {
         reject(new ApiError('Network error during upload', 0))
       }
 
-      xhr.open('POST', `${this.baseURL}/api/tenders/${tenderId}/documents`)
+      xhr.open('POST', `${this.baseURL}/api/v1/tenders/${tenderId}/documents`)
       if (token) {
         xhr.setRequestHeader('Authorization', `Bearer ${token}`)
       }
@@ -211,11 +211,11 @@ class ApiClient {
   }
 
   async getDocuments(tenderId: string): Promise<APIResponse<TenderDocument[]>> {
-    return this.request(`/api/tenders/${tenderId}/documents`)
+    return this.request(`/api/v1/tenders/${tenderId}/documents`)
   }
 
   async deleteDocument(tenderId: string, documentId: string): Promise<APIResponse<void>> {
-    return this.request(`/api/tenders/${tenderId}/documents/${documentId}`, {
+    return this.request(`/api/v1/tenders/${tenderId}/documents/${documentId}`, {
       method: 'DELETE'
     })
   }
@@ -229,11 +229,11 @@ class ApiClient {
       }
     })
 
-    return this.request(`/api/users?${searchParams}`)
+    return this.request(`/api/v1/users?${searchParams}`)
   }
 
   async updateUserProfile(updates: Partial<Pick<User, 'name' | 'email'>>): Promise<APIResponse<User>> {
-    return this.request('/api/users/profile', {
+    return this.request('/api/v1/users/profile', {
       method: 'PATCH',
       body: JSON.stringify(updates),
     })

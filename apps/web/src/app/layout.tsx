@@ -10,7 +10,15 @@ export const metadata: Metadata = {
   description: 'Streamline your tender management process with advanced automation, validation, and collaboration tools.',
   keywords: ['tender management', 'procurement', 'bid management', 'business automation'],
   authors: [{ name: 'TenderFlow Team' }],
-  viewport: 'width=device-width, initial-scale=1',
+  icons: {
+    icon: '/favicon.svg',
+  },
+};
+
+// Export viewport separately to fix Next.js 14 warning
+export const viewport = {
+  width: 'device-width',
+  initialScale: 1,
 };
 
 export default function RootLayout({

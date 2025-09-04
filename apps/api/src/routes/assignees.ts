@@ -1,7 +1,8 @@
 // Tender assignee management routes for TenderFlow API
 import { FastifyInstance, FastifyPluginAsync } from 'fastify';
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient } from '../generated/prisma';
 import { z } from 'zod';
+import { toJsonSchema } from '../utils/schema-converter';
 import {
   TenderAssignmentSchema,
   CreateTenderAssignmentSchema,
@@ -26,18 +27,18 @@ const assigneeRoutes: FastifyPluginAsync = async (fastify: FastifyInstance) => {
       description: 'Get all users assigned to a tender',
       tags: ['Tender Assignments'],
       security: [{ bearerAuth: [] }],
-      params: z.object({
+      params: toJsonSchema(z.object({
         tenderId: UuidSchema,
-      }),
+      })),
       response: {
-        200: ApiResponseSchema(z.array(TenderAssignmentSchema.extend({
+        200: toJsonSchema(ApiResponseSchema(z.array(TenderAssignmentSchema.extend({
           user: z.object({
             id: z.string(),
             firstName: z.string(),
             lastName: z.string(),
             email: z.string(),
           }),
-        }))),
+        })))),
       },
     },
     preHandler: [
@@ -83,19 +84,19 @@ const assigneeRoutes: FastifyPluginAsync = async (fastify: FastifyInstance) => {
       description: 'Assign user to tender with specific role',
       tags: ['Tender Assignments'],
       security: [{ bearerAuth: [] }],
-      params: z.object({
+      params: toJsonSchema(z.object({
         tenderId: UuidSchema,
-      }),
-      body: CreateTenderAssignmentSchema,
+      })),
+      body: toJsonSchema(CreateTenderAssignmentSchema),
       response: {
-        201: ApiResponseSchema(TenderAssignmentSchema.extend({
+        201: toJsonSchema(ApiResponseSchema(TenderAssignmentSchema.extend({
           user: z.object({
             id: z.string(),
             firstName: z.string(),
             lastName: z.string(),
             email: z.string(),
           }),
-        })),
+        }))),
       },
     },
     preHandler: [
@@ -198,18 +199,18 @@ const assigneeRoutes: FastifyPluginAsync = async (fastify: FastifyInstance) => {
       description: 'Bulk assign multiple users to tender',
       tags: ['Tender Assignments'],
       security: [{ bearerAuth: [] }],
-      params: z.object({
+      params: toJsonSchema(z.object({
         tenderId: UuidSchema,
-      }),
-      body: BulkAssignSchema,
+      })),
+      body: toJsonSchema(BulkAssignSchema),
       response: {
-        201: ApiResponseSchema(z.object({
+        201: toJsonSchema(ApiResponseSchema(z.object({
           created: z.array(TenderAssignmentSchema),
           errors: z.array(z.object({
             userId: z.string(),
             error: z.string(),
           })),
-        })),
+        }))),
       },
     },
     preHandler: [
@@ -316,20 +317,20 @@ const assigneeRoutes: FastifyPluginAsync = async (fastify: FastifyInstance) => {
       description: 'Update user\'s role for tender',
       tags: ['Tender Assignments'],
       security: [{ bearerAuth: [] }],
-      params: z.object({
+      params: toJsonSchema(z.object({
         tenderId: UuidSchema,
         userId: UuidSchema,
-      }),
-      body: UpdateTenderAssignmentSchema,
+      })),
+      body: toJsonSchema(UpdateTenderAssignmentSchema),
       response: {
-        200: ApiResponseSchema(TenderAssignmentSchema.extend({
+        200: toJsonSchema(ApiResponseSchema(TenderAssignmentSchema.extend({
           user: z.object({
             id: z.string(),
             firstName: z.string(),
             lastName: z.string(),
             email: z.string(),
           }),
-        })),
+        }))),
       },
     },
     preHandler: [
@@ -412,14 +413,14 @@ const assigneeRoutes: FastifyPluginAsync = async (fastify: FastifyInstance) => {
       description: 'Remove user from tender',
       tags: ['Tender Assignments'],
       security: [{ bearerAuth: [] }],
-      params: z.object({
+      params: toJsonSchema(z.object({
         tenderId: UuidSchema,
         userId: UuidSchema,
-      }),
+      })),
       response: {
-        200: ApiResponseSchema(z.object({
+        200: toJsonSchema(ApiResponseSchema(z.object({
           message: z.string(),
-        })),
+        }))),
       },
     },
     preHandler: [
@@ -495,14 +496,14 @@ const assigneeRoutes: FastifyPluginAsync = async (fastify: FastifyInstance) => {
       description: 'Transfer tender ownership to another user',
       tags: ['Tender Assignments'],
       security: [{ bearerAuth: [] }],
-      params: z.object({
+      params: toJsonSchema(z.object({
         tenderId: UuidSchema,
         userId: UuidSchema,
-      }),
+      })),
       response: {
-        200: ApiResponseSchema(z.object({
+        200: toJsonSchema(ApiResponseSchema(z.object({
           message: z.string(),
-        })),
+        }))),
       },
     },
     preHandler: [

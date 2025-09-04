@@ -1,7 +1,8 @@
 // Tender CRUD routes for TenderFlow API
 import { FastifyInstance, FastifyPluginAsync } from 'fastify';
-import { PrismaClient } from '@prisma/client';
+import { prisma } from '../database/client';
 import { z } from 'zod';
+import { toJsonSchema } from '../utils/schema-converter';
 import {
   TenderBaseSchema,
   CreateTenderSchema,
@@ -31,7 +32,6 @@ const VALID_TRANSITIONS: Record<string, string[]> = {
 };
 
 const tenderRoutes: FastifyPluginAsync = async (fastify: FastifyInstance) => {
-  const prisma = new PrismaClient();
 
   // Helper function to validate state transitions
   const canTransitionTo = (fromStatus: string, toStatus: string): boolean => {
@@ -44,9 +44,9 @@ const tenderRoutes: FastifyPluginAsync = async (fastify: FastifyInstance) => {
       description: 'Get paginated list of tenders with optional filtering',
       tags: ['Tenders'],
       security: [{ bearerAuth: [] }],
-      querystring: TenderQuerySchema,
+      querystring: toJsonSchema(TenderQuerySchema),
       response: {
-        200: PaginatedResponseSchema(TenderBaseSchema.extend({
+        200: toJsonSchema(PaginatedResponseSchema(TenderBaseSchema.extend({
           creator: z.object({
             id: z.string(),
             firstName: z.string(),
@@ -65,7 +65,7 @@ const tenderRoutes: FastifyPluginAsync = async (fastify: FastifyInstance) => {
             documents: z.number(),
             submissions: z.number(),
           }),
-        })),
+        }))),
       },
     },
     preHandler: [fastify.authenticate, fastify.requireTenant],
@@ -112,6 +112,9 @@ const tenderRoutes: FastifyPluginAsync = async (fastify: FastifyInstance) => {
         { title: { contains: search, mode: 'insensitive' } },
         { description: { contains: search, mode: 'insensitive' } },
         { source: { contains: search, mode: 'insensitive' } },
+        { sourcePortal: { contains: search, mode: 'insensitive' } },
+        { externalId: { contains: search, mode: 'insensitive' } },
+        { originalTitle: { contains: search, mode: 'insensitive' } },
       ];
     }
 
@@ -186,11 +189,11 @@ const tenderRoutes: FastifyPluginAsync = async (fastify: FastifyInstance) => {
       description: 'Get tender by ID with full details',
       tags: ['Tenders'],
       security: [{ bearerAuth: [] }],
-      params: z.object({
+      params: toJsonSchema(z.object({
         id: UuidSchema,
-      }),
+      })),
       response: {
-        200: ApiResponseSchema(TenderBaseSchema.extend({
+        200: toJsonSchema(ApiResponseSchema(TenderBaseSchema.extend({
           creator: z.object({
             id: z.string(),
             firstName: z.string(),
@@ -223,7 +226,7 @@ const tenderRoutes: FastifyPluginAsync = async (fastify: FastifyInstance) => {
             submittedAt: z.date(),
             status: z.string().nullable(),
           })),
-        })),
+        }))),
       },
     },
     preHandler: [
@@ -307,9 +310,9 @@ const tenderRoutes: FastifyPluginAsync = async (fastify: FastifyInstance) => {
       description: 'Create new tender',
       tags: ['Tenders'],
       security: [{ bearerAuth: [] }],
-      body: CreateTenderSchema,
+      body: toJsonSchema(CreateTenderSchema),
       response: {
-        201: ApiResponseSchema(TenderBaseSchema),
+        201: toJsonSchema(ApiResponseSchema(TenderBaseSchema)),
       },
     },
     preHandler: [fastify.authenticate, fastify.requireTenant],
@@ -368,12 +371,12 @@ const tenderRoutes: FastifyPluginAsync = async (fastify: FastifyInstance) => {
       description: 'Update tender by ID',
       tags: ['Tenders'],
       security: [{ bearerAuth: [] }],
-      params: z.object({
+      params: toJsonSchema(z.object({
         id: UuidSchema,
-      }),
-      body: UpdateTenderSchema,
+      })),
+      body: toJsonSchema(UpdateTenderSchema),
       response: {
-        200: ApiResponseSchema(TenderBaseSchema),
+        200: toJsonSchema(ApiResponseSchema(TenderBaseSchema)),
       },
     },
     preHandler: [
@@ -433,13 +436,13 @@ const tenderRoutes: FastifyPluginAsync = async (fastify: FastifyInstance) => {
       description: 'Delete tender by ID (soft delete)',
       tags: ['Tenders'],
       security: [{ bearerAuth: [] }],
-      params: z.object({
+      params: toJsonSchema(z.object({
         id: UuidSchema,
-      }),
+      })),
       response: {
-        200: ApiResponseSchema(z.object({
+        200: toJsonSchema(ApiResponseSchema(z.object({
           message: z.string(),
-        })),
+        }))),
       },
     },
     preHandler: [
@@ -498,12 +501,12 @@ const tenderRoutes: FastifyPluginAsync = async (fastify: FastifyInstance) => {
       description: 'Transition tender to new state',
       tags: ['Tenders'],
       security: [{ bearerAuth: [] }],
-      params: z.object({
+      params: toJsonSchema(z.object({
         id: UuidSchema,
-      }),
-      body: TenderStateTransitionSchema,
+      })),
+      body: toJsonSchema(TenderStateTransitionSchema),
       response: {
-        200: ApiResponseSchema(TenderBaseSchema),
+        200: toJsonSchema(ApiResponseSchema(TenderBaseSchema)),
       },
     },
     preHandler: [
@@ -587,11 +590,11 @@ const tenderRoutes: FastifyPluginAsync = async (fastify: FastifyInstance) => {
       description: 'Get tender state transition history',
       tags: ['Tenders'],
       security: [{ bearerAuth: [] }],
-      params: z.object({
+      params: toJsonSchema(z.object({
         id: UuidSchema,
-      }),
+      })),
       response: {
-        200: ApiResponseSchema(z.array(z.object({
+        200: toJsonSchema(ApiResponseSchema(z.array(z.object({
           id: z.string(),
           fromStatus: z.string().nullable(),
           toStatus: z.string(),
@@ -603,7 +606,7 @@ const tenderRoutes: FastifyPluginAsync = async (fastify: FastifyInstance) => {
             firstName: z.string(),
             lastName: z.string(),
           }),
-        }))),
+        })))),
       },
     },
     preHandler: [
@@ -638,10 +641,246 @@ const tenderRoutes: FastifyPluginAsync = async (fastify: FastifyInstance) => {
     }
   });
 
-  // Cleanup on server close
-  fastify.addHook('onClose', async () => {
-    await prisma.$disconnect();
+  // Get scraped tenders with scraper-specific information
+  fastify.get('/scraped', {
+    schema: {
+      description: 'Get scraped tenders with scraper metadata',
+      tags: ['Tenders', 'Scraper'],
+      security: [{ bearerAuth: [] }],
+      querystring: toJsonSchema(z.object({
+        page: z.number().min(1).default(1).optional(),
+        limit: z.number().min(1).max(100).default(20).optional(),
+        sourcePortal: z.string().optional(),
+        scrapedAfter: z.string().datetime().optional(),
+        scrapedBefore: z.string().datetime().optional(),
+      })),
+      response: {
+        200: toJsonSchema(PaginatedResponseSchema(TenderBaseSchema.extend({
+          sourcePortal: z.string().nullable(),
+          externalId: z.string().nullable(),
+          originalTitle: z.string().nullable(),
+          originalStatus: z.string().nullable(),
+          originalValue: z.string().nullable(),
+          scrapedAt: z.date().nullable(),
+          sourceUrl: z.string().nullable(),
+          creator: z.object({
+            id: z.string(),
+            firstName: z.string(),
+            lastName: z.string(),
+          }),
+        }))),
+      },
+    },
+    preHandler: [fastify.authenticate, fastify.requireTenant],
+  }, async (request, reply) => {
+    const {
+      page = 1,
+      limit = 20,
+      sourcePortal,
+      scrapedAfter,
+      scrapedBefore,
+    } = request.query as any;
+
+    const skip = (page - 1) * limit;
+
+    // Build where clause for scraped tenders
+    const where: any = {
+      tenantId: request.tenant!.id,
+      deletedAt: null,
+      scrapedAt: { not: null }, // Only scraped tenders
+    };
+
+    if (sourcePortal) {
+      where.sourcePortal = sourcePortal;
+    }
+
+    if (scrapedAfter || scrapedBefore) {
+      where.scrapedAt = {};
+      if (scrapedAfter) where.scrapedAt.gte = new Date(scrapedAfter);
+      if (scrapedBefore) where.scrapedAt.lte = new Date(scrapedBefore);
+    }
+
+    try {
+      const [tenders, total] = await Promise.all([
+        prisma.tender.findMany({
+          where,
+          orderBy: { scrapedAt: 'desc' },
+          skip,
+          take: limit,
+          select: {
+            id: true,
+            title: true,
+            description: true,
+            status: true,
+            category: true,
+            publishedAt: true,
+            deadline: true,
+            estimatedValue: true,
+            currency: true,
+            sourcePortal: true,
+            externalId: true,
+            originalTitle: true,
+            originalStatus: true,
+            originalValue: true,
+            scrapedAt: true,
+            sourceUrl: true,
+            createdAt: true,
+            updatedAt: true,
+            creator: {
+              select: {
+                id: true,
+                firstName: true,
+                lastName: true,
+              },
+            },
+          },
+        }),
+        prisma.tender.count({ where }),
+      ]);
+
+      const totalPages = Math.ceil(total / limit);
+
+      return reply.send({
+        success: true,
+        data: tenders,
+        pagination: {
+          page,
+          limit,
+          total,
+          totalPages,
+          hasNext: page < totalPages,
+          hasPrev: page > 1,
+        },
+      });
+    } catch (error) {
+      fastify.log.error(error, 'Error fetching scraped tenders');
+      throw new Error('Failed to fetch scraped tenders');
+    }
   });
+
+  // Get scraper statistics for tenders
+  fastify.get('/stats/scraper', {
+    schema: {
+      description: 'Get scraper statistics for tenders',
+      tags: ['Tenders', 'Scraper', 'Statistics'],
+      security: [{ bearerAuth: [] }],
+      response: {
+        200: toJsonSchema(ApiResponseSchema(z.object({
+          totalScraped: z.number(),
+          byPortal: z.record(z.number()),
+          byStatus: z.record(z.number()),
+          recentActivity: z.object({
+            last24h: z.number(),
+            last7d: z.number(),
+            last30d: z.number(),
+          }),
+          avgPerDay: z.number(),
+        }))),
+      },
+    },
+    preHandler: [fastify.authenticate, fastify.requireTenant],
+  }, async (request, reply) => {
+    try {
+      const tenantId = request.tenant!.id;
+      
+      // Get basic counts
+      const [totalScraped, byPortal, byStatus] = await Promise.all([
+        prisma.tender.count({
+          where: {
+            tenantId,
+            deletedAt: null,
+            scrapedAt: { not: null },
+          },
+        }),
+        
+        prisma.tender.groupBy({
+          by: ['sourcePortal'],
+          where: {
+            tenantId,
+            deletedAt: null,
+            scrapedAt: { not: null },
+            sourcePortal: { not: null },
+          },
+          _count: { id: true },
+        }),
+        
+        prisma.tender.groupBy({
+          by: ['status'],
+          where: {
+            tenantId,
+            deletedAt: null,
+            scrapedAt: { not: null },
+          },
+          _count: { id: true },
+        }),
+      ]);
+
+      // Calculate recent activity
+      const now = new Date();
+      const last24h = new Date(now.getTime() - 24 * 60 * 60 * 1000);
+      const last7d = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+      const last30d = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+
+      const [count24h, count7d, count30d] = await Promise.all([
+        prisma.tender.count({
+          where: {
+            tenantId,
+            deletedAt: null,
+            scrapedAt: { gte: last24h },
+          },
+        }),
+        prisma.tender.count({
+          where: {
+            tenantId,
+            deletedAt: null,
+            scrapedAt: { gte: last7d },
+          },
+        }),
+        prisma.tender.count({
+          where: {
+            tenantId,
+            deletedAt: null,
+            scrapedAt: { gte: last30d },
+          },
+        }),
+      ]);
+
+      // Transform data for response
+      const portalStats = byPortal.reduce((acc, item) => {
+        if (item.sourcePortal) {
+          acc[item.sourcePortal] = item._count.id;
+        }
+        return acc;
+      }, {} as Record<string, number>);
+
+      const statusStats = byStatus.reduce((acc, item) => {
+        acc[item.status] = item._count.id;
+        return acc;
+      }, {} as Record<string, number>);
+
+      const avgPerDay = count30d / 30;
+
+      return reply.send({
+        success: true,
+        data: {
+          totalScraped,
+          byPortal: portalStats,
+          byStatus: statusStats,
+          recentActivity: {
+            last24h: count24h,
+            last7d: count7d,
+            last30d: count30d,
+          },
+          avgPerDay: Math.round(avgPerDay * 100) / 100,
+        },
+      });
+    } catch (error) {
+      fastify.log.error(error, 'Error fetching scraper statistics');
+      throw new Error('Failed to fetch scraper statistics');
+    }
+  });
+
+  // No cleanup needed - prisma client is shared
 };
 
 export default tenderRoutes;
