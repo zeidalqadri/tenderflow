@@ -1,56 +1,44 @@
-# Environment files - exact matches
+# Environment files
 .env
-.env.example
-.env.local
-.env.development
-.env.production
-.env.test
-
-# All .env files anywhere
+.env.*
 **/.env
 **/.env.*
-apps/web/.env.local
-apps/web/.env.local.example
 
-# Kubernetes secrets
-k8s/staging/secret.yaml
+# Kubernetes configs
+k8s/
 **/secret.yaml
 **/*secret*.yaml
 
-# Claude's own files - these are security tools, not secrets!
+# Build directories - These contain compiled code, not secrets
+.next
+.next/
+.next/**
+build
+build/
+build/**
+dist
+dist/
+dist/**
+out
+out/
+out/**
+
+# Node modules - Third-party code
+node_modules
+node_modules/
+node_modules/**
+
+# Claude's own files
 .claude/
 .claude/**
-.claude/hooks/
-.claude/hooks/**
-.claude/hooks/prevent-learning-secrets.py
-.claude/hooks/no-secrets-prompted.py
 .claude-backup/
 .claude-backup/**
 
-# Node modules - exclude the entire directory
-node_modules/
-node_modules/**
-node_modules/@babel/plugin-transform-private-methods
-node_modules/@babel/plugin-transform-private-methods/**
-node_modules/@babel/plugin-transform-private-property-in-object
-node_modules/@babel/plugin-transform-private-property-in-object/**
-node_modules/nan/nan_private.h
-node_modules/@dabh/diagnostics/adapters/process.env.js
+# Logs
+*.log
+logs/
+.claude/logs/
 
-# Common build/dist directories
-dist/
-build/
-.next/
-out/
-
-# Any file with these patterns in node_modules
-node_modules/**/*private*
-node_modules/**/*secret*
-node_modules/**/*.env.*
-node_modules/**/.env
-
-# Package manager files that might have "private" fields
-package.json
-package-lock.json
-yarn.lock
-pnpm-lock.yaml
+# Specific files from your errors
+apps/web/.env.local
+apps/web/.env.local.example
