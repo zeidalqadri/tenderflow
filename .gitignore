@@ -184,3 +184,6 @@ redis_data/
 
 # PostgreSQL
 postgres_data/
+
+# Claude backups
+.claude-backup/
