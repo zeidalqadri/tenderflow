@@ -101,7 +101,12 @@ export function useMonitoringSocket() {
 
   // Setup socket listeners
   useEffect(() => {
-    if (!socket) return
+    // Check if socket exists and has the required methods
+    if (!socket || typeof socket.on !== 'function') {
+      // Set disconnected status when no socket available
+      setConnectionStatus('disconnected')
+      return
+    }
 
     // Connection events
     socket.on('connect', () => {
@@ -130,15 +135,20 @@ export function useMonitoringSocket() {
     socket.emit('monitoring:subscribe')
 
     return () => {
-      socket.off('connect')
-      socket.off('disconnect')
-      socket.off('error')
-      socket.off('health:update')
-      socket.off('component:update')
-      socket.off('alert:new')
-      socket.off('error:new')
-      socket.off('metrics:update')
-      socket.emit('monitoring:unsubscribe')
+      // Safe cleanup - check socket methods exist before calling
+      if (socket && typeof socket.off === 'function') {
+        socket.off('connect')
+        socket.off('disconnect')
+        socket.off('error')
+        socket.off('health:update')
+        socket.off('component:update')
+        socket.off('alert:new')
+        socket.off('error:new')
+        socket.off('metrics:update')
+      }
+      if (socket && typeof socket.emit === 'function') {
+        socket.emit('monitoring:unsubscribe')
+      }
     }
   }, [
     socket,
@@ -152,19 +162,19 @@ export function useMonitoringSocket() {
 
   // Public methods
   const refreshHealth = useCallback(() => {
-    if (socket) {
+    if (socket && typeof socket.emit === 'function') {
       socket.emit('monitoring:refresh:health')
     }
   }, [socket])
 
   const refreshComponent = useCallback((componentId: string) => {
-    if (socket) {
+    if (socket && typeof socket.emit === 'function') {
       socket.emit('monitoring:refresh:component', { componentId })
     }
   }, [socket])
 
   const executeRemediation = useCallback((actionId: string) => {
-    if (socket) {
+    if (socket && typeof socket.emit === 'function') {
       socket.emit('monitoring:remediation:execute', { actionId })
     }
   }, [socket])
