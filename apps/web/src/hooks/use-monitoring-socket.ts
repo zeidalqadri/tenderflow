@@ -152,7 +152,6 @@ export function useMonitoringSocket() {
     }
   }, [
     socket,
-    setConnectionStatus,
     handleSystemHealth,
     handleComponentUpdate,
     handleAlert,
