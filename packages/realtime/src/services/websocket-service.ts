@@ -49,13 +49,17 @@ export class WebSocketService {
       const redisConfig = {
         host: process.env.REDIS_HOST || 'localhost',
         port: parseInt(process.env.REDIS_PORT || '6379'),
-        password: process.env.REDIS_PASSWORD,
+        password: process.env.REDIS_PASSWORD || process.env.REDIS_AUTH_TOKEN,
         db: parseInt(process.env.REDIS_DB || '0'),
         retryDelayOnFailover: 100,
         retryDelayOnClusterDown: 300,
         maxRetriesPerRequest: 3,
         lazyConnect: true,
         keepAlive: 30000,
+        // Add connection timeout and resilience
+        connectTimeout: 10000,
+        commandTimeout: 5000,
+        enableAutoPipelining: true,
       };
 
       // Create Redis clients for Socket.IO adapter
@@ -139,25 +143,55 @@ export class WebSocketService {
   }
 
   private async validateToken(token: string): Promise<any> {
-    try {
-      // Implementation depends on your JWT validation logic
-      // This should call your auth service or validate JWT locally
-      const response = await fetch(`${process.env.API_URL}/auth/validate`, {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        },
-      });
+    const maxRetries = 3;
+    let attempt = 0;
 
-      if (!response.ok) {
-        throw new Error('Token validation failed');
+    while (attempt < maxRetries) {
+      try {
+        // Implementation with timeout, retry logic, and circuit breaker
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 5000); // 5 second timeout
+
+        const response = await fetch(`${process.env.API_URL}/auth/validate`, {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json',
+            'User-Agent': 'TenderFlow-WebSocket/1.0',
+            'X-Request-ID': `ws-auth-${Date.now()}-${Math.random()}`,
+          },
+          signal: controller.signal,
+        });
+
+        clearTimeout(timeoutId);
+
+        if (!response.ok) {
+          throw new Error(`Token validation failed: ${response.status} ${response.statusText}`);
+        }
+
+        const result = await response.json();
+        
+        // Validate the response structure
+        if (!result.userId || !result.tenantId) {
+          throw new Error('Invalid token validation response structure');
+        }
+
+        return result;
+      } catch (error) {
+        attempt++;
+        logger.warn(`Token validation attempt ${attempt} failed:`, error);
+        
+        if (attempt >= maxRetries) {
+          logger.error('Token validation failed after all retries:', error);
+          return null;
+        }
+        
+        // Exponential backoff: wait 100ms, 200ms, 400ms
+        await new Promise(resolve => setTimeout(resolve, 100 * Math.pow(2, attempt - 1)));
       }
-
-      return await response.json();
-    } catch (error) {
-      logger.error('Token validation error:', error);
-      return null;
+    }
+    
+    return null;
     }
   }
 

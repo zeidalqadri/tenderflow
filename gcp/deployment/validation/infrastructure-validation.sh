@@ -5,10 +5,16 @@ set -euo pipefail
 # Validates all infrastructure components before production deployment
 # Government compliance and 99.9% uptime SLA validation
 
-# Configuration
-PROJECT_ID="tensurv"
-REGION="us-central1"
-ENVIRONMENT="production"
+# Configuration - Load from environment variables with defaults
+PROJECT_ID="${GCP_PROJECT_ID:-tensurv}"
+REGION="${GCP_REGION:-us-central1}"
+ENVIRONMENT="${ENVIRONMENT:-production}"
+
+# Validate required environment variables
+if [ -z "$PROJECT_ID" ]; then
+    echo "ERROR: GCP_PROJECT_ID environment variable is required"
+    exit 1
+fi
 LOG_FILE="/tmp/infrastructure-validation-$(date +%Y%m%d-%H%M%S).log"
 
 # Colors for output

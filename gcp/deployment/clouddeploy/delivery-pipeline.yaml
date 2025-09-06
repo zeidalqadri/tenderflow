@@ -1,0 +1,173 @@
+# Cloud Deploy Delivery Pipeline Configuration
+# Implements automated progressive deployments with rollback capabilities
+apiVersion: deploy.cloud.google.com/v1
+kind: DeliveryPipeline
+metadata:
+  name: tenderflow-pipeline
+  annotations:
+    deploy.cloud.google.com/delivery-type: "progressive"
+spec:
+  description: "TenderFlow Government-Grade Progressive Deployment Pipeline"
+  
+  # Define deployment stages with automatic promotion criteria
+  serialPipeline:
+    stages:
+    - targetId: tenderflow-staging
+      profiles:
+      - staging
+      strategy:
+        standard:
+          verify: true
+          predeploy:
+            actions:
+            - "database-migration-check"
+            - "security-scan"
+            - "dependency-audit"
+          postdeploy:
+            actions:
+            - "health-check"
+            - "smoke-tests"
+            - "performance-baseline"
+      
+    - targetId: tenderflow-canary
+      profiles:
+      - canary
+      strategy:
+        canary:
+          runtimeConfig:
+            kubernetes:
+              gatewayServiceMesh:
+                httpRoute: tenderflow-canary-route
+                service: tenderflow-api
+                deployment: tenderflow-api-canary
+          canaryDeployment:
+            percentages: [10, 25, 50, 100]  # Progressive rollout percentages
+            verify: true
+            predeploy:
+              actions:
+              - "canary-validation"
+              - "traffic-validation"
+            postdeploy:
+              actions:
+              - "canary-health-check"
+              - "performance-comparison"
+              - "error-rate-validation"
+              
+    - targetId: tenderflow-production
+      profiles:
+      - production
+      strategy:
+        standard:
+          verify: true
+          predeploy:
+            actions:
+            - "final-security-check"
+            - "backup-current-version"
+            - "maintenance-window-check"
+          postdeploy:
+            actions:
+            - "production-health-check"
+            - "sla-validation"
+            - "government-compliance-check"
+
+  # Automatic promotion conditions
+  condition:
+    pipelineReadyCondition:
+      status: true
+      updateTime: "2024-01-01T00:00:00Z"
+    targetsPresentCondition:
+      status: true
+      missingTargets: []
+    targetTypesPresentCondition:
+      status: true
+      missingTargetTypes: []
+
+  # Global deployment configuration
+  suspend: false
+  uid: "tenderflow-pipeline-uid"
+  etag: "deployment-pipeline-etag"
+
+---
+# Staging Target Configuration
+apiVersion: deploy.cloud.google.com/v1
+kind: Target
+metadata:
+  name: tenderflow-staging
+  annotations:
+    deploy.cloud.google.com/environment: "staging"
+spec:
+  description: "TenderFlow Staging Environment"
+  
+  # Deploy to Cloud Run staging service
+  run:
+    location: projects/tensurv/locations/us-central1
+  
+  # Execution configuration
+  executionConfigs:
+  - usages: [RENDER, DEPLOY, VERIFY]
+    serviceAccount: tenderflow-deploy@tensurv.iam.gserviceaccount.com
+  
+  # Deployment verification
+  deployParameters:
+    deploy-project-id: "tensurv"
+    deploy-location: "us-central1"
+    service-name: "tenderflow-staging-api"
+    traffic-split: "100"
+    
+---
+# Canary Target Configuration  
+apiVersion: deploy.cloud.google.com/v1
+kind: Target
+metadata:
+  name: tenderflow-canary
+  annotations:
+    deploy.cloud.google.com/environment: "canary"
+spec:
+  description: "TenderFlow Canary Environment"
+  
+  # Deploy to Cloud Run with traffic splitting
+  run:
+    location: projects/tensurv/locations/us-central1
+    
+  executionConfigs:
+  - usages: [RENDER, DEPLOY, VERIFY]
+    serviceAccount: tenderflow-deploy@tensurv.iam.gserviceaccount.com
+    
+  deployParameters:
+    deploy-project-id: "tensurv"
+    deploy-location: "us-central1" 
+    service-name: "tenderflow-api"
+    traffic-split: "10,25,50,100"  # Progressive traffic percentages
+    rollback-threshold: "5"  # Error rate threshold for automatic rollback
+    
+---
+# Production Target Configuration
+apiVersion: deploy.cloud.google.com/v1
+kind: Target  
+metadata:
+  name: tenderflow-production
+  annotations:
+    deploy.cloud.google.com/environment: "production"
+    deploy.cloud.google.com/sla-requirement: "99.9%"
+spec:
+  description: "TenderFlow Production Environment - Government Grade"
+  
+  # Deploy to Cloud Run production service
+  run:
+    location: projects/tensurv/locations/us-central1
+    
+  executionConfigs:
+  - usages: [RENDER, DEPLOY, VERIFY]
+    serviceAccount: tenderflow-deploy@tensurv.iam.gserviceaccount.com
+    workerPool: projects/tensurv/locations/us-central1/workerPools/secure-deploy-pool
+    
+  deployParameters:
+    deploy-project-id: "tensurv"
+    deploy-location: "us-central1"
+    service-name: "tenderflow-api"
+    traffic-split: "100"
+    min-instances: "10"  # Minimum instances for government SLA
+    max-instances: "1000"
+    cpu-throttling: "false"
+    memory-limit: "2Gi"
+    cpu-limit: "2000m"

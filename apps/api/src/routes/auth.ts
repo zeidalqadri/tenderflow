@@ -4,6 +4,9 @@ import { PrismaClient } from '../generated/prisma';
 import bcrypt from 'bcrypt';
 import { z } from 'zod';
 import { zodToJsonSchema } from 'zod-to-json-schema';
+import { JWTLifecycleManager } from '../services/jwt-lifecycle-manager';
+import { secretManager } from '../services/secret-manager';
+import { logger } from '../utils/logger';
 import {
   LoginSchema,
   RefreshTokenSchema,
@@ -22,6 +25,17 @@ import {
 
 const authRoutes: FastifyPluginAsync = async (fastify: FastifyInstance) => {
   const prisma = new PrismaClient();
+  
+  // Initialize JWT lifecycle manager with secrets from Secret Manager
+  const secrets = await secretManager.getSecretsWithFallback({
+    JWT_SECRET: 'jwt-secret',
+    JWT_REFRESH_SECRET: 'jwt-refresh-secret',
+  });
+  
+  const jwtManager = new JWTLifecycleManager(
+    secrets.JWT_SECRET, 
+    secrets.JWT_REFRESH_SECRET
+  );
 
   // Login endpoint
   fastify.post('/login', {

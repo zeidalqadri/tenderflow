@@ -1,0 +1,281 @@
+# Automated Rollback Configuration for TenderFlow
+# Implements intelligent rollback triggers and procedures
+
+apiVersion: deploy.cloud.google.com/v1
+kind: AutomationRun
+metadata:
+  name: tenderflow-automated-rollback
+  annotations:
+    deploy.cloud.google.com/automation-type: "rollback"
+spec:
+  deliveryPipeline: projects/tensurv/locations/us-central1/deliveryPipelines/tenderflow-pipeline
+  
+  # Rollback triggers and conditions
+  selector:
+    targets:
+    - id: tenderflow-canary
+    - id: tenderflow-production
+      
+  # Automated rollback rules
+  automationRuns:
+  - automationId: error-rate-rollback
+    createTime: "2024-01-01T00:00:00Z"
+    updateTime: "2024-01-01T00:00:00Z"
+    
+  rules:
+  - name: "high-error-rate-rollback"
+    description: "Rollback if error rate exceeds 5% for 5 minutes"
+    condition:
+      targetsPresentCondition:
+        status: true
+    automationRule:
+      promoteReleaseRule:
+        id: "error-rate-monitor"
+        condition: "(error_rate > 0.05) AND (duration > 300s)"
+        destinationTargetId: "@previous"  # Rollback to previous version
+        wait: "60s"
+        
+  - name: "response-time-rollback" 
+    description: "Rollback if P95 response time exceeds 2 seconds for 3 minutes"
+    automationRule:
+      promoteReleaseRule:
+        id: "response-time-monitor"
+        condition: "(p95_response_time > 2000ms) AND (duration > 180s)"
+        destinationTargetId: "@previous"
+        wait: "30s"
+        
+  - name: "health-check-rollback"
+    description: "Rollback if health check success rate drops below 98%"
+    automationRule:
+      promoteReleaseRule:
+        id: "health-check-monitor"
+        condition: "(health_check_success_rate < 0.98) AND (duration > 120s)"
+        destinationTargetId: "@previous"
+        wait: "15s"  # Immediate rollback for health issues
+        
+  - name: "traffic-spike-rollback"
+    description: "Rollback if traffic drops by more than 50% (potential DNS/routing issue)"
+    automationRule:
+      promoteReleaseRule:
+        id: "traffic-monitor"
+        condition: "(current_traffic < previous_traffic * 0.5) AND (duration > 300s)"
+        destinationTargetId: "@previous"
+        wait: "120s"
+
+---
+# Rollback Verification Jobs
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: rollback-verification
+  namespace: tenderflow-system
+spec:
+  template:
+    spec:
+      serviceAccountName: tenderflow-deploy
+      containers:
+      - name: rollback-verifier
+        image: gcr.io/tensurv/tenderflow-deploy-tools:latest
+        env:
+        - name: PROJECT_ID
+          value: "tensurv"
+        - name: REGION  
+          value: "us-central1"
+        - name: DEPLOYMENT_PIPELINE
+          value: "tenderflow-pipeline"
+        command:
+        - /bin/bash
+        - -c
+        - |
+          #!/bin/bash
+          set -euo pipefail
+          
+          echo "Starting rollback verification process..."
+          
+          # Function to verify rollback success
+          verify_rollback() {
+            local target=$1
+            local max_attempts=10
+            local attempt=1
+            
+            echo "Verifying rollback for target: $target"
+            
+            while [ $attempt -le $max_attempts ]; do
+              echo "Attempt $attempt/$max_attempts"
+              
+              # Check service health
+              if gcloud run services describe tenderflow-api \
+                --region=$REGION \
+                --format='value(status.conditions[0].status)' | grep -q True; then
+                
+                # Verify error rates are back to normal
+                if curl -f -s "https://$target.tenderflow.app/health" | grep -q "healthy"; then
+                  echo "Rollback verification successful for $target"
+                  return 0
+                fi
+              fi
+              
+              echo "Health check failed, retrying in 30 seconds..."
+              sleep 30
+              ((attempt++))
+            done
+            
+            echo "Rollback verification failed for $target after $max_attempts attempts"
+            return 1
+          }
+          
+          # Function to send alerts
+          send_alert() {
+            local status=$1
+            local target=$2
+            local message="Rollback $status for $target at $(date)"
+            
+            # Send to multiple channels for government compliance
+            gcloud pubsub topics publish critical-alerts --message="$message"
+            
+            # Log to audit trail
+            gcloud logging write tenderflow-deployment \
+              "{\"severity\":\"ERROR\",\"message\":\"$message\",\"target\":\"$target\"}"
+          }
+          
+          # Main verification logic
+          TARGETS=("tenderflow-canary" "tenderflow-production")
+          
+          for target in "${TARGETS[@]}"; do
+            if verify_rollback "$target"; then
+              send_alert "SUCCESSFUL" "$target"
+            else
+              send_alert "FAILED" "$target"
+              exit 1
+            fi
+          done
+          
+          echo "All rollback verifications completed successfully"
+      restartPolicy: Never
+  backoffLimit: 3
+
+---
+# Rollback Monitoring Dashboard Configuration
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: rollback-monitoring-config
+  namespace: tenderflow-system
+data:
+  dashboard.json: |
+    {
+      "dashboard": {
+        "title": "TenderFlow Automated Rollback Monitoring",
+        "tags": ["tenderflow", "rollback", "production"],
+        "timezone": "UTC",
+        "panels": [
+          {
+            "id": 1,
+            "title": "Rollback Events",
+            "type": "graph",
+            "targets": [
+              {
+                "expr": "increase(tenderflow_rollback_events_total[5m])",
+                "legendFormat": "Rollback Events"
+              }
+            ],
+            "yAxes": [
+              {
+                "label": "Events",
+                "min": 0
+              }
+            ],
+            "alert": {
+              "conditions": [
+                {
+                  "query": {
+                    "queryType": "rollback_events",
+                    "refId": "A"
+                  },
+                  "reducer": {
+                    "type": "last",
+                    "params": []
+                  },
+                  "evaluator": {
+                    "params": [1],
+                    "type": "gt"
+                  }
+                }
+              ],
+              "executionErrorState": "alerting",
+              "noDataState": "no_data",
+              "frequency": "10s",
+              "handler": 1,
+              "name": "Automated Rollback Triggered",
+              "message": "Automated rollback has been triggered for TenderFlow deployment"
+            }
+          },
+          {
+            "id": 2,
+            "title": "Error Rate Trends",
+            "type": "graph", 
+            "targets": [
+              {
+                "expr": "rate(tenderflow_http_requests_total{status=~\"5..\"}[5m]) / rate(tenderflow_http_requests_total[5m]) * 100",
+                "legendFormat": "Error Rate %"
+              }
+            ],
+            "thresholds": [
+              {
+                "value": 5,
+                "colorMode": "critical",
+                "op": "gt"
+              }
+            ]
+          },
+          {
+            "id": 3,
+            "title": "Response Time P95",
+            "type": "graph",
+            "targets": [
+              {
+                "expr": "histogram_quantile(0.95, rate(tenderflow_http_request_duration_seconds_bucket[5m])) * 1000",
+                "legendFormat": "P95 Response Time (ms)"
+              }
+            ],
+            "thresholds": [
+              {
+                "value": 2000,
+                "colorMode": "critical", 
+                "op": "gt"
+              }
+            ]
+          },
+          {
+            "id": 4,
+            "title": "Deployment Health Status",
+            "type": "singlestat",
+            "targets": [
+              {
+                "expr": "tenderflow_deployment_health_status",
+                "legendFormat": "Health Status"
+              }
+            ],
+            "valueMaps": [
+              {
+                "value": "1",
+                "text": "Healthy"
+              },
+              {
+                "value": "0", 
+                "text": "Unhealthy"
+              }
+            ],
+            "colorBackground": true,
+            "colors": ["#d44a3a", "#e24d42", "#299c46"]
+          }
+        ],
+        "time": {
+          "from": "now-1h",
+          "to": "now"
+        },
+        "refresh": "30s",
+        "schemaVersion": 16,
+        "version": 1
+      }
+    }

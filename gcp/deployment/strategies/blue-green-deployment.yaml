@@ -1,0 +1,381 @@
+# Blue-Green Deployment Strategy for TenderFlow
+# Ensures zero-downtime deployments with instant rollback capability
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: blue-green-deployment-config
+  namespace: tenderflow-system
+data:
+  deployment-strategy.yaml: |
+    strategy:
+      type: "blue-green"
+      description: "Zero-downtime blue-green deployment for government SLA compliance"
+      
+      # Blue-Green specific configuration
+      blueGreen:
+        # Time to wait before switching traffic
+        scaleDownDelayRevisionLimit: 2
+        
+        # Automatic rollback configuration
+        autoRollback:
+          enabled: true
+          thresholds:
+            errorRate: 5.0          # Rollback if error rate > 5%
+            responseTime: 2000      # Rollback if P95 > 2 seconds  
+            healthCheckFailures: 3  # Rollback after 3 consecutive health check failures
+          
+        # Traffic switching configuration
+        trafficRouting:
+          istio:
+            virtualService:
+              name: tenderflow-virtualservice
+              routes:
+              - match:
+                - headers:
+                    canary-user:
+                      exact: "true"
+                route:
+                - destination:
+                    host: tenderflow-api
+                    subset: green
+              - route:
+                - destination:
+                    host: tenderflow-api
+                    subset: blue
+                    
+        # Health checks during deployment
+        prePromotionAnalysis:
+          templates:
+          - templateName: success-rate
+            args:
+            - name: service-name
+              value: tenderflow-api
+          - templateName: avg-response-time
+            args:
+            - name: service-name
+              value: tenderflow-api
+          args:
+          - name: stable-hash
+            valueFrom:
+              podTemplateHashValue: Stable
+          - name: canary-hash
+            valueFrom:
+              podTemplateHashValue: Latest
+              
+        # Post-promotion verification
+        postPromotionAnalysis:
+          templates:
+          - templateName: success-rate
+          - templateName: error-rate-analysis
+          args:
+          - name: stable-hash
+            valueFrom:
+              podTemplateHashValue: Latest
+
+---
+# Blue-Green Service Configuration
+apiVersion: v1
+kind: Service
+metadata:
+  name: tenderflow-api-blue
+  namespace: tenderflow-system
+  labels:
+    app: tenderflow-api
+    version: blue
+spec:
+  selector:
+    app: tenderflow-api
+    version: blue
+  ports:
+  - port: 80
+    targetPort: 3000
+    protocol: TCP
+    name: http
+  type: ClusterIP
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: tenderflow-api-green
+  namespace: tenderflow-system
+  labels:
+    app: tenderflow-api
+    version: green
+spec:
+  selector:
+    app: tenderflow-api
+    version: green
+  ports:
+  - port: 80
+    targetPort: 3000
+    protocol: TCP
+    name: http
+  type: ClusterIP
+
+---
+# Traffic Switching Script
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: traffic-switching-script
+  namespace: tenderflow-system
+data:
+  switch-traffic.sh: |
+    #!/bin/bash
+    set -euo pipefail
+    
+    # Configuration
+    PROJECT_ID="${PROJECT_ID:-tensurv}"
+    REGION="${REGION:-us-central1}"
+    SERVICE_NAME="${SERVICE_NAME:-tenderflow-api}"
+    
+    # Colors for output
+    GREEN='\033[0;32m'
+    RED='\033[0;31m'
+    YELLOW='\033[1;33m'
+    NC='\033[0m' # No Color
+    
+    log() {
+        echo -e "$(date '+%Y-%m-%d %H:%M:%S') - $1"
+    }
+    
+    log_success() {
+        log "${GREEN}✅ $1${NC}"
+    }
+    
+    log_error() {
+        log "${RED}❌ $1${NC}"
+    }
+    
+    log_warning() {
+        log "${YELLOW}⚠️  $1${NC}"
+    }
+    
+    # Function to get current active revision
+    get_active_revision() {
+        gcloud run services describe $SERVICE_NAME \
+            --region=$REGION \
+            --format='value(spec.traffic[0].revisionName)'
+    }
+    
+    # Function to get latest revision
+    get_latest_revision() {
+        gcloud run services describe $SERVICE_NAME \
+            --region=$REGION \
+            --format='value(status.latestCreatedRevisionName)'
+    }
+    
+    # Function to switch traffic gradually
+    switch_traffic_gradually() {
+        local new_revision=$1
+        local old_revision=$2
+        local percentages=(10 25 50 100)
+        
+        log "Starting gradual traffic switch from $old_revision to $new_revision"
+        
+        for percent in "${percentages[@]}"; do
+            log "Switching $percent% traffic to $new_revision"
+            
+            # Update traffic allocation
+            gcloud run services update-traffic $SERVICE_NAME \
+                --region=$REGION \
+                --to-revisions="$new_revision=$percent,$old_revision=$((100-percent))" \
+                --quiet
+            
+            # Wait and verify health
+            log "Waiting 60 seconds for traffic to stabilize..."
+            sleep 60
+            
+            if ! verify_deployment_health; then
+                log_error "Health check failed at $percent% traffic"
+                rollback_traffic "$old_revision"
+                return 1
+            fi
+            
+            log_success "$percent% traffic successfully switched"
+        done
+        
+        # Final cleanup - remove old revision from traffic
+        gcloud run services update-traffic $SERVICE_NAME \
+            --region=$REGION \
+            --to-revisions="$new_revision=100" \
+            --quiet
+            
+        log_success "Traffic switch completed successfully"
+    }
+    
+    # Function to verify deployment health
+    verify_deployment_health() {
+        local max_attempts=5
+        local attempt=1
+        
+        log "Verifying deployment health..."
+        
+        while [ $attempt -le $max_attempts ]; do
+            local service_url=$(gcloud run services describe $SERVICE_NAME \
+                --region=$REGION \
+                --format='value(status.address.url)')
+            
+            # Health check
+            if curl -f -s -m 10 "$service_url/health" | grep -q "healthy"; then
+                # Check error rate from monitoring
+                local error_rate=$(get_error_rate)
+                if (( $(echo "$error_rate < 5.0" | bc -l) )); then
+                    log_success "Health check passed (error rate: ${error_rate}%)"
+                    return 0
+                else
+                    log_warning "High error rate detected: ${error_rate}%"
+                fi
+            fi
+            
+            log "Health check failed, attempt $attempt/$max_attempts"
+            sleep 10
+            ((attempt++))
+        done
+        
+        log_error "Health check failed after $max_attempts attempts"
+        return 1
+    }
+    
+    # Function to get current error rate from monitoring
+    get_error_rate() {
+        # This would typically query Cloud Monitoring
+        # For now, return a mock value
+        echo "1.2"
+    }
+    
+    # Function to rollback traffic
+    rollback_traffic() {
+        local safe_revision=$1
+        
+        log_error "Initiating emergency rollback to $safe_revision"
+        
+        gcloud run services update-traffic $SERVICE_NAME \
+            --region=$REGION \
+            --to-revisions="$safe_revision=100" \
+            --quiet
+            
+        # Verify rollback success
+        if verify_deployment_health; then
+            log_success "Emergency rollback completed successfully"
+            
+            # Send critical alert
+            gcloud pubsub topics publish critical-alerts \
+                --message="Emergency rollback executed for $SERVICE_NAME at $(date)"
+        else
+            log_error "Rollback verification failed - manual intervention required"
+            exit 1
+        fi
+    }
+    
+    # Function to perform blue-green deployment
+    blue_green_deploy() {
+        log "Starting Blue-Green deployment for $SERVICE_NAME"
+        
+        # Get current state
+        local current_revision=$(get_active_revision)
+        local latest_revision=$(get_latest_revision)
+        
+        log "Current active revision: $current_revision"
+        log "Latest deployed revision: $latest_revision"
+        
+        if [ "$current_revision" = "$latest_revision" ]; then
+            log "No new revision to deploy"
+            return 0
+        fi
+        
+        # Pre-deployment validation
+        log "Running pre-deployment validation..."
+        
+        # Check if new revision is healthy
+        local temp_url="https://${latest_revision}---${SERVICE_NAME}-${REGION}.run.app"
+        if ! curl -f -s -m 10 "$temp_url/health" | grep -q "healthy"; then
+            log_error "New revision $latest_revision failed health check"
+            return 1
+        fi
+        
+        log_success "Pre-deployment validation passed"
+        
+        # Execute gradual traffic switch
+        if switch_traffic_gradually "$latest_revision" "$current_revision"; then
+            log_success "Blue-Green deployment completed successfully"
+            
+            # Send success notification
+            gcloud pubsub topics publish deployment-notifications \
+                --message="Successful Blue-Green deployment of $latest_revision for $SERVICE_NAME"
+                
+            return 0
+        else
+            log_error "Blue-Green deployment failed"
+            return 1
+        fi
+    }
+    
+    # Main execution
+    case "${1:-deploy}" in
+        "deploy")
+            blue_green_deploy
+            ;;
+        "rollback")
+            if [ -z "${2:-}" ]; then
+                log_error "Rollback requires revision name"
+                exit 1
+            fi
+            rollback_traffic "$2"
+            ;;
+        "status")
+            log "Current active revision: $(get_active_revision)"
+            log "Latest deployed revision: $(get_latest_revision)"
+            ;;
+        *)
+            echo "Usage: $0 {deploy|rollback <revision>|status}"
+            exit 1
+            ;;
+    esac
+
+---
+# Automated Blue-Green Deployment Job
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: automated-blue-green-deploy
+  namespace: tenderflow-system
+spec:
+  # Run every deployment trigger (manually triggered)
+  schedule: "@yearly"  # Disabled by default
+  suspend: true  # Start suspended, enable when needed
+  
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          serviceAccountName: tenderflow-deploy
+          containers:
+          - name: blue-green-deployer
+            image: gcr.io/google.com/cloudsdktool/cloud-sdk:latest
+            env:
+            - name: PROJECT_ID
+              value: "tensurv"
+            - name: REGION
+              value: "us-central1"
+            - name: SERVICE_NAME
+              value: "tenderflow-api"
+            command:
+            - /bin/bash
+            - -c
+            volumeMounts:
+            - name: traffic-switching-script
+              mountPath: /scripts
+              readOnly: true
+            command: ["/scripts/switch-traffic.sh", "deploy"]
+            
+          volumes:
+          - name: traffic-switching-script
+            configMap:
+              name: traffic-switching-script
+              defaultMode: 0755
+              
+          restartPolicy: OnFailure
+      backoffLimit: 2

@@ -1,0 +1,333 @@
+# Alert Correlation and Fatigue Reduction Configuration
+# Implements intelligent alert grouping and escalation for government operations
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: alert-correlation-config
+  namespace: tenderflow-system
+data:
+  alertmanager.yml: |
+    global:
+      # Government compliance SMTP configuration
+      smtp_smarthost: 'smtp.government.internal:587'
+      smtp_from: 'tenderflow-alerts@tensurv.gov'
+      smtp_auth_username: 'alert-system'
+      smtp_auth_password_file: '/etc/alertmanager/secrets/smtp-password'
+      smtp_require_tls: true
+      
+      # Slack configuration for immediate team notifications
+      slack_api_url_file: '/etc/alertmanager/secrets/slack-webhook'
+      
+      # PagerDuty integration for critical escalations
+      pagerduty_url: 'https://events.pagerduty.com/v2/enqueue'
+    
+    # Template definitions for government-compliant notifications
+    templates:
+    - '/etc/alertmanager/templates/*.tmpl'
+    
+    # Routing rules with intelligent correlation
+    route:
+      group_by: ['cluster', 'service', 'severity']
+      group_wait: 10s        # Wait 10s for additional alerts to group
+      group_interval: 5m     # Send grouped alerts every 5 minutes
+      repeat_interval: 4h    # Repeat critical alerts every 4 hours
+      receiver: 'government-operations'
+      
+      # Routing rules for different alert types
+      routes:
+      
+      # Critical SLA-threatening alerts - immediate escalation
+      - match:
+          severity: critical
+        receiver: 'critical-escalation'
+        group_wait: 5s       # Immediate grouping for critical
+        group_interval: 1m   # Frequent updates for critical issues
+        repeat_interval: 30m # Repeat every 30 minutes until resolved
+        routes:
+        
+        # Database issues during business hours
+        - match:
+            component: database
+        receiver: 'database-team-critical'
+        continue: true       # Also send to general critical channel
+        
+        # API issues affecting government services
+        - match:
+            government_compliance: "true"
+        receiver: 'government-liaison-critical'
+        continue: true
+        
+      # Performance degradation alerts - team notification
+      - match:
+          severity: warning
+        receiver: 'performance-team'
+        group_interval: 10m  # Group performance alerts over 10 minutes
+        repeat_interval: 2h  # Repeat every 2 hours
+        
+      # Infrastructure scaling alerts - operations team
+      - match:
+          component: infrastructure
+        receiver: 'infrastructure-team'
+        group_interval: 15m  # Infrastructure changes can be batched
+        
+      # Business hours routing (government office hours)
+      - match_re:
+          time_range: "business_hours"
+        receiver: 'business-hours-team'
+        
+      # After-hours routing (reduced noise, critical only)  
+      - match_re:
+          time_range: "after_hours"
+        receiver: 'on-call-engineer'
+        routes:
+        - match:
+            severity: critical
+          receiver: 'emergency-escalation'
+    
+    # Time-based inhibition rules to prevent alert fatigue
+    inhibit_rules:
+    
+    # Suppress downstream alerts when upstream service is down
+    - source_match:
+        severity: 'critical'
+        component: 'database'
+      target_match:
+        component: 'api'
+      equal: ['cluster', 'service']
+      
+    # Suppress performance alerts during known high error rates
+    - source_match:
+        alertname: 'TenderFlowAPIHighErrorRateCritical'
+      target_match_re:
+        alertname: '.*Performance.*'
+      equal: ['cluster']
+      
+    # Suppress scaling alerts during maintenance windows
+    - source_match:
+        maintenance_window: 'true'
+      target_match:
+        component: 'infrastructure'
+      equal: ['cluster']
+    
+    # Receiver configurations with multi-channel escalation
+    receivers:
+    
+    # Default government operations team
+    - name: 'government-operations'
+      email_configs:
+      - to: 'tenderflow-ops@tensurv.gov'
+        subject: '[TenderFlow] {{ .GroupLabels.severity | title }} Alert: {{ .GroupLabels.alertname }}'
+        body: |
+          {{ range .Alerts }}
+          **Alert:** {{ .Annotations.summary }}
+          **Severity:** {{ .Labels.severity }}
+          **Service:** {{ .Labels.service }}
+          **Description:** {{ .Annotations.description }}
+          **Runbook:** {{ .Annotations.runbook_url }}
+          **Time:** {{ .StartsAt.Format "2006-01-02 15:04:05 UTC" }}
+          {{ end }}
+          
+          Government SLA Status: https://monitoring.tensurv.com/sla-dashboard
+          
+      slack_configs:
+      - channel: '#tenderflow-alerts'
+        title: 'TenderFlow Alert - {{ .GroupLabels.severity | title }}'
+        text: |
+          {{ range .Alerts }}
+          *{{ .Annotations.summary }}*
+          Service: {{ .Labels.service }}
+          {{ .Annotations.description }}
+          {{ if .Annotations.runbook_url }}Runbook: {{ .Annotations.runbook_url }}{{ end }}
+          {{ end }}
+    
+    # Critical escalation with PagerDuty integration
+    - name: 'critical-escalation'
+      email_configs:
+      - to: 'tenderflow-critical@tensurv.gov'
+        subject: '[CRITICAL] TenderFlow SLA Threat: {{ .GroupLabels.alertname }}'
+        body: |
+          🚨 CRITICAL ALERT - GOVERNMENT SLA AT RISK 🚨
+          
+          {{ range .Alerts }}
+          **Alert:** {{ .Annotations.summary }}
+          **Impact:** {{ .Labels.user_impact | default "Service Degradation" }}
+          **SLA Status:** {{ .Labels.slo | default "Unknown" }}
+          **Government Compliance:** {{ .Labels.government_compliance | default "Standard" }}
+          
+          **Description:**
+          {{ .Annotations.description }}
+          
+          **Immediate Action Required:**
+          1. Check service health: https://monitoring.tensurv.com/health
+          2. Review runbook: {{ .Annotations.runbook_url }}
+          3. Escalate if not resolved within 15 minutes
+          
+          **Time:** {{ .StartsAt.Format "2006-01-02 15:04:05 UTC" }}
+          {{ end }}
+          
+      pagerduty_configs:
+      - routing_key_file: '/etc/alertmanager/secrets/pagerduty-key'
+        description: '{{ range .Alerts }}{{ .Annotations.summary }}{{ end }}'
+        client: 'TenderFlow Monitoring'
+        client_url: 'https://monitoring.tensurv.com'
+        details:
+          service: '{{ .GroupLabels.service }}'
+          severity: '{{ .GroupLabels.severity }}'
+          runbook: '{{ range .Alerts }}{{ .Annotations.runbook_url }}{{ end }}'
+          
+      slack_configs:
+      - channel: '#tenderflow-critical'
+        color: 'danger'
+        title: '🚨 CRITICAL: {{ .GroupLabels.alertname }}'
+        text: |
+          <!channel> Government SLA at risk!
+          {{ range .Alerts }}
+          *{{ .Annotations.summary }}*
+          {{ .Annotations.description }}
+          Runbook: {{ .Annotations.runbook_url }}
+          {{ end }}
+          
+    # Database team specialization
+    - name: 'database-team-critical'
+      email_configs:
+      - to: 'database-team@tensurv.gov'
+        subject: '[DB-CRITICAL] TenderFlow Database Issue: {{ .GroupLabels.alertname }}'
+        body: |
+          🗄️ DATABASE CRITICAL ALERT
+          
+          {{ range .Alerts }}
+          **Database Issue:** {{ .Annotations.summary }}
+          **Component:** {{ .Labels.component }}
+          **Connection Status:** {{ .Labels.connection_status | default "Unknown" }}
+          
+          **Technical Details:**
+          {{ .Annotations.description }}
+          
+          **Database Runbook:** {{ .Annotations.runbook_url }}
+          
+          **Quick Actions:**
+          1. Check AlloyDB cluster health
+          2. Verify PgBouncer connection pool
+          3. Check for long-running queries
+          4. Monitor connection count vs. limits
+          
+          {{ end }}
+          
+    # Government liaison for compliance issues
+    - name: 'government-liaison-critical'
+      email_configs:
+      - to: 'government-liaison@tensurv.gov,compliance-officer@tensurv.gov'
+        subject: '[COMPLIANCE-CRITICAL] TenderFlow Government Service Impact'
+        body: |
+          📋 GOVERNMENT COMPLIANCE ALERT
+          
+          A critical issue is affecting TenderFlow's government services:
+          
+          {{ range .Alerts }}
+          **Issue:** {{ .Annotations.summary }}
+          **Government Impact:** {{ .Labels.government_impact | default "Service degradation affecting tender submissions" }}
+          **SLA Status:** {{ .Labels.slo }}
+          **Compliance Risk:** {{ .Labels.compliance_risk | default "Medium" }}
+          
+          **Business Impact:**
+          {{ .Annotations.description }}
+          
+          **Estimated Resolution:** {{ .Labels.eta | default "Under investigation" }}
+          {{ end }}
+          
+          **Next Steps:**
+          1. Technical team is investigating
+          2. Status updates every 15 minutes
+          3. Government stakeholders will be notified if resolution exceeds 1 hour
+          
+          Status Page: https://status.tenderflow.app
+          
+    # Performance team for non-critical issues
+    - name: 'performance-team'
+      slack_configs:
+      - channel: '#tenderflow-performance'
+        title: 'Performance Alert: {{ .GroupLabels.alertname }}'
+        text: |
+          {{ range .Alerts }}
+          📊 *Performance Issue Detected*
+          
+          **Service:** {{ .Labels.service }}
+          **Metric:** {{ .Labels.alertname }}
+          **Current Value:** {{ .Annotations.current_value | default "See description" }}
+          
+          {{ .Annotations.description }}
+          
+          Dashboard: https://monitoring.tensurv.com/performance
+          {{ end }}
+          
+    # Infrastructure team for scaling and resource issues  
+    - name: 'infrastructure-team'
+      email_configs:
+      - to: 'infrastructure-team@tensurv.gov'
+        subject: '[INFRA] TenderFlow Infrastructure Alert: {{ .GroupLabels.alertname }}'
+        
+      slack_configs:
+      - channel: '#tenderflow-infrastructure'
+        title: 'Infrastructure Alert: {{ .GroupLabels.alertname }}'
+        
+    # Business hours team (reduced escalation)
+    - name: 'business-hours-team'
+      slack_configs:
+      - channel: '#tenderflow-business-hours'
+        title: 'Business Hours Alert: {{ .GroupLabels.alertname }}'
+        
+    # On-call engineer for after-hours
+    - name: 'on-call-engineer'
+      pagerduty_configs:
+      - routing_key_file: '/etc/alertmanager/secrets/oncall-pagerduty-key'
+        description: 'After-hours TenderFlow alert: {{ range .Alerts }}{{ .Annotations.summary }}{{ end }}'
+        
+    # Emergency escalation for severe after-hours issues
+    - name: 'emergency-escalation'
+      pagerduty_configs:
+      - routing_key_file: '/etc/alertmanager/secrets/emergency-pagerduty-key'
+        description: 'EMERGENCY: {{ range .Alerts }}{{ .Annotations.summary }}{{ end }}'
+        severity: 'critical'
+      
+      # Also notify senior staff via SMS
+      email_configs:
+      - to: 'emergency-contact@tensurv.gov'
+        subject: '[EMERGENCY] TenderFlow Critical Failure After Hours'
+
+---
+# Time-based routing configuration
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: time-based-routing
+  namespace: tenderflow-system
+data:
+  time-routing.yml: |
+    # Business hours: 6 AM - 8 PM EST (government working hours)
+    business_hours:
+      timezone: "America/New_York"
+      weekdays:
+        start: "06:00"
+        end: "20:00"
+      weekends:
+        start: "08:00" 
+        end: "18:00"
+    
+    # Emergency contacts for after-hours critical issues
+    emergency_contacts:
+      - name: "Senior SRE"
+        phone: "+1-555-0101"
+        email: "senior-sre@tensurv.gov"
+      - name: "Engineering Manager"  
+        phone: "+1-555-0102"
+        email: "eng-manager@tensurv.gov"
+      - name: "Government Liaison"
+        phone: "+1-555-0103"
+        email: "gov-liaison@tensurv.gov"
+        
+    # Escalation timeframes
+    escalation:
+      critical: "15m"    # Escalate critical alerts after 15 minutes
+      warning: "2h"      # Escalate warnings after 2 hours  
+      info: "24h"        # Info alerts escalate after 1 day if unresolved

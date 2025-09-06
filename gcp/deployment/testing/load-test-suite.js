@@ -117,13 +117,18 @@ export const options = {
   },
 };
 
-// Test data for realistic load simulation
-const TEST_USERS = [
+// Test data for realistic load simulation - Load from environment variables
+const TEST_USERS = JSON.parse(__ENV.TEST_USERS || JSON.stringify([
   { email: 'contractor1@test.com', password: 'TestPass123!' },
   { email: 'govofficial1@test.com', password: 'TestPass123!' },
   { email: 'procurement1@test.com', password: 'TestPass123!' },
   // Add more test users as needed
-];
+]));
+
+// Validate that test credentials are provided
+if (!__ENV.TEST_USERS && (__ENV.ENVIRONMENT === 'production' || __ENV.ENVIRONMENT === 'staging')) {
+  throw new Error('TEST_USERS environment variable must be provided for non-development environments');
+}
 
 const TENDER_TEMPLATES = [
   {

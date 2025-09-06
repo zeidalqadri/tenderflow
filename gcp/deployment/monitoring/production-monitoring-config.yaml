@@ -1,0 +1,421 @@
+# Production-Tuned Monitoring Configuration for TenderFlow
+# Implements government-grade SLA compliance with 99.9% uptime requirements
+
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: tenderflow-production-alerts
+  namespace: tenderflow-system
+  labels:
+    app: tenderflow
+    tier: production
+    compliance: government-grade
+spec:
+  groups:
+  
+  # High Priority - SLA Threatening Alerts
+  - name: sla-critical-alerts
+    interval: 10s  # Check every 10 seconds for critical issues
+    rules:
+    
+    # API Error Rate - Burn Rate Alerting for 99.9% SLO
+    - alert: TenderFlowAPIHighErrorRateCritical
+      expr: |
+        (
+          rate(tenderflow_http_requests_total{status=~"5.."}[1m]) /
+          rate(tenderflow_http_requests_total[1m])
+        ) > 0.05  # 5% error rate consumes error budget quickly
+      for: 2m
+      labels:
+        severity: critical
+        slo: "99.9%"
+        burn_rate: "high"
+        escalation: "immediate"
+      annotations:
+        summary: "Critical: TenderFlow API error rate exceeds SLA threshold"
+        description: |
+          API error rate is {{ $value | humanizePercentage }} for {{ $labels.service }}.
+          This threatens our 99.9% SLA requirement.
+          Burn rate: This consumes 5% of monthly error budget per hour.
+          
+          Runbook: https://docs.tenderflow.app/runbooks/high-error-rate
+          Dashboard: https://monitoring.tensurv.com/d/api-health
+        runbook_url: "https://docs.tenderflow.app/runbooks/api-error-rate"
+        
+    # API Response Time - Government SLA Requirement 
+    - alert: TenderFlowAPIHighLatencyCritical
+      expr: |
+        histogram_quantile(0.95, 
+          rate(tenderflow_http_request_duration_seconds_bucket[5m])
+        ) > 2.0  # P95 > 2 seconds threatens government SLA
+      for: 2m
+      labels:
+        severity: critical
+        slo: "response-time"
+        government_compliance: "true"
+      annotations:
+        summary: "Critical: API response time exceeds government SLA"
+        description: |
+          P95 response time is {{ $value }}s, exceeding 2s government requirement.
+          Current value threatens tender submission deadlines.
+          
+    # Database Connection Pool Exhaustion
+    - alert: DatabaseConnectionPoolCritical
+      expr: |
+        (
+          pgbouncer_active_clients / pgbouncer_max_client_conn
+        ) > 0.90  # 90% of connection pool used
+      for: 1m
+      labels:
+        severity: critical
+        component: "database"
+        impact: "service-degradation"
+      annotations:
+        summary: "Critical: Database connection pool near exhaustion"
+        description: |
+          Connection pool utilization at {{ $value | humanizePercentage }}.
+          Risk of connection timeouts affecting 10k+ concurrent users.
+          
+    # WebSocket Connection Health for Real-time Features
+    - alert: WebSocketConnectionDropsCritical  
+      expr: |
+        rate(tenderflow_websocket_disconnects_total[5m]) > 10
+      for: 2m
+      labels:
+        severity: critical
+        component: "realtime"
+        user_impact: "high"
+      annotations:
+        summary: "Critical: High WebSocket connection drop rate"
+        description: |
+          WebSocket disconnect rate: {{ $value }} per second.
+          Real-time notifications for tender updates at risk.
+
+  # Medium Priority - Performance Degradation
+  - name: performance-alerts  
+    interval: 30s
+    rules:
+    
+    # Adaptive CPU Thresholds based on traffic patterns
+    - alert: TenderFlowHighCPUUsage
+      expr: |
+        (
+          rate(container_cpu_usage_seconds_total{container="tenderflow-api"}[5m]) /
+          container_spec_cpu_quota{container="tenderflow-api"} * 100
+        ) > 85  # 85% sustained CPU for production scale
+      for: 10m  # Longer duration to avoid false positives during traffic spikes
+      labels:
+        severity: warning
+        component: "compute"
+        scaling: "auto-scale-candidate"
+      annotations:
+        summary: "High CPU usage detected"
+        description: |
+          CPU usage: {{ $value | humanizePercentage }} for {{ $labels.pod }}.
+          May indicate need for horizontal scaling during peak tender periods.
+          
+    # Memory Usage with Predictive Alerting
+    - alert: TenderFlowHighMemoryUsage
+      expr: |
+        (
+          container_memory_working_set_bytes{container="tenderflow-api"} /
+          container_spec_memory_limit_bytes{container="tenderflow-api"}
+        ) > 0.75  # 75% memory usage triggers scaling consideration
+      for: 5m
+      labels:
+        severity: warning
+        component: "memory"
+        prediction: "scale-up-recommended"
+      annotations:
+        summary: "Memory usage approaching limits"
+        description: |
+          Memory usage: {{ $value | humanizePercentage }} of limit.
+          Predictive scaling recommended for sustained high usage.
+          
+    # Business Logic Performance - Tender Processing Time
+    - alert: TenderProcessingSlowdown
+      expr: |
+        histogram_quantile(0.95, 
+          rate(tenderflow_tender_processing_duration_seconds_bucket[10m])
+        ) > 30  # Government tender processing should complete within 30s
+      for: 5m
+      labels:
+        severity: warning
+        business_impact: "tender-delays"
+        government_compliance: "processing-time"
+      annotations:
+        summary: "Tender processing time degraded"
+        description: |
+          P95 tender processing time: {{ $value }}s.
+          May impact government contract submission deadlines.
+
+  # SLA Compliance Monitoring
+  - name: sla-compliance-monitoring
+    interval: 60s  # Check SLA compliance every minute
+    rules:
+    
+    # Monthly Availability SLO Tracking
+    - alert: TenderFlowSLABudgetBurn
+      expr: |
+        (
+          1 - (
+            sum(rate(tenderflow_http_requests_total{status!~"5.."}[30d])) /
+            sum(rate(tenderflow_http_requests_total[30d]))
+          )
+        ) > 0.001  # More than 0.1% error rate in 30-day window
+      for: 0m  # Immediate alert for SLA tracking
+      labels:
+        severity: warning
+        sla_type: "availability"
+        tracking: "monthly-budget"
+      annotations:
+        summary: "SLA error budget consumption tracking"
+        description: |
+          Current monthly error rate: {{ $value | humanizePercentage }}.
+          SLA Budget remaining: {{ 0.001 - $value | humanizePercentage }}.
+          
+          Government SLA requirement: 99.9% (43.2 minutes downtime/month max).
+          
+    # Compliance Audit Trail Completeness
+    - alert: AuditLogCompleteness
+      expr: |
+        increase(tenderflow_audit_log_entries_total[1h]) < 
+        increase(tenderflow_business_operations_total[1h]) * 0.95  # 95% audit coverage
+      for: 5m
+      labels:
+        severity: warning
+        compliance: "audit-trail"
+        government_requirement: "true"
+      annotations:
+        summary: "Audit log completeness below requirement"
+        description: |
+          Audit log coverage: {{ $value | humanizePercentage }}.
+          Government requires complete audit trail for all tender operations.
+
+---
+# SLA Dashboard Configuration
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: sla-dashboard-config
+  namespace: tenderflow-system
+data:
+  government-sla-dashboard.json: |
+    {
+      "dashboard": {
+        "id": null,
+        "title": "TenderFlow Government SLA Compliance",
+        "tags": ["tenderflow", "sla", "government", "compliance"],
+        "timezone": "UTC",
+        "refresh": "30s",
+        "time": {
+          "from": "now-24h",
+          "to": "now"
+        },
+        "panels": [
+          {
+            "id": 1,
+            "title": "Monthly SLA Status",
+            "type": "stat",
+            "gridPos": {"h": 8, "w": 12, "x": 0, "y": 0},
+            "targets": [
+              {
+                "expr": "1 - (sum(rate(tenderflow_http_requests_total{status=~\"5..\"}[30d])) / sum(rate(tenderflow_http_requests_total[30d])))",
+                "legendFormat": "Monthly Availability",
+                "refId": "A"
+              }
+            ],
+            "fieldConfig": {
+              "defaults": {
+                "unit": "percentunit",
+                "min": 0.999,
+                "max": 1,
+                "thresholds": {
+                  "steps": [
+                    {"color": "red", "value": 0},
+                    {"color": "yellow", "value": 0.999},
+                    {"color": "green", "value": 0.9995}
+                  ]
+                }
+              }
+            },
+            "options": {
+              "colorMode": "background",
+              "orientation": "horizontal",
+              "reduceOptions": {
+                "values": false,
+                "fields": "",
+                "calcs": ["lastNotNull"]
+              },
+              "textMode": "auto"
+            }
+          },
+          {
+            "id": 2,
+            "title": "Error Budget Consumption",
+            "type": "bargauge",
+            "gridPos": {"h": 8, "w": 12, "x": 12, "y": 0},
+            "targets": [
+              {
+                "expr": "(sum(rate(tenderflow_http_requests_total{status=~\"5..\"}[30d])) / sum(rate(tenderflow_http_requests_total[30d]))) / 0.001 * 100",
+                "legendFormat": "Error Budget Used %",
+                "refId": "A"
+              }
+            ],
+            "fieldConfig": {
+              "defaults": {
+                "unit": "percent",
+                "min": 0,
+                "max": 100,
+                "thresholds": {
+                  "steps": [
+                    {"color": "green", "value": 0},
+                    {"color": "yellow", "value": 50},
+                    {"color": "red", "value": 90}
+                  ]
+                }
+              }
+            }
+          },
+          {
+            "id": 3, 
+            "title": "API Response Time Distribution",
+            "type": "heatmap",
+            "gridPos": {"h": 8, "w": 24, "x": 0, "y": 8},
+            "targets": [
+              {
+                "expr": "sum(rate(tenderflow_http_request_duration_seconds_bucket[5m])) by (le)",
+                "legendFormat": "{{le}}",
+                "refId": "A"
+              }
+            ]
+          },
+          {
+            "id": 4,
+            "title": "Real-time Connection Health",
+            "type": "timeseries",
+            "gridPos": {"h": 8, "w": 12, "x": 0, "y": 16},
+            "targets": [
+              {
+                "expr": "tenderflow_websocket_active_connections",
+                "legendFormat": "Active WebSocket Connections",
+                "refId": "A"
+              },
+              {
+                "expr": "rate(tenderflow_websocket_disconnects_total[5m])",
+                "legendFormat": "Disconnect Rate",
+                "refId": "B"
+              }
+            ]
+          },
+          {
+            "id": 5,
+            "title": "Database Connection Pool Status", 
+            "type": "timeseries",
+            "gridPos": {"h": 8, "w": 12, "x": 12, "y": 16},
+            "targets": [
+              {
+                "expr": "pgbouncer_active_clients",
+                "legendFormat": "Active Connections",
+                "refId": "A"
+              },
+              {
+                "expr": "pgbouncer_max_client_conn",
+                "legendFormat": "Max Connections",
+                "refId": "B"
+              }
+            ]
+          },
+          {
+            "id": 6,
+            "title": "Government Compliance Metrics",
+            "type": "table",
+            "gridPos": {"h": 8, "w": 24, "x": 0, "y": 24},
+            "targets": [
+              {
+                "expr": "increase(tenderflow_audit_log_entries_total[24h])",
+                "legendFormat": "Audit Logs (24h)",
+                "refId": "A"
+              },
+              {
+                "expr": "tenderflow_data_retention_compliance",
+                "legendFormat": "Data Retention Compliance",
+                "refId": "B"
+              },
+              {
+                "expr": "tenderflow_security_scan_status",
+                "legendFormat": "Security Scan Status", 
+                "refId": "C"
+              }
+            ]
+          }
+        ]
+      }
+    }
+
+---
+# Burn Rate Alert Configuration for Precise SLO Management
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: tenderflow-burn-rate-alerts
+  namespace: tenderflow-system
+spec:
+  groups:
+  - name: burn-rate-alerts
+    interval: 30s
+    rules:
+    
+    # Fast Burn Rate (2% error budget in 1 hour)
+    - alert: TenderFlowFastBurnRate
+      expr: |
+        (
+          sum(rate(tenderflow_http_requests_total{status=~"5.."}[1h])) /
+          sum(rate(tenderflow_http_requests_total[1h]))
+        ) > 0.02  # 2% error rate = 2% of monthly budget per hour
+      for: 2m
+      labels:
+        severity: critical
+        burn_rate: "fast"
+        sla_impact: "immediate"
+      annotations:
+        summary: "Fast error budget burn rate detected"
+        description: |
+          Current error rate: {{ $value | humanizePercentage }}.
+          At this rate, monthly error budget will be consumed in {{ 720 * 0.001 / $value | humanizeDuration }}.
+          
+    # Medium Burn Rate (5% error budget in 6 hours)  
+    - alert: TenderFlowMediumBurnRate
+      expr: |
+        (
+          sum(rate(tenderflow_http_requests_total{status=~"5.."}[6h])) /
+          sum(rate(tenderflow_http_requests_total[6h]))
+        ) > 0.005  # 0.5% error rate sustained
+      for: 15m
+      labels:
+        severity: warning
+        burn_rate: "medium"
+        sla_impact: "delayed"
+      annotations:
+        summary: "Medium error budget burn rate detected"
+        description: |
+          6-hour error rate: {{ $value | humanizePercentage }}.
+          Trend indicates potential SLA risk if sustained.
+          
+    # Slow Burn Rate (5% error budget in 3 days)
+    - alert: TenderFlowSlowBurnRate  
+      expr: |
+        (
+          sum(rate(tenderflow_http_requests_total{status=~"5.."}[3d])) /
+          sum(rate(tenderflow_http_requests_total[3d]))
+        ) > 0.0017  # Approximately 0.17% error rate over 3 days
+      for: 1h
+      labels:
+        severity: info
+        burn_rate: "slow"
+        sla_impact: "monitoring"
+      annotations:
+        summary: "Slow error budget consumption detected"
+        description: |
+          3-day error rate trend: {{ $value | humanizePercentage }}.
+          Monitor for sustained issues affecting long-term SLA.

@@ -89,12 +89,12 @@ export const databaseConfig = {
     },
   },
   
-  // Connection pool settings for high load
+  // Connection pool settings for high load - UPDATED FOR 10K+ USERS
   connectionPool: {
-    max: 50,              // Maximum connections
-    min: 5,               // Minimum connections
-    acquireTimeoutMillis: 60000,   // 60 second acquire timeout
-    createTimeoutMillis: 30000,    // 30 second create timeout
+    max: 300,             // Increased for 10k+ concurrent users (from Database Infrastructure Specialist)
+    min: 20,              // Minimum connections to maintain warm pool
+    acquireTimeoutMillis: 5000,    // Reduced timeout for faster failure detection
+    createTimeoutMillis: 10000,    // Connection creation timeout
     idleTimeoutMillis: 600000,     // 10 minute idle timeout
     createRetryIntervalMillis: 100, // Fast retry for failed connections
   },
@@ -434,16 +434,22 @@ export class OptimizedQueries {
     });
   }
   
-  // Optimized search with full-text search
+  // Optimized search with full-text search - SECURE VERSION
   static async searchTenders(prisma, tenantId, searchTerm, limit = 20) {
+    // Input validation and sanitization
+    if (typeof searchTerm !== 'string' || searchTerm.length > 100) {
+      throw new Error('Invalid search term');
+    }
+    
+    // Use parameterized query with proper escaping
     return await prisma.$queryRaw`
       SELECT id, title, description, status, deadline, ts_rank_cd(search_vector, query) AS rank
-      FROM tenders, plainto_tsquery('english', ${searchTerm}) query
-      WHERE tenant_id = ${tenantId}
+      FROM tenders, plainto_tsquery('english', ${searchTerm}::text) query
+      WHERE tenant_id = ${tenantId}::uuid
         AND deleted_at IS NULL
         AND search_vector @@ query
       ORDER BY rank DESC, deadline ASC
-      LIMIT ${limit}
+      LIMIT ${limit}::integer
     `;
   }
 }
