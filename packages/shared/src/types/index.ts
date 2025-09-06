@@ -111,3 +111,6 @@ export interface FileUploadResponse {
   size: number;
   url: string;
 }
+
+// Export monitoring types
+export * from './monitoring';

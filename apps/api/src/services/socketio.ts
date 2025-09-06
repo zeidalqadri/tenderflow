@@ -4,6 +4,9 @@ import { queueEvents } from './queue';
 import { prisma } from '../database/client';
 import { CacheManager } from './redis';
 import { createLogger, logError, logInfo, logSuccess } from '../utils/logger';
+import { monitoringAgent } from './monitoring-agent';
+import { systemControl } from './system-control';
+import type { RemediationAction } from '@tenderflow/shared';
 
 const logger = createLogger('SOCKETIO');
 
@@ -27,6 +30,7 @@ export class SocketIOService {
     this.io = this.fastify.io;
     this.setupSocketHandlers();
     this.setupQueueEventListeners();
+    this.setupMonitoringEventListeners();
   }
 
   private setupSocketHandlers(): void {
@@ -77,6 +81,98 @@ export class SocketIOService {
       socket.on('unsubscribe:tender', (tenderId: string) => {
         socket.leave(`tender:${tenderId}`);
         client.subscriptions.delete(`tender:${tenderId}`);
+      });
+
+      // Monitoring event handlers
+      socket.on('monitoring:subscribe', () => {
+        socket.join('monitoring:updates');
+        client.subscriptions.add('monitoring');
+        logInfo('MONITORING', `Client ${socket.id} subscribed to monitoring updates`);
+        
+        // Send initial health status
+        const health = monitoringAgent.getHealth();
+        socket.emit('health:update', health);
+        
+        // Send recent metrics
+        const metrics = monitoringAgent.getMetrics(1);
+        if (metrics.length > 0) {
+          socket.emit('metrics:update', metrics[0]);
+        }
+      });
+
+      socket.on('monitoring:unsubscribe', () => {
+        socket.leave('monitoring:updates');
+        client.subscriptions.delete('monitoring');
+      });
+
+      socket.on('monitoring:refresh:health', () => {
+        const health = monitoringAgent.getHealth();
+        socket.emit('health:update', health);
+      });
+
+      socket.on('monitoring:refresh:component', async (data: { componentId: string }) => {
+        await monitoringAgent.refreshComponent(data.componentId);
+        const component = monitoringAgent.getComponentHealth(data.componentId);
+        if (component) {
+          socket.emit('component:update', component);
+        }
+      });
+
+      socket.on('monitoring:remediation:execute', async (data: { actionId: string }) => {
+        try {
+          const result = await systemControl.executeRemediation(data.actionId);
+          socket.emit('remediation:complete', result);
+        } catch (error) {
+          socket.emit('remediation:error', { 
+            actionId: data.actionId,
+            error: error instanceof Error ? error.message : 'Remediation failed'
+          });
+        }
+      });
+
+      socket.on('monitoring:control:restart', async (data: { componentId: string }) => {
+        try {
+          await systemControl.restartComponent(data.componentId);
+          socket.emit('control:success', { 
+            action: 'restart',
+            componentId: data.componentId 
+          });
+        } catch (error) {
+          socket.emit('control:error', { 
+            action: 'restart',
+            componentId: data.componentId,
+            error: error instanceof Error ? error.message : 'Restart failed'
+          });
+        }
+      });
+
+      socket.on('monitoring:control:scale', async (data: { componentId: string, replicas: number }) => {
+        try {
+          await systemControl.scaleComponent(data.componentId, data.replicas);
+          socket.emit('control:success', { 
+            action: 'scale',
+            componentId: data.componentId,
+            replicas: data.replicas
+          });
+        } catch (error) {
+          socket.emit('control:error', { 
+            action: 'scale',
+            componentId: data.componentId,
+            error: error instanceof Error ? error.message : 'Scale failed'
+          });
+        }
+      });
+
+      socket.on('monitoring:control:clear_cache', async () => {
+        try {
+          await systemControl.clearCache();
+          socket.emit('control:success', { action: 'clear_cache' });
+        } catch (error) {
+          socket.emit('control:error', { 
+            action: 'clear_cache',
+            error: error instanceof Error ? error.message : 'Cache clear failed'
+          });
+        }
       });
 
       // Handle search
@@ -235,9 +331,43 @@ export class SocketIOService {
     };
   }
 
+  private setupMonitoringEventListeners(): void {
+    // Listen to monitoring agent events
+    monitoringAgent.on('health:update', (health) => {
+      this.io.to('monitoring:updates').emit('health:update', health);
+    });
+
+    monitoringAgent.on('component:update', (component) => {
+      this.io.to('monitoring:updates').emit('component:update', component);
+    });
+
+    monitoringAgent.on('alert:new', (alert) => {
+      this.io.to('monitoring:updates').emit('alert:new', alert);
+    });
+
+    monitoringAgent.on('error:new', (error) => {
+      this.io.to('monitoring:updates').emit('error:new', error);
+    });
+
+    monitoringAgent.on('metrics:update', (metrics) => {
+      this.io.to('monitoring:updates').emit('metrics:update', metrics);
+    });
+
+    // Start monitoring if not already started
+    monitoringAgent.start(30000); // 30 second interval
+  }
+
+  // Send monitoring update
+  public notifyMonitoringUpdate(type: string, data: any): void {
+    this.io.to('monitoring:updates').emit(type, data);
+  }
+
   // Graceful shutdown
   public async shutdown(): Promise<void> {
     logInfo('SHUTDOWN', 'Shutting down Socket.IO service...');
+
+    // Stop monitoring agent
+    monitoringAgent.stop();
 
     // Disconnect all clients
     this.io.emit('server:shutdown', { message: 'Server shutting down' });

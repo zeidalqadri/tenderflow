@@ -135,6 +135,21 @@ export async function getRedisStats() {
 export class CacheManager {
   private static readonly DEFAULT_TTL = 3600; // 1 hour
 
+  // Instance methods for compatibility
+  async ping(): Promise<void> {
+    await redis.ping();
+  }
+
+  async flushAll(): Promise<void> {
+    await redis.flushall();
+  }
+
+  async reconnect(): Promise<void> {
+    await redis.disconnect();
+    await redis.connect();
+  }
+
+  // Static methods (existing)
   static async get<T = any>(key: string): Promise<T | null> {
     try {
       const value = await redis.get(key);
