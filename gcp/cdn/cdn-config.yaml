@@ -1,0 +1,174 @@
+# Cloud CDN Configuration for TenderFlow
+# Optimizes content delivery for documents and static assets
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: cdn-config
+  namespace: tenderflow
+data:
+  cdn-policy.yaml: |
+    # Cloud CDN Backend Bucket Configuration
+    backend_bucket:
+      name: "tenderflow-thumbnails-backend"
+      bucket_name: "tensurv-thumbnails-prod"
+      enable_cdn: true
+      
+      cdn_policy:
+        cache_mode: "CACHE_ALL_STATIC"
+        client_ttl: 3600        # 1 hour
+        default_ttl: 86400      # 24 hours  
+        max_ttl: 2592000        # 30 days
+        negative_caching: true
+        serve_while_stale: 86400 # 24 hours
+        
+        # Cache specific file types differently
+        cache_key_policy:
+          include_host: true
+          include_protocol: true
+          include_query_string: false
+          query_string_whitelist: ["v", "version"]
+          
+        negative_caching_policy:
+          - code: 404
+            ttl: 60
+          - code: 410  
+            ttl: 60
+          - code: 500
+            ttl: 10
+          - code: 502
+            ttl: 10
+          - code: 503
+            ttl: 10
+        
+        # Compression settings
+        compression_mode: "AUTOMATIC"
+        
+        # Custom headers
+        response_headers_to_add:
+          - header_name: "Cache-Control"
+            header_value: "public, max-age=86400"
+            replace: true
+          - header_name: "X-Content-Type-Options"
+            header_value: "nosniff"
+            replace: false
+
+  url-map.yaml: |
+    # URL Map Configuration for CDN routing
+    name: "tenderflow-cdn-url-map"
+    default_service: "tenderflow-thumbnails-backend"
+    
+    host_rules:
+      - hosts: ["cdn.tenderflow.gov"]
+        path_matcher: "cdn-paths"
+        
+    path_matchers:
+      - name: "cdn-paths"
+        default_service: "tenderflow-thumbnails-backend"
+        
+        path_rules:
+          # Thumbnail images
+          - paths: ["/thumbnails/*"]
+            service: "tenderflow-thumbnails-backend"
+            route_action:
+              cors_policy:
+                allow_origins: ["https://tenderflow.gov", "https://*.tenderflow.gov"]
+                allow_methods: ["GET", "HEAD", "OPTIONS"]
+                allow_headers: ["Content-Type", "Authorization"]
+                max_age: 86400
+                
+          # Static assets (if served from GCS)
+          - paths: ["/assets/*", "/static/*"]
+            service: "tenderflow-static-backend"
+            
+          # API documentation assets
+          - paths: ["/docs/*"]
+            service: "tenderflow-docs-backend"
+
+  # SSL Certificate Configuration
+  ssl-certificate.yaml: |
+    name: "tenderflow-cdn-ssl-cert"
+    managed:
+      domains:
+        - "cdn.tenderflow.gov"
+        - "assets.tenderflow.gov"
+    
+    # For production, use Google-managed certificates
+    # For development, you might use self_managed certificates
+
+  # Load Balancer Configuration  
+  load-balancer.yaml: |
+    # Global IP Address
+    global_address:
+      name: "tenderflow-cdn-ip"
+      ip_version: "IPV4"
+      
+    # Target HTTPS Proxy
+    target_https_proxy:
+      name: "tenderflow-cdn-https-proxy"
+      url_map: "tenderflow-cdn-url-map"
+      ssl_certificates: ["tenderflow-cdn-ssl-cert"]
+      
+    # Global Forwarding Rule
+    global_forwarding_rule:
+      name: "tenderflow-cdn-forwarding-rule"
+      target: "tenderflow-cdn-https-proxy"
+      port_range: "443"
+      ip_protocol: "TCP"
+      load_balancing_scheme: "EXTERNAL"
+
+  # Cache Invalidation Configuration
+  cache-invalidation.yaml: |
+    # Patterns for automatic cache invalidation
+    invalidation_patterns:
+      # Invalidate thumbnails when original is updated
+      - pattern: "/thumbnails/*"
+        trigger: "document_updated"
+        
+      # Invalidate static assets on deployment
+      - pattern: "/assets/*"
+        trigger: "deployment"
+        
+      # Invalidate API docs on update
+      - pattern: "/docs/*"
+        trigger: "documentation_updated"
+    
+    # Batch invalidation settings
+    batch_settings:
+      max_batch_size: 1000
+      batch_timeout_seconds: 30
+      
+  # Monitoring and Alerting
+  monitoring.yaml: |
+    # CDN Performance Metrics
+    metrics:
+      - name: "cdn_cache_hit_ratio"
+        threshold: 0.8  # Alert if cache hit ratio drops below 80%
+        
+      - name: "cdn_origin_latency"
+        threshold: 500  # Alert if origin latency > 500ms
+        
+      - name: "cdn_error_rate"
+        threshold: 0.01  # Alert if error rate > 1%
+        
+      - name: "cdn_bandwidth_usage"
+        threshold: 1000000000  # Alert if bandwidth > 1GB/hour
+    
+    # Dashboard configuration
+    dashboard:
+      panels:
+        - title: "Cache Hit Ratio"
+          type: "single_stat"
+          metric: "loadbalancing.googleapis.com/https/cache_hit_ratio"
+          
+        - title: "Origin Latency"
+          type: "graph"
+          metric: "loadbalancing.googleapis.com/https/total_latency"
+          
+        - title: "Error Rate"
+          type: "graph" 
+          metric: "loadbalancing.googleapis.com/https/request_count"
+          
+        - title: "Bandwidth Usage"
+          type: "graph"
+          metric: "loadbalancing.googleapis.com/https/response_bytes_count"

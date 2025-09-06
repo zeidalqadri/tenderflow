@@ -1,0 +1,101 @@
+{
+  "description": "Package.json updates required for GCS migration",
+  "packages": {
+    "@tenderflow/jobs": {
+      "dependencies_to_add": {
+        "@google-cloud/storage": "^7.7.0",
+        "@google-cloud/secret-manager": "^5.0.1",
+        "@google-cloud/kms": "^3.2.1",
+        "@google-cloud/document-ai": "^8.0.2",
+        "@google-cloud/monitoring": "^4.0.1",
+        "@google-cloud/logging": "^11.0.0"
+      },
+      "dependencies_to_remove": [
+        "minio"
+      ],
+      "dev_dependencies_to_add": {
+        "@types/google-cloud__storage": "^1.7.0"
+      }
+    },
+    
+    "@tenderflow/api": {
+      "dependencies_to_add": {
+        "@google-cloud/storage": "^7.7.0",
+        "@google-cloud/secret-manager": "^5.0.1",
+        "@google-cloud/kms": "^3.2.1",
+        "@google-cloud/monitoring": "^4.0.1",
+        "@google-cloud/logging": "^11.0.0"
+      },
+      "dependencies_to_remove": [
+        "minio"
+      ]
+    },
+    
+    "@tenderflow/web": {
+      "dependencies_to_add": {
+        "@google-cloud/storage": "^7.7.0"
+      }
+    },
+    
+    "root": {
+      "dev_dependencies_to_add": {
+        "terraform": "^1.6.0",
+        "@google-cloud/cli": "latest"
+      },
+      "scripts_to_add": {
+        "gcp:deploy": "cd gcp/terraform && terraform apply",
+        "gcp:plan": "cd gcp/terraform && terraform plan", 
+        "gcp:destroy": "cd gcp/terraform && terraform destroy",
+        "migrate:storage": "cd gcp/migration && ./migrate-storage.sh",
+        "migrate:storage:dry-run": "cd gcp/migration && ./migrate-storage.sh --dry-run",
+        "gcp:buckets:create": "cd gcp/terraform && terraform apply -target=google_storage_bucket.documents -target=google_storage_bucket.thumbnails -target=google_storage_bucket.temp_processing -target=google_storage_bucket.backups",
+        "gcp:cdn:deploy": "cd gcp/terraform && terraform apply -target=google_compute_backend_bucket.thumbnails_backend -target=google_compute_url_map.cdn_url_map"
+      }
+    }
+  },
+  
+  "environment_variables": {
+    "required": [
+      "GCP_PROJECT_ID",
+      "GCS_DOCUMENTS_BUCKET", 
+      "GCS_THUMBNAILS_BUCKET",
+      "GCS_TEMP_BUCKET",
+      "GCS_BACKUP_BUCKET"
+    ],
+    "optional": [
+      "GCP_SERVICE_ACCOUNT_KEY",
+      "CDN_DOMAIN",
+      "GCP_REGION"
+    ],
+    "example_values": {
+      "GCP_PROJECT_ID": "tensurv",
+      "GCS_DOCUMENTS_BUCKET": "tensurv-documents-prod",
+      "GCS_THUMBNAILS_BUCKET": "tensurv-thumbnails-prod", 
+      "GCS_TEMP_BUCKET": "tensurv-temp-processing-prod",
+      "GCS_BACKUP_BUCKET": "tensurv-backups-prod",
+      "CDN_DOMAIN": "https://cdn.tenderflow.gov",
+      "GCP_REGION": "us-central1"
+    }
+  },
+  
+  "migration_notes": {
+    "breaking_changes": [
+      "MinIO client replaced with GCS client",
+      "File URLs now use signed URLs by default",
+      "Bucket initialization is automatic (no manual bucket creation)",
+      "Metadata structure enhanced with GCS-specific fields"
+    ],
+    "backward_compatibility": [
+      "All existing method signatures maintained",
+      "FileMetadata interface extended (not modified)",
+      "Error handling patterns preserved"
+    ],
+    "performance_improvements": [
+      "Resumable uploads for large files",
+      "Built-in integrity validation",
+      "CDN integration for thumbnails", 
+      "Parallel processing support",
+      "Lifecycle policies for cost optimization"
+    ]
+  }
+}

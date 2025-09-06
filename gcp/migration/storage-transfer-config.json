@@ -1,0 +1,76 @@
+{
+  "description": "TenderFlow MinIO to GCS Migration",
+  "projectId": "tensurv",
+  "schedule": {
+    "scheduleStartDate": {
+      "year": 2024,
+      "month": 3,
+      "day": 1
+    },
+    "scheduleEndDate": {
+      "year": 2024,
+      "month": 3,
+      "day": 31
+    },
+    "startTimeOfDay": {
+      "hours": 2,
+      "minutes": 0,
+      "seconds": 0
+    },
+    "repeatInterval": "86400s"
+  },
+  "transferSpec": {
+    "awsS3DataSource": {
+      "bucketName": "tenderflow-files",
+      "awsAccessKey": {
+        "accessKeyId": "${MINIO_ACCESS_KEY}",
+        "secretAccessKey": "${MINIO_SECRET_KEY}"
+      },
+      "path": "documents/",
+      "cloudFrontDomain": "${MINIO_ENDPOINT}:9000"
+    },
+    "gcsDataSink": {
+      "bucketName": "tensurv-documents-prod",
+      "path": "migrated/"
+    },
+    "objectConditions": {
+      "minTimeElapsedSinceLastModification": "3600s",
+      "includePrefixes": [
+        "tender-documents/",
+        "user-uploads/",
+        "system-reports/"
+      ],
+      "excludePrefixes": [
+        "temp/",
+        "cache/"
+      ]
+    },
+    "transferOptions": {
+      "overwriteObjectsAlreadyExistingInSink": false,
+      "deleteObjectsUniqueInSink": false,
+      "deleteObjectsFromSourceAfterTransfer": false,
+      "overwriteWhen": "DIFFERENT"
+    }
+  },
+  "notificationConfig": {
+    "payloadFormat": "JSON_API_V1",
+    "eventTypes": [
+      "TRANSFER_OPERATION_SUCCESS",
+      "TRANSFER_OPERATION_FAILED",
+      "TRANSFER_OPERATION_ABORTED"
+    ],
+    "pubsubTopic": "projects/tensurv/topics/storage-transfer-notifications"
+  },
+  "loggingConfig": {
+    "logActions": [
+      "COPY",
+      "DELETE",
+      "FIND"
+    ],
+    "logActionStates": [
+      "SUCCEEDED",
+      "FAILED"
+    ],
+    "enableOnpremGcsTransferLogs": true
+  }
+}

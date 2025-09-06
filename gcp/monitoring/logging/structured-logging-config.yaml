@@ -1,0 +1,406 @@
+# Structured logging configuration for TenderFlow platform
+# Government compliance with audit trails and security monitoring
+
+logging:
+  # Global logging configuration
+  global:
+    level: "info"
+    format: "json"
+    timezone: "UTC"
+    
+  # Service-specific logging levels
+  services:
+    api:
+      level: "debug"
+      includeStackTrace: true
+      fields:
+        - timestamp
+        - level
+        - service
+        - traceId
+        - userId
+        - tenantId
+        - requestId
+        - method
+        - url
+        - statusCode
+        - responseTime
+        - userAgent
+        - sourceIP
+        - message
+        
+    websocket:
+      level: "info"
+      includeStackTrace: false
+      fields:
+        - timestamp
+        - level
+        - service
+        - traceId
+        - userId
+        - tenantId
+        - socketId
+        - connectionCount
+        - event
+        - room
+        - message
+        
+    background_jobs:
+      level: "info"
+      includeStackTrace: true
+      fields:
+        - timestamp
+        - level
+        - service
+        - jobId
+        - jobType
+        - tenantId
+        - userId
+        - duration
+        - status
+        - message
+
+  # Audit logging for compliance
+  audit:
+    enabled: true
+    level: "info"
+    retention: "7 years"  # Government compliance requirement
+    
+    # Events that must be audited
+    events:
+      - user_login
+      - user_logout
+      - user_registration
+      - password_change
+      - password_reset
+      - role_change
+      - permission_grant
+      - permission_revoke
+      - tender_create
+      - tender_update
+      - tender_delete
+      - tender_submit
+      - tender_award
+      - document_upload
+      - document_download
+      - document_delete
+      - bid_submit
+      - bid_update
+      - bid_delete
+      - data_export
+      - admin_action
+      - security_violation
+      - authentication_failure
+      - authorization_failure
+      - system_configuration_change
+      
+    # Audit log structure
+    fields:
+      - timestamp
+      - event
+      - userId
+      - tenantId
+      - sessionId
+      - sourceIP
+      - userAgent
+      - resource
+      - action
+      - outcome  # success/failure
+      - reason   # for failures
+      - oldValue # for updates
+      - newValue # for updates
+      - metadata
+      
+  # Security logging
+  security:
+    enabled: true
+    level: "warn"
+    
+    # Security events to monitor
+    events:
+      - brute_force_attempt
+      - suspicious_activity
+      - rate_limit_exceeded
+      - invalid_token
+      - token_expired
+      - unauthorized_access
+      - sql_injection_attempt
+      - xss_attempt
+      - csrf_attempt
+      - file_upload_violation
+      - data_breach_attempt
+      
+    # Security log fields
+    fields:
+      - timestamp
+      - severity
+      - event
+      - sourceIP
+      - userAgent
+      - userId
+      - tenantId
+      - resource
+      - threat_type
+      - action_taken
+      - metadata
+
+  # Performance logging
+  performance:
+    enabled: true
+    level: "info"
+    threshold: 2000  # Log requests > 2 seconds
+    
+    fields:
+      - timestamp
+      - service
+      - operation
+      - duration
+      - cpuUsage
+      - memoryUsage
+      - dbQueries
+      - cacheHits
+      - cacheMisses
+      - externalCalls
+
+  # Business metrics logging
+  business:
+    enabled: true
+    level: "info"
+    
+    metrics:
+      - tender_created
+      - tender_submitted
+      - tender_awarded
+      - document_processed
+      - user_registered
+      - login_count
+      - active_sessions
+      - api_calls_per_minute
+      - websocket_connections
+      - background_jobs_processed
+      
+    fields:
+      - timestamp
+      - metric
+      - value
+      - tenantId
+      - dimensions
+      - metadata
+
+  # Error logging
+  errors:
+    enabled: true
+    level: "error"
+    includeStackTrace: true
+    includeContext: true
+    
+    # Error categorization
+    categories:
+      - application_error
+      - database_error
+      - external_service_error
+      - validation_error
+      - authentication_error
+      - authorization_error
+      - rate_limit_error
+      - timeout_error
+      - network_error
+      - configuration_error
+      
+    fields:
+      - timestamp
+      - level
+      - service
+      - error_type
+      - error_code
+      - error_message
+      - stack_trace
+      - context
+      - userId
+      - tenantId
+      - requestId
+      - traceId
+
+  # Log routing configuration
+  routing:
+    # Default sink - Cloud Logging
+    default:
+      destination: "gcp_cloud_logging"
+      resource_type: "cloud_run_revision"
+      
+    # Audit logs - separate storage for compliance
+    audit:
+      destination: "gcp_storage"
+      bucket: "${project_id}-audit-logs"
+      path: "audit/{service}/{year}/{month}/{day}"
+      
+    # Security logs - immediate alerting
+    security:
+      destinations:
+        - "gcp_cloud_logging"
+        - "security_siem"  # If integrated
+        
+    # Error logs - Error Reporting
+    errors:
+      destinations:
+        - "gcp_cloud_logging"
+        - "gcp_error_reporting"
+        
+    # Performance logs - custom metrics
+    performance:
+      destinations:
+        - "gcp_cloud_logging"
+        - "gcp_custom_metrics"
+
+  # Log aggregation rules
+  aggregation:
+    # Aggregate similar events to reduce log volume
+    rules:
+      - name: "authentication_failures"
+        pattern: "event=auth_failed"
+        window: "5m"
+        threshold: 10
+        action: "create_summary_log"
+        
+      - name: "rate_limit_hits"
+        pattern: "event=rate_limit_exceeded"
+        window: "1m"
+        threshold: 100
+        action: "create_summary_log"
+        
+      - name: "slow_queries"
+        pattern: "event=slow_query"
+        window: "10m"
+        threshold: 50
+        action: "create_summary_log"
+
+  # Log sampling for high-volume endpoints
+  sampling:
+    enabled: true
+    
+    rules:
+      # Health check endpoints - sample heavily
+      - pattern: "url=/health"
+        rate: 0.01  # 1%
+        
+      # Static assets - minimal logging
+      - pattern: "url=/static/*"
+        rate: 0.001  # 0.1%
+        
+      # API endpoints - moderate sampling for successful requests
+      - pattern: "url=/api/* AND statusCode=200"
+        rate: 0.1   # 10%
+        
+      # Error responses - always log
+      - pattern: "statusCode>=400"
+        rate: 1.0   # 100%
+        
+      # Authentication endpoints - always log
+      - pattern: "url=/auth/*"
+        rate: 1.0   # 100%
+
+  # Log filtering
+  filters:
+    # Remove sensitive data from logs
+    sensitive_data:
+      - field: "password"
+        action: "redact"
+      - field: "token"
+        action: "hash"
+      - field: "ssn"
+        action: "redact"
+      - field: "credit_card"
+        action: "redact"
+      - field: "email"
+        action: "partial_redact"  # show first 3 chars + domain
+        
+    # PII protection for GDPR compliance
+    pii_protection:
+      - field: "user.firstName"
+        action: "hash_for_audit"
+      - field: "user.lastName"
+        action: "hash_for_audit"
+      - field: "user.address"
+        action: "redact"
+      - field: "user.phoneNumber"
+        action: "partial_redact"
+
+  # Log retention policies
+  retention:
+    # Standard application logs
+    default: "30 days"
+    
+    # Audit logs for government compliance
+    audit: "7 years"
+    
+    # Security logs for investigation
+    security: "2 years"
+    
+    # Error logs for debugging
+    errors: "90 days"
+    
+    # Performance logs for optimization
+    performance: "1 year"
+    
+    # Business metrics for analytics
+    business: "3 years"
+
+  # Export configuration
+  exports:
+    # BigQuery for analytics
+    bigquery:
+      enabled: true
+      dataset: "tenderflow_logs"
+      tables:
+        - name: "audit_logs"
+          source: "audit"
+        - name: "performance_logs"
+          source: "performance"
+        - name: "business_metrics"
+          source: "business"
+          
+    # External SIEM integration
+    siem:
+      enabled: false  # Enable if security team requires
+      endpoint: "https://siem.company.com/api/logs"
+      format: "cef"  # Common Event Format
+      
+    # Compliance reporting
+    compliance:
+      enabled: true
+      schedule: "daily"
+      reports:
+        - type: "access_report"
+          recipients: ["compliance@tenderflow.app"]
+        - type: "security_summary"
+          recipients: ["security@tenderflow.app"]
+        - type: "performance_summary"
+          recipients: ["ops@tenderflow.app"]
+
+# Environment-specific overrides
+environments:
+  development:
+    global:
+      level: "debug"
+    sampling:
+      enabled: false
+    audit:
+      retention: "30 days"  # Shorter retention in dev
+      
+  staging:
+    global:
+      level: "info"
+    sampling:
+      enabled: true
+    audit:
+      retention: "90 days"
+      
+  production:
+    global:
+      level: "info"
+    sampling:
+      enabled: true
+    audit:
+      retention: "7 years"
+    security:
+      level: "warn"

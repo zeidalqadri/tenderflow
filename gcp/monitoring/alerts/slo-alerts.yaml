@@ -1,0 +1,347 @@
+# SLO-based alerting policies for TenderFlow government compliance
+# Ensures 99.9% uptime and performance requirements
+
+alertPolicies:
+  # API Service Level Objectives
+  - displayName: "SLO Alert: API Availability < 99.9%"
+    documentation:
+      content: |
+        The TenderFlow API availability has dropped below the required 99.9% SLA.
+        This violates government compliance requirements.
+        
+        Immediate actions:
+        1. Check Cloud Run service health
+        2. Verify load balancer configuration
+        3. Check database connectivity
+        4. Review recent deployments
+        
+        Escalation: If not resolved in 15 minutes, escalate to on-call engineer.
+    conditions:
+      - displayName: "API availability below SLO"
+        conditionThreshold:
+          filter: 'resource.type="cloud_run_revision" AND resource.label.service_name=~"tenderflow-api.*" AND metric.type="run.googleapis.com/request_count"'
+          comparison: COMPARISON_LESS_THAN
+          thresholdValue: 0.999
+          duration: "300s"  # 5 minutes
+          aggregations:
+            - alignmentPeriod: "60s"
+              perSeriesAligner: ALIGN_RATE
+              crossSeriesReducer: REDUCE_SUM
+              groupByFields: ["resource.label.service_name"]
+          trigger:
+            count: 1
+    alertStrategy:
+      autoClose: "86400s"  # 24 hours
+    notificationChannels:
+      - "projects/tensurv/notificationChannels/critical-alerts"
+      - "projects/tensurv/notificationChannels/sms-alerts"
+    severity: CRITICAL
+
+  # API Response Time SLO
+  - displayName: "SLO Alert: API Response Time > 2s (95th percentile)"
+    documentation:
+      content: |
+        API response times have exceeded the 2-second SLO for the 95th percentile.
+        This impacts user experience and may violate performance requirements.
+        
+        Investigation steps:
+        1. Check database query performance
+        2. Review Cloud Run CPU/memory usage
+        3. Analyze slow log entries
+        4. Check external service dependencies
+    conditions:
+      - displayName: "API latency above SLO"
+        conditionThreshold:
+          filter: 'resource.type="cloud_run_revision" AND resource.label.service_name=~"tenderflow-api.*" AND metric.type="run.googleapis.com/request_latencies"'
+          comparison: COMPARISON_GREATER_THAN
+          thresholdValue: 2000  # 2 seconds in milliseconds
+          duration: "600s"  # 10 minutes
+          aggregations:
+            - alignmentPeriod: "60s"
+              perSeriesAligner: ALIGN_DELTA
+              crossSeriesReducer: REDUCE_PERCENTILE_95
+    notificationChannels:
+      - "projects/tensurv/notificationChannels/performance-alerts"
+    severity: WARNING
+
+  # WebSocket Connection Health
+  - displayName: "SLO Alert: WebSocket Connection Drop Rate > 5%"
+    documentation:
+      content: |
+        WebSocket connections are dropping at a rate higher than 5%.
+        This affects real-time functionality for tender updates.
+        
+        Troubleshooting:
+        1. Check Redis cluster health
+        2. Verify Cloud Run WebSocket service scaling
+        3. Review load balancer session affinity
+        4. Check network connectivity issues
+    conditions:
+      - displayName: "High WebSocket disconnection rate"
+        conditionThreshold:
+          filter: 'resource.type="cloud_run_revision" AND resource.label.service_name="tenderflow-websocket" AND metric.type="custom.googleapis.com/websocket/disconnection_rate"'
+          comparison: COMPARISON_GREATER_THAN
+          thresholdValue: 0.05  # 5%
+          duration: "300s"
+          aggregations:
+            - alignmentPeriod: "60s"
+              perSeriesAligner: ALIGN_MEAN
+    notificationChannels:
+      - "projects/tensurv/notificationChannels/realtime-alerts"
+    severity: WARNING
+
+  # Database Performance SLO
+  - displayName: "SLO Alert: Database Query Time > 1s (90th percentile)"
+    documentation:
+      content: |
+        Database query performance has degraded beyond acceptable limits.
+        This directly impacts API response times and user experience.
+        
+        Actions:
+        1. Check Cloud SQL performance insights
+        2. Review slow query logs
+        3. Analyze connection pool usage
+        4. Check for locking issues
+        5. Consider query optimization
+    conditions:
+      - displayName: "Database query latency above SLO"
+        conditionThreshold:
+          filter: 'resource.type="cloudsql_database" AND metric.type="cloudsql.googleapis.com/database/postgresql/transaction_count"'
+          comparison: COMPARISON_GREATER_THAN
+          thresholdValue: 1000  # 1 second
+          duration: "300s"
+          aggregations:
+            - alignmentPeriod: "60s"
+              perSeriesAligner: ALIGN_RATE
+              crossSeriesReducer: REDUCE_PERCENTILE_90
+    notificationChannels:
+      - "projects/tensurv/notificationChannels/database-alerts"
+    severity: WARNING
+
+  # Error Rate SLO
+  - displayName: "SLO Alert: Error Rate > 1%"
+    documentation:
+      content: |
+        Application error rate has exceeded 1%, violating reliability SLO.
+        
+        Immediate investigation required:
+        1. Check Error Reporting for details
+        2. Review recent deployments
+        3. Check external service health
+        4. Analyze error patterns and affected endpoints
+    conditions:
+      - displayName: "High error rate"
+        conditionThreshold:
+          filter: 'resource.type="cloud_run_revision" AND metric.type="run.googleapis.com/request_count" AND (metric.label.response_code_class="4xx" OR metric.label.response_code_class="5xx")'
+          comparison: COMPARISON_GREATER_THAN
+          thresholdValue: 0.01  # 1%
+          duration: "180s"  # 3 minutes
+          aggregations:
+            - alignmentPeriod: "60s"
+              perSeriesAligner: ALIGN_RATE
+              crossSeriesReducer: REDUCE_SUM
+    notificationChannels:
+      - "projects/tensurv/notificationChannels/error-alerts"
+      - "projects/tensurv/notificationChannels/sms-alerts"
+    severity: CRITICAL
+
+  # Security Alert - Failed Authentication
+  - displayName: "Security Alert: High Authentication Failure Rate"
+    documentation:
+      content: |
+        SECURITY INCIDENT: High rate of authentication failures detected.
+        This may indicate a brute force attack or system compromise.
+        
+        IMMEDIATE ACTIONS:
+        1. Review authentication logs for patterns
+        2. Check for suspicious IP addresses
+        3. Consider temporary rate limiting
+        4. Alert security team
+        5. Review user account status
+    conditions:
+      - displayName: "Authentication failure spike"
+        conditionThreshold:
+          filter: 'resource.type="cloud_run_revision" AND metric.type="custom.googleapis.com/auth/failed_attempts"'
+          comparison: COMPARISON_GREATER_THAN
+          thresholdValue: 100  # 100 failed attempts per minute
+          duration: "60s"
+          aggregations:
+            - alignmentPeriod: "60s"
+              perSeriesAligner: ALIGN_RATE
+    notificationChannels:
+      - "projects/tensurv/notificationChannels/security-alerts"
+      - "projects/tensurv/notificationChannels/sms-alerts"
+    severity: CRITICAL
+
+  # Resource Utilization SLOs
+  - displayName: "SLO Alert: CPU Utilization > 80%"
+    documentation:
+      content: |
+        Service CPU utilization is consistently above 80%.
+        This may impact performance and requires scaling or optimization.
+        
+        Actions:
+        1. Check auto-scaling configuration
+        2. Review resource limits
+        3. Analyze CPU-intensive operations
+        4. Consider vertical or horizontal scaling
+    conditions:
+      - displayName: "High CPU utilization"
+        conditionThreshold:
+          filter: 'resource.type="cloud_run_revision" AND metric.type="run.googleapis.com/container/cpu/utilizations"'
+          comparison: COMPARISON_GREATER_THAN
+          thresholdValue: 0.80
+          duration: "600s"  # 10 minutes
+          aggregations:
+            - alignmentPeriod: "60s"
+              perSeriesAligner: ALIGN_MEAN
+    notificationChannels:
+      - "projects/tensurv/notificationChannels/capacity-alerts"
+    severity: WARNING
+
+  - displayName: "SLO Alert: Memory Utilization > 85%"
+    documentation:
+      content: |
+        Service memory utilization is critically high.
+        This may lead to OOM kills and service instability.
+        
+        Immediate actions:
+        1. Check for memory leaks
+        2. Review memory allocation patterns
+        3. Consider increasing memory limits
+        4. Analyze heap dumps if available
+    conditions:
+      - displayName: "High memory utilization"
+        conditionThreshold:
+          filter: 'resource.type="cloud_run_revision" AND metric.type="run.googleapis.com/container/memory/utilizations"'
+          comparison: COMPARISON_GREATER_THAN
+          thresholdValue: 0.85
+          duration: "300s"  # 5 minutes
+          aggregations:
+            - alignmentPeriod: "60s"
+              perSeriesAligner: ALIGN_MEAN
+    notificationChannels:
+      - "projects/tensurv/notificationChannels/capacity-alerts"
+      - "projects/tensurv/notificationChannels/sms-alerts"
+    severity: CRITICAL
+
+  # Business Logic SLOs
+  - displayName: "Business SLO Alert: Document Processing Time > 10 minutes"
+    documentation:
+      content: |
+        Document processing is taking longer than the 10-minute SLO.
+        This impacts tender submission workflows and user experience.
+        
+        Investigation steps:
+        1. Check document processing queue health
+        2. Review OCR service performance
+        3. Check file storage accessibility
+        4. Analyze document types and sizes
+        5. Review background job worker status
+    conditions:
+      - displayName: "Slow document processing"
+        conditionThreshold:
+          filter: 'resource.type="generic_task" AND metric.type="custom.googleapis.com/business/document_processing_time"'
+          comparison: COMPARISON_GREATER_THAN
+          thresholdValue: 600  # 10 minutes in seconds
+          duration: "300s"
+          aggregations:
+            - alignmentPeriod: "60s"
+              perSeriesAligner: ALIGN_MEAN
+              crossSeriesReducer: REDUCE_PERCENTILE_90
+    notificationChannels:
+      - "projects/tensurv/notificationChannels/business-alerts"
+    severity: WARNING
+
+  - displayName: "Business SLO Alert: Tender Submission Success Rate < 98%"
+    documentation:
+      content: |
+        Tender submission success rate has dropped below 98%.
+        This is critical for government compliance and user trust.
+        
+        Priority actions:
+        1. Check API health and error logs
+        2. Verify database transaction success
+        3. Review file upload processes
+        4. Check external service dependencies
+        5. Analyze failed submission patterns
+    conditions:
+      - displayName: "Low tender submission success rate"
+        conditionThreshold:
+          filter: 'resource.type="generic_task" AND metric.type="custom.googleapis.com/business/tender_submission_success_rate"'
+          comparison: COMPARISON_LESS_THAN
+          thresholdValue: 0.98
+          duration: "300s"
+          aggregations:
+            - alignmentPeriod: "300s"
+              perSeriesAligner: ALIGN_MEAN
+    notificationChannels:
+      - "projects/tensurv/notificationChannels/business-alerts"
+      - "projects/tensurv/notificationChannels/sms-alerts"
+    severity: CRITICAL
+
+# Notification channel configurations
+notificationChannels:
+  - name: "critical-alerts"
+    type: "email"
+    displayName: "Critical Alerts"
+    description: "High-priority alerts requiring immediate attention"
+    labels:
+      email_address: "alerts-critical@tenderflow.app"
+    enabled: true
+
+  - name: "sms-alerts"
+    type: "sms"
+    displayName: "SMS Alerts"
+    description: "SMS notifications for critical incidents"
+    labels:
+      number: "+1234567890"  # Replace with actual on-call number
+    enabled: true
+
+  - name: "performance-alerts"
+    type: "email"
+    displayName: "Performance Alerts"
+    description: "Performance degradation notifications"
+    labels:
+      email_address: "alerts-performance@tenderflow.app"
+    enabled: true
+
+  - name: "security-alerts"
+    type: "email"
+    displayName: "Security Alerts"
+    description: "Security incident notifications"
+    labels:
+      email_address: "security@tenderflow.app"
+    enabled: true
+
+  - name: "database-alerts"
+    type: "email"
+    displayName: "Database Alerts"
+    description: "Database performance and health alerts"
+    labels:
+      email_address: "alerts-database@tenderflow.app"
+    enabled: true
+
+  - name: "realtime-alerts"
+    type: "email"
+    displayName: "Real-time Alerts"
+    description: "WebSocket and real-time service alerts"
+    labels:
+      email_address: "alerts-realtime@tenderflow.app"
+    enabled: true
+
+  - name: "business-alerts"
+    type: "email"
+    displayName: "Business Logic Alerts"
+    description: "Business process and workflow alerts"
+    labels:
+      email_address: "alerts-business@tenderflow.app"
+    enabled: true
+
+  - name: "capacity-alerts"
+    type: "email"
+    displayName: "Capacity Alerts"
+    description: "Resource utilization and scaling alerts"
+    labels:
+      email_address: "alerts-capacity@tenderflow.app"
+    enabled: true

@@ -1,0 +1,121 @@
+# Multi-stage Dockerfile optimized for WebSocket service with 10,000+ connections
+FROM node:20-alpine AS base
+
+# Install dependencies required for native modules
+RUN apk add --no-cache \
+    python3 \
+    make \
+    g++ \
+    libc6-compat \
+    dumb-init
+
+# Set optimal Node.js flags for high-concurrency WebSocket workload
+ENV NODE_OPTIONS="--max-old-space-size=2048 --max-semi-space-size=128"
+ENV UV_THREADPOOL_SIZE=128
+
+# Create app directory with proper user
+RUN addgroup -g 1001 -S nodejs && \
+    adduser -S nodejs -u 1001 -G nodejs
+
+WORKDIR /app
+
+# Copy package.json files
+COPY package.json package-lock.json ./
+COPY packages/realtime/package.json ./packages/realtime/
+COPY packages/shared/package.json ./packages/shared/
+
+# Install production dependencies
+FROM base AS deps
+RUN npm ci --only=production --frozen-lockfile --ignore-scripts && \
+    npm cache clean --force
+
+# Install all dependencies for build
+FROM base AS build-deps
+RUN npm ci --frozen-lockfile --ignore-scripts
+
+# Build stage
+FROM build-deps AS build
+
+# Copy source code
+COPY packages/shared ./packages/shared
+COPY packages/realtime ./packages/realtime
+COPY tsconfig.json ./
+
+# Build the application
+RUN npm run build -w packages/shared && \
+    npm run build -w packages/realtime
+
+# Production image
+FROM base AS runtime
+
+# Copy production dependencies
+COPY --from=deps /app/node_modules ./node_modules
+COPY --from=deps /app/packages/realtime/node_modules ./packages/realtime/node_modules
+
+# Copy built application
+COPY --from=build /app/packages/shared/dist ./packages/shared/dist
+COPY --from=build /app/packages/realtime/dist ./packages/realtime/dist
+COPY --from=build /app/packages/realtime/package.json ./packages/realtime/
+
+# Copy startup script
+COPY gcp/docker/websocket-entrypoint.sh ./entrypoint.sh
+RUN chmod +x ./entrypoint.sh
+
+# Switch to non-root user
+USER nodejs
+
+# Set working directory to websocket service
+WORKDIR /app/packages/realtime
+
+# Expose WebSocket port
+EXPOSE 8080
+
+# Health check for WebSocket service
+HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \
+    CMD node -e "
+        const http = require('http');
+        const options = {
+            host: 'localhost',
+            port: 8080,
+            path: '/health/websocket',
+            timeout: 5000
+        };
+        const req = http.request(options, (res) => {
+            if (res.statusCode === 200) {
+                process.exit(0);
+            } else {
+                process.exit(1);
+            }
+        });
+        req.on('error', () => process.exit(1));
+        req.on('timeout', () => process.exit(1));
+        req.end();
+    "
+
+# Set resource limits for high-concurrency workload
+# These will be overridden by Cloud Run configuration
+ENV NODE_ENV=production
+ENV PORT=8080
+
+# WebSocket-specific optimizations
+ENV SOCKET_IO_PING_TIMEOUT=60000
+ENV SOCKET_IO_PING_INTERVAL=25000
+ENV REDIS_CONNECT_TIMEOUT=10000
+ENV REDIS_COMMAND_TIMEOUT=5000
+
+# Use dumb-init to handle signals properly
+ENTRYPOINT ["/usr/bin/dumb-init", "--"]
+
+# Start the application
+CMD ["./entrypoint.sh"]
+
+# Add labels for better container management
+LABEL org.opencontainers.image.title="TenderFlow WebSocket Service"
+LABEL org.opencontainers.image.description="High-performance WebSocket service for real-time tender management"
+LABEL org.opencontainers.image.vendor="TenderFlow"
+LABEL org.opencontainers.image.version="1.0.0"
+LABEL org.opencontainers.image.licenses="MIT"
+
+# Security: Run as non-root and use minimal base image
+LABEL org.opencontainers.image.source="https://github.com/tenderflow/platform"
+LABEL org.opencontainers.image.documentation="https://docs.tenderflow.app"

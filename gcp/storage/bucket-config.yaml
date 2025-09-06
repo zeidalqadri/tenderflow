@@ -1,0 +1,129 @@
+# GCS Bucket Configuration for TenderFlow Document Storage
+# Project: tensurv
+# Region: us-central1
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: gcs-bucket-config
+  namespace: tenderflow
+data:
+  # Primary document storage bucket
+  documents-bucket-config.yaml: |
+    name: "tensurv-documents-prod"
+    location: "us-central1"
+    storageClass: "STANDARD"
+    uniformBucketLevelAccess: true
+    versioning:
+      enabled: true
+    encryption:
+      defaultKmsKeyName: "projects/tensurv/locations/us-central1/keyRings/tenderflow-ring/cryptoKeys/storage-key"
+    lifecycle:
+      rules:
+        - action:
+            type: "SetStorageClass"
+            storageClass: "NEARLINE"
+          condition:
+            age: 90
+            matchesStorageClass: ["STANDARD"]
+        - action:
+            type: "SetStorageClass" 
+            storageClass: "COLDLINE"
+          condition:
+            age: 365
+            matchesStorageClass: ["NEARLINE"]
+        - action:
+            type: "Delete"
+          condition:
+            age: 2555  # 7 years for government compliance
+    cors:
+      - origin: ["https://tenderflow.gov", "https://*.tenderflow.gov"]
+        method: ["GET", "POST", "PUT", "DELETE", "OPTIONS"]
+        responseHeader: ["Content-Type", "x-goog-resumable"]
+        maxAgeSeconds: 3600
+    labels:
+      environment: "production"
+      service: "tenderflow"
+      cost-center: "government"
+      compliance: "required"
+      data-classification: "sensitive"
+
+  # Thumbnail/processed images bucket  
+  thumbnails-bucket-config.yaml: |
+    name: "tensurv-thumbnails-prod"
+    location: "us-central1"
+    storageClass: "STANDARD"
+    uniformBucketLevelAccess: true
+    versioning:
+      enabled: false
+    encryption:
+      defaultKmsKeyName: "projects/tensurv/locations/us-central1/keyRings/tenderflow-ring/cryptoKeys/storage-key"
+    lifecycle:
+      rules:
+        - action:
+            type: "SetStorageClass"
+            storageClass: "NEARLINE"
+          condition:
+            age: 30
+            matchesStorageClass: ["STANDARD"]
+        - action:
+            type: "Delete"
+          condition:
+            age: 180  # Delete thumbnails after 6 months
+    cors:
+      - origin: ["https://tenderflow.gov", "https://*.tenderflow.gov"]
+        method: ["GET", "OPTIONS"]
+        responseHeader: ["Content-Type"]
+        maxAgeSeconds: 86400
+    labels:
+      environment: "production"
+      service: "tenderflow"
+      cost-center: "government"
+      data-type: "thumbnails"
+
+  # Temporary processing bucket
+  temp-processing-bucket-config.yaml: |
+    name: "tensurv-temp-processing-prod"
+    location: "us-central1"
+    storageClass: "STANDARD"
+    uniformBucketLevelAccess: true
+    versioning:
+      enabled: false
+    encryption:
+      defaultKmsKeyName: "projects/tensurv/locations/us-central1/keyRings/tenderflow-ring/cryptoKeys/storage-key"
+    lifecycle:
+      rules:
+        - action:
+            type: "Delete"
+          condition:
+            age: 1  # Delete temporary files after 24 hours
+    labels:
+      environment: "production"
+      service: "tenderflow"
+      cost-center: "government"
+      data-type: "temporary"
+
+  # Backup bucket for disaster recovery
+  backup-bucket-config.yaml: |
+    name: "tensurv-backups-prod"
+    location: "us-central1"
+    storageClass: "COLDLINE"
+    uniformBucketLevelAccess: true
+    versioning:
+      enabled: true
+    encryption:
+      defaultKmsKeyName: "projects/tensurv/locations/us-central1/keyRings/tenderflow-ring/cryptoKeys/backup-key"
+    lifecycle:
+      rules:
+        - action:
+            type: "SetStorageClass"
+            storageClass: "ARCHIVE"
+          condition:
+            age: 365
+            matchesStorageClass: ["COLDLINE"]
+    labels:
+      environment: "production"
+      service: "tenderflow"
+      cost-center: "government"
+      data-type: "backup"
+      retention-policy: "7-years"
