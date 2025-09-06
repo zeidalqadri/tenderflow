@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useCallback } from 'react'
+import { useEffect, useCallback, useRef } from 'react'
 import { useSocket } from '@/hooks/use-socket'
 import { useMonitoringStore } from '@/stores/monitoring-store'
 
@@ -47,6 +47,9 @@ export function useMonitoringSocket() {
     updateMetrics,
     setConnectionStatus
   } = useMonitoringStore()
+  
+  // Track connection status to prevent redundant updates
+  const lastConnectionStatusRef = useRef<string | null>(null)
 
   // Handle system health updates
   const handleSystemHealth = useCallback((data: any) => {
@@ -99,28 +102,46 @@ export function useMonitoringSocket() {
     })
   }, [updateMetrics])
 
+  // Handle connection status separately to prevent infinite loops
+  useEffect(() => {
+    const newStatus = (!socket || typeof socket.on !== 'function') ? 'disconnected' : 'connected'
+    
+    // Only update if status actually changed
+    if (lastConnectionStatusRef.current !== newStatus) {
+      lastConnectionStatusRef.current = newStatus
+      setConnectionStatus(newStatus)
+    }
+  }, [socket, setConnectionStatus])
+
   // Setup socket listeners
   useEffect(() => {
-    // Check if socket exists and has the required methods
+    // Early return if socket is not available
     if (!socket || typeof socket.on !== 'function') {
-      // Set disconnected status when no socket available
-      setConnectionStatus('disconnected')
       return
     }
 
     // Connection events
     socket.on('connect', () => {
-      setConnectionStatus('connected')
+      if (lastConnectionStatusRef.current !== 'connected') {
+        lastConnectionStatusRef.current = 'connected'
+        setConnectionStatus('connected')
+      }
       console.log('Monitoring socket connected')
     })
 
     socket.on('disconnect', () => {
-      setConnectionStatus('disconnected')
+      if (lastConnectionStatusRef.current !== 'disconnected') {
+        lastConnectionStatusRef.current = 'disconnected'
+        setConnectionStatus('disconnected')
+      }
       console.log('Monitoring socket disconnected')
     })
 
     socket.on('error', (error) => {
-      setConnectionStatus('error')
+      if (lastConnectionStatusRef.current !== 'error') {
+        lastConnectionStatusRef.current = 'error'
+        setConnectionStatus('error')
+      }
       console.error('Monitoring socket error:', error)
     })
 
@@ -156,7 +177,8 @@ export function useMonitoringSocket() {
     handleComponentUpdate,
     handleAlert,
     handleError,
-    handleMetrics
+    handleMetrics,
+    setConnectionStatus
   ])
 
   // Public methods

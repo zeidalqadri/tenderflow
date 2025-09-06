@@ -284,7 +284,13 @@ export const useMonitoringStore = create<MonitoringState>()(
         })),
 
       setConnectionStatus: (status) =>
-        set(() => ({ connectionStatus: status })),
+        set((state) => {
+          // Only update if status actually changed
+          if (state.connectionStatus === status) {
+            return state
+          }
+          return { connectionStatus: status }
+        }),
 
       clearAlerts: () =>
         set(() => ({ alerts: [] })),
