@@ -1,0 +1,252 @@
+# Alert Policies for TenderFlow Ingestion Pipeline
+# To be applied using gcloud monitoring policies create
+
+---
+# High Failure Rate Alert
+- name: "tenderflow-ingestion-high-failure-rate"
+  displayName: "TenderFlow Ingestion - High Failure Rate"
+  documentation:
+    content: |
+      The ingestion pipeline is experiencing a high failure rate.
+      
+      Possible causes:
+      - Network connectivity issues between scraper and GCP
+      - Authentication/authorization problems
+      - Data validation errors
+      - API endpoint issues
+      
+      Runbook:
+      1. Check scraper logs for error messages
+      2. Verify API health at /api/ingestion/health
+      3. Check authentication tokens are valid
+      4. Review recent deployments for breaking changes
+    mimeType: "text/markdown"
+  conditions:
+    - displayName: "Ingestion success rate < 90%"
+      conditionThreshold:
+        filter: 'metric.type="custom.googleapis.com/tenderflow/ingestion_success_rate" resource.type="global"'
+        aggregations:
+          - alignmentPeriod: "300s"
+            perSeriesAligner: "ALIGN_MEAN"
+            crossSeriesReducer: "REDUCE_MEAN"
+        comparison: "COMPARISON_LT"
+        thresholdValue: 90
+        duration: "600s"
+  notificationChannels:
+    - "projects/PROJECT_ID/notificationChannels/CHANNEL_ID"
+  alertStrategy:
+    autoClose: "1800s"
+
+---
+# Circuit Breaker Open Alert
+- name: "tenderflow-scraper-circuit-breaker-open"
+  displayName: "TenderFlow Scraper - Circuit Breaker Open"
+  documentation:
+    content: |
+      The scraper's circuit breaker has opened, indicating persistent failures.
+      
+      This means the scraper has stopped attempting to upload data to prevent
+      cascading failures.
+      
+      Runbook:
+      1. Check GCP API endpoint availability
+      2. Review error logs for failure patterns
+      3. Verify network connectivity
+      4. Check for rate limiting or quota issues
+      5. Manually reset circuit breaker if service is restored
+    mimeType: "text/markdown"
+  conditions:
+    - displayName: "Circuit breaker state is open"
+      conditionThreshold:
+        filter: 'metric.type="custom.googleapis.com/tenderflow/scraper_circuit_breaker_state" resource.type="global"'
+        aggregations:
+          - alignmentPeriod: "60s"
+            perSeriesAligner: "ALIGN_MAX"
+        comparison: "COMPARISON_GT"
+        thresholdValue: 0.5
+        duration: "120s"
+  notificationChannels:
+    - "projects/PROJECT_ID/notificationChannels/CHANNEL_ID"
+  alertStrategy:
+    autoClose: "600s"
+
+---
+# High Queue Depth Alert
+- name: "tenderflow-scraper-high-queue-depth"
+  displayName: "TenderFlow Scraper - High Queue Depth"
+  documentation:
+    content: |
+      The upload queue has exceeded normal thresholds, indicating a backlog.
+      
+      Possible causes:
+      - Upload processing is slower than scraping rate
+      - Network issues causing upload delays
+      - API endpoint performance degradation
+      
+      Runbook:
+      1. Check current upload processing rate
+      2. Review API endpoint performance metrics
+      3. Consider temporarily reducing scraping frequency
+      4. Scale up API resources if needed
+    mimeType: "text/markdown"
+  conditions:
+    - displayName: "Queue depth > 100 items"
+      conditionThreshold:
+        filter: 'metric.type="custom.googleapis.com/tenderflow/scraper_queue_depth" resource.type="global"'
+        aggregations:
+          - alignmentPeriod: "300s"
+            perSeriesAligner: "ALIGN_MAX"
+        comparison: "COMPARISON_GT"
+        thresholdValue: 100
+        duration: "900s"
+  notificationChannels:
+    - "projects/PROJECT_ID/notificationChannels/CHANNEL_ID"
+  alertStrategy:
+    autoClose: "1800s"
+
+---
+# Scraper Resource Alert
+- name: "tenderflow-scraper-high-resource-usage"
+  displayName: "TenderFlow Scraper - High Resource Usage"
+  documentation:
+    content: |
+      The local scraper is experiencing high resource utilization.
+      
+      Monitored resources:
+      - CPU usage > 80%
+      - Memory usage > 2GB
+      
+      Runbook:
+      1. Check for memory leaks in scraper process
+      2. Review recent scraping activity volume
+      3. Consider restarting the scraper service
+      4. Investigate any stuck or long-running operations
+    mimeType: "text/markdown"
+  conditions:
+    - displayName: "CPU usage > 80%"
+      conditionThreshold:
+        filter: 'metric.type="custom.googleapis.com/tenderflow/scraper_resource_cpu" resource.type="global"'
+        aggregations:
+          - alignmentPeriod: "300s"
+            perSeriesAligner: "ALIGN_MEAN"
+        comparison: "COMPARISON_GT"
+        thresholdValue: 80
+        duration: "600s"
+    - displayName: "Memory usage > 2048 MB"
+      conditionThreshold:
+        filter: 'metric.type="custom.googleapis.com/tenderflow/scraper_resource_memory" resource.type="global"'
+        aggregations:
+          - alignmentPeriod: "300s"
+            perSeriesAligner: "ALIGN_MEAN"
+        comparison: "COMPARISON_GT"
+        thresholdValue: 2048
+        duration: "600s"
+  combiner: "OR"
+  notificationChannels:
+    - "projects/PROJECT_ID/notificationChannels/CHANNEL_ID"
+  alertStrategy:
+    autoClose: "1800s"
+
+---
+# Processing Time SLA Alert
+- name: "tenderflow-ingestion-slow-processing"
+  displayName: "TenderFlow Ingestion - Slow Processing"
+  documentation:
+    content: |
+      Ingestion processing time has exceeded SLA thresholds.
+      
+      SLA: 95th percentile processing time should be < 5 seconds
+      
+      Runbook:
+      1. Check database performance metrics
+      2. Review ingestion batch sizes
+      3. Look for lock contention in database
+      4. Consider scaling database resources
+      5. Optimize database queries if needed
+    mimeType: "text/markdown"
+  conditions:
+    - displayName: "P95 processing time > 5000ms"
+      conditionThreshold:
+        filter: 'metric.type="custom.googleapis.com/tenderflow/ingestion_processing_time_ms" resource.type="global"'
+        aggregations:
+          - alignmentPeriod: "600s"
+            perSeriesAligner: "ALIGN_DELTA"
+            crossSeriesReducer: "REDUCE_PERCENTILE_95"
+        comparison: "COMPARISON_GT"
+        thresholdValue: 5000
+        duration: "900s"
+  notificationChannels:
+    - "projects/PROJECT_ID/notificationChannels/CHANNEL_ID"
+  alertStrategy:
+    autoClose: "3600s"
+
+---
+# Data Validation Failures Alert
+- name: "tenderflow-ingestion-validation-failures"
+  displayName: "TenderFlow Ingestion - High Validation Failures"
+  documentation:
+    content: |
+      The ingestion pipeline is experiencing high data validation failure rates.
+      
+      This could indicate:
+      - Changes in scraper data format
+      - Corrupted data from scrapers
+      - Schema mismatches
+      - Malformed JSON/checksum issues
+      
+      Runbook:
+      1. Review validation error logs for patterns
+      2. Check if scraper code was recently updated
+      3. Verify data schema compatibility
+      4. Investigate specific failed batches
+    mimeType: "text/markdown"
+  conditions:
+    - displayName: "Validation failures > 10 per 5 minutes"
+      conditionThreshold:
+        filter: 'metric.type="custom.googleapis.com/tenderflow/ingestion_validation_failures" resource.type="global"'
+        aggregations:
+          - alignmentPeriod: "300s"
+            perSeriesAligner: "ALIGN_SUM"
+        comparison: "COMPARISON_GT"
+        thresholdValue: 10
+        duration: "300s"
+  notificationChannels:
+    - "projects/PROJECT_ID/notificationChannels/CHANNEL_ID"
+  alertStrategy:
+    autoClose: "1800s"
+
+---
+# No Data Received Alert
+- name: "tenderflow-ingestion-no-data"
+  displayName: "TenderFlow Ingestion - No Data Received"
+  documentation:
+    content: |
+      No data has been received from scrapers for an extended period.
+      
+      Possible causes:
+      - Scraper service is down
+      - Network connectivity issues
+      - Authentication expired
+      - All target portals are unavailable
+      
+      Runbook:
+      1. Check if scraper service is running
+      2. Verify network connectivity to GCP
+      3. Check authentication token validity
+      4. Review scraper logs for errors
+      5. Test individual portal accessibility
+    mimeType: "text/markdown"
+  conditions:
+    - displayName: "No tenders received for 30 minutes"
+      conditionThreshold:
+        filter: 'metric.type="custom.googleapis.com/tenderflow/ingestion_tenders_received" resource.type="global"'
+        aggregations:
+          - alignmentPeriod: "1800s"
+            perSeriesAligner: "ALIGN_SUM"
+        comparison: "COMPARISON_EQ"
+        thresholdValue: 0
+        duration: "1800s"
+  notificationChannels:
+    - "projects/PROJECT_ID/notificationChannels/CHANNEL_ID"
+  alertStrategy:
+    autoClose: "3600s"

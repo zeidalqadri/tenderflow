@@ -1,30 +1,108 @@
 // TenderFlow Fastify API Server Entry Point
 import { createServer, ServerConfig } from './server';
-import { WorkerManager } from './services/workers';
+import { workerManager } from './workers';
 import { setupRecurringJobs } from './services/queue';
 import { shutdownRedis } from './services/redis';
 import { shutdownQueues } from './services/queue';
+import { logStartup, logShutdown, logError, logInfo, logSuccess } from './utils/logger';
+import { validateEnvironment } from './utils/env-validator';
 
 // Global references for cleanup
 let server: any;
-let workerManager: WorkerManager;
-let webSocketService: any;
+let socketIOService: any;
 
 async function start() {
-  // Validate required environment variables
-  if (!process.env.JWT_SECRET) {
-    console.error('❌ JWT_SECRET environment variable is required');
-    process.exit(1);
-  }
+  // COMPREHENSIVE SECURITY VALIDATION SYSTEM
+  logInfo('STARTUP', '🛡️  Initializing comprehensive security validation system...');
   
-  // Ensure JWT secret is long enough for security
-  if (process.env.JWT_SECRET.length < 32) {
-    console.error('❌ JWT_SECRET must be at least 32 characters long');
+  // Import security modules
+  const { performSecurityValidation, assertProductionSafety } = await import('./utils/production-detector');
+  const { securityMonitor, validateSecurityMonitor } = await import('./utils/security-monitor');
+  
+  try {
+    // Step 1: Comprehensive Production Environment Detection and Security Validation
+    logInfo('STARTUP', '🔍 Performing comprehensive security assessment...');
+    
+    const securityResult = performSecurityValidation();
+    
+    // Log detailed security assessment results
+    logInfo('STARTUP', 'Security Assessment Results:', {
+      environment: securityResult.environment.environment,
+      platform: securityResult.environment.platform,
+      securityLevel: securityResult.environment.securityLevel,
+      isProduction: securityResult.environment.isProduction,
+      isProdLike: securityResult.environment.isProdLike,
+      detectedBy: securityResult.environment.detectedBy,
+      securityPassed: securityResult.security.passed,
+      violations: securityResult.security.violations.length,
+      warnings: securityResult.security.warnings.length,
+    });
+    
+    // Step 2: Block startup if critical security violations detected
+    if (securityResult.shouldBlock) {
+      logError('STARTUP', '🚨 CRITICAL SECURITY VIOLATIONS DETECTED - STARTUP BLOCKED');
+      securityResult.security.violations.forEach(violation => 
+        logError('SECURITY', `VIOLATION: ${violation}`)
+      );
+      logError('STARTUP', 'Fix all security violations before starting the application');
+      process.exit(1);
+    }
+    
+    // Step 3: Report warnings but allow startup
+    if (securityResult.security.warnings.length > 0) {
+      logInfo('STARTUP', '⚠️  Security warnings detected (startup allowed):');
+      securityResult.security.warnings.forEach(warning => 
+        logError('SECURITY', `WARNING: ${warning}`)
+      );
+    }
+    
+    // Step 4: Validate security monitor is functioning
+    const monitorValid = validateSecurityMonitor();
+    if (!monitorValid) {
+      logError('STARTUP', 'Security monitor validation failed');
+      process.exit(1);
+    }
+    
+    logSuccess('STARTUP', '✅ Comprehensive security validation completed');
+    
+    // Step 5: Legacy environment validation for backwards compatibility
+    // Skip if DISABLE_AUTH is true in development
+    if (process.env.DISABLE_AUTH !== 'true') {
+      logInfo('STARTUP', 'Performing legacy environment validation...');
+      
+      const envValidation = validateEnvironment();
+      if (!envValidation.valid) {
+        logError('STARTUP', 'Legacy environment validation failed - application cannot start with compromised credentials');
+        envValidation.errors.forEach(error => logError('SECURITY', error));
+        process.exit(1);
+      }
+      
+      if (envValidation.warnings.length > 0) {
+        envValidation.warnings.forEach(warning => logError('SECURITY', warning));
+      }
+      
+      logSuccess('STARTUP', 'Legacy environment security validation passed');
+    } else {
+      logInfo('STARTUP', '⚠️  Skipping legacy environment validation due to DISABLE_AUTH=true');
+    }
+    
+    // Step 6: Assert production safety (throws on dangerous configurations)
+    try {
+      assertProductionSafety();
+    } catch (error) {
+      logError('STARTUP', 'Production safety assertion failed:', error);
+      process.exit(1);
+    }
+    
+    logSuccess('STARTUP', '🔒 All security validations passed - startup approved');
+    
+  } catch (error) {
+    logError('STARTUP', 'Security validation system failed:', error);
     process.exit(1);
   }
 
   const config: ServerConfig = {
-    port: parseInt(process.env.PORT || '3001'),
+    port: parseInt(process.env.PORT || '3457'),
     host: process.env.HOST || '0.0.0.0',
     nodeEnv: (process.env.NODE_ENV as any) || 'development',
     logLevel: (process.env.LOG_LEVEL as any) || 'info',
@@ -39,17 +117,17 @@ async function start() {
   };
 
   try {
-    console.log('🚀 Starting TenderFlow API Server...');
+    logStartup('TenderFlow API Server', config);
     
     // Initialize server
     server = await createServer(config);
     
     // Start BullMQ workers
-    console.log('⚙️  Starting background workers...');
-    workerManager = new WorkerManager();
+    logInfo('STARTUP', 'Starting background workers...');
+    await workerManager.start();
     
     // Setup recurring jobs
-    console.log('⏰ Setting up recurring jobs...');
+    logInfo('STARTUP', 'Setting up recurring jobs...');
     await setupRecurringJobs();
     
     // Start the server
@@ -58,82 +136,60 @@ async function start() {
       host: config.host 
     });
 
-    // Store WebSocket service reference for cleanup
-    webSocketService = (server as any).websocket;
+    // Store Socket.IO service reference for cleanup
+    socketIOService = (server as any).socketio;
     
-    console.log(`
-🚀 TenderFlow API Server is running!
-
-📍 Server: http://${config.host}:${config.port}
-📚 API Docs: http://${config.host}:${config.port}/docs
-🌍 Environment: ${config.nodeEnv}
-📊 Log Level: ${config.logLevel}
-
-🔗 HTTP Endpoints:
-  - Health: http://${config.host}:${config.port}/health
-  - API Docs: http://${config.host}:${config.port}/docs
-  - Auth: http://${config.host}:${config.port}/api/v1/auth
-  - Tenders: http://${config.host}:${config.port}/api/v1/tenders
-  - Scraper: http://${config.host}:${config.port}/api/v1/scraper
-  - Documents: http://${config.host}:${config.port}/api/v1/documents
-  - Bids: http://${config.host}:${config.port}/api/v1/bids
-  - Submissions: http://${config.host}:${config.port}/api/v1/submissions
-  - Exports: http://${config.host}:${config.port}/api/v1/exports
-
-🔌 WebSocket Endpoints:
-  - Main: ws://${config.host}:${config.port}/api/v1/ws
-  - Job Progress: ws://${config.host}:${config.port}/api/v1/ws/jobs/:jobId
-  - Tenant: ws://${config.host}:${config.port}/api/v1/ws/tenant/:tenantId
-
-⚙️  Background Services:
-  ✅ BullMQ Workers: Scraping, Processing, Notifications
-  ✅ Redis Cache: Session & queue management
-  ✅ WebSocket: Real-time updates
-  ✅ Recurring Jobs: Cleanup & maintenance
-
-🔧 Use Ctrl+C to stop the server
-    `);
+    logSuccess('STARTUP', 'TenderFlow API Server started successfully', {
+      server: `http://${config.host}:${config.port}`,
+      docs: `http://${config.host}:${config.port}/docs`,
+      environment: config.nodeEnv,
+      logLevel: config.logLevel,
+      endpoints: {
+        health: `http://${config.host}:${config.port}/health`,
+        auth: `http://${config.host}:${config.port}/api/v1/auth`,
+        tenders: `http://${config.host}:${config.port}/api/v1/tenders`,
+        scraper: `http://${config.host}:${config.port}/api/v1/scraper`
+      }
+    });
   } catch (err) {
-    console.error('❌ Error starting server:', err);
+    logError('STARTUP', 'Error starting server', err as Error);
     process.exit(1);
   }
 }
 
 // Graceful shutdown function
 async function shutdown(signal: string) {
-  console.log(`\n🛑 Received ${signal}, shutting down gracefully...`);
+  logShutdown('TenderFlow API Server', signal);
 
   try {
     // Stop accepting new requests
     if (server) {
-      console.log('🔌 Closing HTTP server...');
+      logInfo('SHUTDOWN', 'Closing HTTP server...');
       await server.close();
     }
 
-    // Shutdown WebSocket service
-    if (webSocketService) {
-      console.log('🔌 Shutting down WebSocket service...');
-      await webSocketService.shutdown();
+    // Shutdown Socket.IO service
+    if (socketIOService) {
+      logInfo('SHUTDOWN', 'Shutting down Socket.IO service...');
+      await socketIOService.shutdown();
     }
 
     // Shutdown workers
-    if (workerManager) {
-      console.log('⚙️  Shutting down background workers...');
-      await workerManager.shutdown();
-    }
+    logInfo('SHUTDOWN', 'Shutting down background workers...');
+    await workerManager.stop();
 
     // Shutdown queues
-    console.log('📋 Shutting down job queues...');
+    logInfo('SHUTDOWN', 'Shutting down job queues...');
     await shutdownQueues();
 
     // Shutdown Redis
-    console.log('🔴 Shutting down Redis connections...');
+    logInfo('SHUTDOWN', 'Shutting down Redis connections...');
     await shutdownRedis();
 
-    console.log('✅ Graceful shutdown completed');
+    logSuccess('SHUTDOWN', 'Graceful shutdown completed');
     process.exit(0);
   } catch (error) {
-    console.error('❌ Error during shutdown:', error);
+    logError('SHUTDOWN', 'Error during shutdown', error as Error);
     process.exit(1);
   }
 }
@@ -144,12 +200,12 @@ process.on('SIGTERM', () => shutdown('SIGTERM'));
 
 // Handle uncaught exceptions
 process.on('uncaughtException', (error) => {
-  console.error('❌ Uncaught Exception:', error);
+  logError('UNCAUGHT_EXCEPTION', 'Uncaught Exception', error);
   shutdown('UNCAUGHT_EXCEPTION');
 });
 
 process.on('unhandledRejection', (reason, promise) => {
-  console.error('❌ Unhandled Rejection at:', promise, 'reason:', reason);
+  logError('UNHANDLED_REJECTION', 'Unhandled Rejection', reason instanceof Error ? reason : new Error(String(reason)), { promise });
   shutdown('UNHANDLED_REJECTION');
 });
 

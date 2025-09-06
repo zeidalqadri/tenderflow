@@ -1,5 +1,5 @@
 // Test fixtures for TenderFlow API tests
-import { Tenant, User, Tender, Document, Submission } from '@prisma/client';
+import { Tenant, User, Tender, Document, Submission } from '../../generated/prisma';
 
 export const TEST_FIXTURES = {
   // Tenant fixtures

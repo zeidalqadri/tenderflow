@@ -1,7 +1,8 @@
 // Alert management routes for TenderFlow API
 import { FastifyInstance, FastifyPluginAsync } from 'fastify';
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient } from '../generated/prisma';
 import { z } from 'zod';
+import { toJsonSchema } from '../utils/schema-converter';
 import {
   AlertRuleSchema,
   CreateAlertRuleSchema,
@@ -25,14 +26,14 @@ const alertRoutes: FastifyPluginAsync = async (fastify: FastifyInstance) => {
       description: 'Get paginated list of alert rules',
       tags: ['Alerts'],
       security: [{ bearerAuth: [] }],
-      querystring: PaginationSchema.extend({
+      querystring: toJsonSchema(PaginationSchema.extend({
         isActive: z.boolean().optional(),
         search: z.string().optional(),
-      }),
+      })),
       response: {
-        200: PaginatedResponseSchema(AlertRuleSchema.extend({
+        200: toJsonSchema(PaginatedResponseSchema(AlertRuleSchema.extend({
           triggeredCount: z.number(),
-        })),
+        }))),
       },
     },
     preHandler: [fastify.authenticate, fastify.requireTenant],
@@ -111,18 +112,18 @@ const alertRoutes: FastifyPluginAsync = async (fastify: FastifyInstance) => {
       description: 'Get alert rule by ID',
       tags: ['Alerts'],
       security: [{ bearerAuth: [] }],
-      params: z.object({
+      params: toJsonSchema(z.object({
         id: UuidSchema,
-      }),
+      })),
       response: {
-        200: ApiResponseSchema(AlertRuleSchema.extend({
+        200: toJsonSchema(ApiResponseSchema(AlertRuleSchema.extend({
           triggeredCount: z.number(),
           recentTriggers: z.array(z.object({
             triggeredAt: z.date(),
             tenderId: z.string().optional(),
             tenderTitle: z.string().optional(),
           })),
-        })),
+        }))),
       },
     },
     preHandler: [fastify.authenticate, fastify.requireTenant],
@@ -167,9 +168,9 @@ const alertRoutes: FastifyPluginAsync = async (fastify: FastifyInstance) => {
       description: 'Create new alert rule',
       tags: ['Alerts'],
       security: [{ bearerAuth: [] }],
-      body: CreateAlertRuleSchema,
+      body: toJsonSchema(CreateAlertRuleSchema),
       response: {
-        201: ApiResponseSchema(AlertRuleSchema),
+        201: toJsonSchema(ApiResponseSchema(AlertRuleSchema)),
       },
     },
     preHandler: [fastify.authenticate, fastify.requireTenant],
@@ -225,12 +226,12 @@ const alertRoutes: FastifyPluginAsync = async (fastify: FastifyInstance) => {
       description: 'Update alert rule',
       tags: ['Alerts'],
       security: [{ bearerAuth: [] }],
-      params: z.object({
+      params: toJsonSchema(z.object({
         id: UuidSchema,
-      }),
-      body: UpdateAlertRuleSchema,
+      })),
+      body: toJsonSchema(UpdateAlertRuleSchema),
       response: {
-        200: ApiResponseSchema(AlertRuleSchema),
+        200: toJsonSchema(ApiResponseSchema(AlertRuleSchema)),
       },
     },
     preHandler: [fastify.authenticate, fastify.requireTenant],
@@ -297,13 +298,13 @@ const alertRoutes: FastifyPluginAsync = async (fastify: FastifyInstance) => {
       description: 'Delete alert rule',
       tags: ['Alerts'],
       security: [{ bearerAuth: [] }],
-      params: z.object({
+      params: toJsonSchema(z.object({
         id: UuidSchema,
-      }),
+      })),
       response: {
-        200: ApiResponseSchema(z.object({
+        200: toJsonSchema(ApiResponseSchema(z.object({
           message: z.string(),
-        })),
+        }))),
       },
     },
     preHandler: [fastify.authenticate, fastify.requireTenant],
@@ -359,14 +360,14 @@ const alertRoutes: FastifyPluginAsync = async (fastify: FastifyInstance) => {
       description: 'Test alert rule with sample data',
       tags: ['Alerts'],
       security: [{ bearerAuth: [] }],
-      params: z.object({
+      params: toJsonSchema(z.object({
         id: UuidSchema,
-      }),
-      body: z.object({
+      })),
+      body: toJsonSchema(z.object({
         testData: z.record(z.unknown()).optional(),
-      }),
+      })),
       response: {
-        200: ApiResponseSchema(z.object({
+        200: toJsonSchema(ApiResponseSchema(z.object({
           triggered: z.boolean(),
           actions: z.array(z.object({
             type: z.string(),
@@ -374,7 +375,7 @@ const alertRoutes: FastifyPluginAsync = async (fastify: FastifyInstance) => {
             message: z.string(),
           })),
           message: z.string(),
-        })),
+        }))),
       },
     },
     preHandler: [fastify.authenticate, fastify.requireTenant],
@@ -440,11 +441,11 @@ const alertRoutes: FastifyPluginAsync = async (fastify: FastifyInstance) => {
       description: 'Toggle alert rule active status',
       tags: ['Alerts'],
       security: [{ bearerAuth: [] }],
-      params: z.object({
+      params: toJsonSchema(z.object({
         id: UuidSchema,
-      }),
+      })),
       response: {
-        200: ApiResponseSchema(AlertRuleSchema),
+        200: toJsonSchema(ApiResponseSchema(AlertRuleSchema)),
       },
     },
     preHandler: [fastify.authenticate, fastify.requireTenant],

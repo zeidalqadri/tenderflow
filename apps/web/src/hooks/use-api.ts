@@ -60,7 +60,7 @@ export function useMe(options?: Omit<UseQueryOptions<APIResponse<User>, ApiError
 
 export function useLogin() {
   const queryClient = useQueryClient()
-  const { login } = useAuthStore()
+  const { setTokens } = useAuthStore()
   const { addNotification } = useUIStore()
 
   return useMutation({
@@ -68,12 +68,12 @@ export function useLogin() {
       apiClient.login(email, password),
     onSuccess: (response) => {
       if (response.success && response.data) {
-        login(response.data.user, response.data.token)
+        setTokens(response.data.accessToken, response.data.refreshToken)
         queryClient.setQueryData(queryKeys.auth.me, response.data.user)
         addNotification({
           type: 'success',
           title: 'Welcome back!',
-          message: `Logged in as ${response.data.user.name}`,
+          message: `Logged in as ${response.data.user?.name || 'User'}`,
         })
       }
     },

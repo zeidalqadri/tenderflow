@@ -1,7 +1,8 @@
 // Permission checking routes for TenderFlow API
 import { FastifyInstance, FastifyPluginAsync } from 'fastify';
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient } from '../generated/prisma';
 import { z } from 'zod';
+import { toJsonSchema } from '../utils/schema-converter';
 import {
   ApiResponseSchema,
   UuidSchema,
@@ -17,11 +18,11 @@ const permissionRoutes: FastifyPluginAsync = async (fastify: FastifyInstance) =>
       description: 'Check current user\'s permissions for a tender',
       tags: ['Tender Permissions'],
       security: [{ bearerAuth: [] }],
-      params: z.object({
+      params: toJsonSchema(z.object({
         tenderId: UuidSchema,
-      }),
+      })),
       response: {
-        200: ApiResponseSchema(z.object({
+        200: toJsonSchema(ApiResponseSchema(z.object({
           tenderId: z.string(),
           role: z.string().nullable(),
           permissions: z.object({
@@ -33,7 +34,7 @@ const permissionRoutes: FastifyPluginAsync = async (fastify: FastifyInstance) =>
           }),
           isOwner: z.boolean(),
           isAdmin: z.boolean(),
-        })),
+        }))),
       },
     },
     preHandler: [fastify.authenticate, fastify.requireTenant],
@@ -97,18 +98,18 @@ const permissionRoutes: FastifyPluginAsync = async (fastify: FastifyInstance) =>
       description: 'Check if current user can perform specific action on tender',
       tags: ['Tender Permissions'],
       security: [{ bearerAuth: [] }],
-      params: z.object({
+      params: toJsonSchema(z.object({
         tenderId: UuidSchema,
         action: z.enum(['read', 'write', 'delete', 'manage_assignees', 'transition_state']),
-      }),
+      })),
       response: {
-        200: ApiResponseSchema(z.object({
+        200: toJsonSchema(ApiResponseSchema(z.object({
           tenderId: z.string(),
           action: z.string(),
           allowed: z.boolean(),
           role: z.string().nullable(),
           reason: z.string().optional(),
-        })),
+        }))),
       },
     },
     preHandler: [fastify.authenticate, fastify.requireTenant],
@@ -164,12 +165,12 @@ const permissionRoutes: FastifyPluginAsync = async (fastify: FastifyInstance) =>
       description: 'Bulk check permissions for multiple tenders',
       tags: ['Tender Permissions'],
       security: [{ bearerAuth: [] }],
-      body: z.object({
+      body: toJsonSchema(z.object({
         tenderIds: z.array(UuidSchema).min(1).max(50),
         actions: z.array(z.enum(['read', 'write', 'delete', 'manage_assignees', 'transition_state'])).optional(),
-      }),
+      })),
       response: {
-        200: ApiResponseSchema(z.array(z.object({
+        200: toJsonSchema(ApiResponseSchema(z.array(z.object({
           tenderId: z.string(),
           role: z.string().nullable(),
           permissions: z.object({
@@ -179,7 +180,7 @@ const permissionRoutes: FastifyPluginAsync = async (fastify: FastifyInstance) =>
             canManageAssignees: z.boolean(),
             canTransitionState: z.boolean(),
           }),
-        }))),
+        })))),
       },
     },
     preHandler: [fastify.authenticate, fastify.requireTenant],
@@ -236,12 +237,12 @@ const permissionRoutes: FastifyPluginAsync = async (fastify: FastifyInstance) =>
       description: 'Get all tenders the current user has access to',
       tags: ['Tender Permissions'],
       security: [{ bearerAuth: [] }],
-      querystring: z.object({
+      querystring: toJsonSchema(z.object({
         role: z.enum(['owner', 'contributor', 'viewer']).optional(),
         includeArchived: z.boolean().default(false),
-      }),
+      })),
       response: {
-        200: ApiResponseSchema(z.array(z.object({
+        200: toJsonSchema(ApiResponseSchema(z.array(z.object({
           tenderId: z.string(),
           title: z.string(),
           status: z.string(),
@@ -255,7 +256,7 @@ const permissionRoutes: FastifyPluginAsync = async (fastify: FastifyInstance) =>
           }),
           createdAt: z.date(),
           deadline: z.date().nullable(),
-        }))),
+        })))),
       },
     },
     preHandler: [fastify.authenticate, fastify.requireTenant],

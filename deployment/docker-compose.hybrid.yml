@@ -1,0 +1,145 @@
+# Docker Compose Configuration for Hybrid Deployment
+# Local scraper feeding to GCP-deployed API
+version: '3.8'
+
+services:
+  # Local PostgreSQL for scraper queue persistence
+  scraper-db:
+    image: postgres:15-alpine
+    container_name: tenderflow-scraper-db
+    environment:
+      POSTGRES_DB: scraper_queue
+      POSTGRES_USER: scraper
+      POSTGRES_PASSWORD: ${SCRAPER_DB_PASSWORD:-scraper_local_dev}
+    volumes:
+      - scraper_db_data:/var/lib/postgresql/data
+      - ./init-scraper-db.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    ports:
+      - "5433:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U scraper -d scraper_queue"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - scraper-network
+
+  # Local Redis for scraper caching and rate limiting
+  scraper-redis:
+    image: redis:7-alpine
+    container_name: tenderflow-scraper-redis
+    command: redis-server --appendonly yes
+    volumes:
+      - scraper_redis_data:/data
+    ports:
+      - "6380:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - scraper-network
+
+  # Prometheus for local metrics collection
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: tenderflow-prometheus
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus_data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/usr/share/prometheus/console_libraries'
+      - '--web.console.templates=/usr/share/prometheus/consoles'
+      - '--web.enable-lifecycle'
+    ports:
+      - "9090:9090"
+    networks:
+      - scraper-network
+
+  # Grafana for local monitoring dashboard
+  grafana:
+    image: grafana/grafana:latest
+    container_name: tenderflow-grafana
+    environment:
+      GF_SECURITY_ADMIN_USER: ${GRAFANA_USER:-admin}
+      GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_PASSWORD:-admin}
+      GF_INSTALL_PLUGINS: grafana-clock-panel
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./grafana/dashboards:/etc/grafana/provisioning/dashboards:ro
+      - ./grafana/datasources:/etc/grafana/provisioning/datasources:ro
+    ports:
+      - "3001:3000"
+    depends_on:
+      - prometheus
+    networks:
+      - scraper-network
+
+  # Python scraper service
+  scraper:
+    build:
+      context: ../scraper
+      dockerfile: Dockerfile
+    container_name: tenderflow-scraper
+    environment:
+      # GCP Configuration
+      GCP_PROJECT_ID: ${GCP_PROJECT_ID}
+      TENDERFLOW_API_URL: ${TENDERFLOW_API_URL:-https://api.tenderflow.app}
+      TENDERFLOW_API_KEY: ${TENDERFLOW_API_KEY}
+      TENDERFLOW_SCRAPER_ID: ${TENDERFLOW_SCRAPER_ID:-local-scraper-01}
+      
+      # Local Database
+      DATABASE_URL: postgresql://scraper:${SCRAPER_DB_PASSWORD:-scraper_local_dev}@scraper-db:5432/scraper_queue
+      
+      # Redis Cache
+      REDIS_URL: redis://scraper-redis:6379
+      
+      # Monitoring
+      ENABLE_MONITORING: "true"
+      PROMETHEUS_PUSHGATEWAY_URL: http://prometheus:9090
+      
+      # Scraper Configuration
+      SCRAPE_INTERVAL_MINUTES: ${SCRAPE_INTERVAL_MINUTES:-30}
+      MAX_CONCURRENT_SCRAPERS: ${MAX_CONCURRENT_SCRAPERS:-3}
+      RETRY_MAX_ATTEMPTS: ${RETRY_MAX_ATTEMPTS:-5}
+      CIRCUIT_BREAKER_THRESHOLD: ${CIRCUIT_BREAKER_THRESHOLD:-5}
+      
+      # Development/Debug
+      LOG_LEVEL: ${LOG_LEVEL:-INFO}
+      ENABLE_DEBUG: ${ENABLE_DEBUG:-false}
+    volumes:
+      - ../scraper:/app
+      - scraper_logs:/app/logs
+      - scraper_data:/app/data
+    depends_on:
+      scraper-db:
+        condition: service_healthy
+      scraper-redis:
+        condition: service_healthy
+    networks:
+      - scraper-network
+    restart: unless-stopped
+
+volumes:
+  scraper_db_data:
+    driver: local
+  scraper_redis_data:
+    driver: local
+  prometheus_data:
+    driver: local
+  grafana_data:
+    driver: local
+  scraper_logs:
+    driver: local
+  scraper_data:
+    driver: local
+
+networks:
+  scraper-network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.30.0.0/16

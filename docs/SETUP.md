@@ -112,7 +112,7 @@ Once everything is running, you can access:
 |---------|-----|-------------|
 | **TenderFlow Web** | http://localhost:8357 | Main application |
 | **API Server** | http://localhost:3001 | Backend API |
-| **MinIO Console** | http://localhost:9001 | File storage (admin/minioadmin) |
+| **MinIO Console** | http://localhost:9001 | File storage (admin/[SECURE_CREDENTIAL]) |
 | **MailHog** | http://localhost:8025 | Email testing |
 | **PostgreSQL** | localhost:5432 | Database (tenderflow/tenderflow123) |
 | **Redis** | localhost:6379 | Cache/Queue |
@@ -159,8 +159,8 @@ JWT_REFRESH_SECRET="your-super-secret-refresh-jwt-key-change-in-production"
 
 # Storage
 MINIO_ENDPOINT="localhost"
-MINIO_ACCESS_KEY="minioadmin"
-MINIO_SECRET_KEY="minioadmin"
+MINIO_ACCESS_KEY="[SECURE_CREDENTIAL]"
+MINIO_SECRET_KEY="[SECURE_CREDENTIAL]"
 
 # Features
 ENABLE_OCR="true"
@@ -309,7 +309,7 @@ cd apps/api && npm run db:setup
 
 ### MinIO Storage Setup
 1. Open MinIO Console: http://localhost:9001
-2. Login: `minioadmin` / `minioadmin`  
+2. Login: `[SECURE_CREDENTIAL]` / `[SECURE_CREDENTIAL]`  
 3. Verify buckets exist:
    - `tender-documents`
    - `user-uploads`

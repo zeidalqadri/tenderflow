@@ -22,6 +22,9 @@ CREATE TYPE "NotificationType" AS ENUM ('TENDER_ASSIGNED', 'TENDER_STATUS_CHANGE
 -- CreateEnum
 CREATE TYPE "AuditAction" AS ENUM ('CREATE', 'UPDATE', 'DELETE', 'VIEW', 'DOWNLOAD', 'UPLOAD', 'TRANSITION', 'ASSIGN', 'UNASSIGN', 'LOGIN', 'LOGOUT');
 
+-- CreateEnum
+CREATE TYPE "ScrapingStatus" AS ENUM ('PENDING', 'RUNNING', 'COMPLETED', 'FAILED', 'CANCELLED');
+
 -- CreateTable
 CREATE TABLE "tenants" (
     "id" TEXT NOT NULL,
@@ -74,6 +77,13 @@ CREATE TABLE "tenders" (
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
     "deletedAt" TIMESTAMP(3),
+    "scrapedAt" TIMESTAMP(3),
+    "sourcePortal" TEXT,
+    "originalTitle" TEXT,
+    "originalStatus" TEXT,
+    "originalValue" TEXT,
+    "exchangeRates" JSONB,
+    "sourceUrl" TEXT,
 
     CONSTRAINT "tenders_pkey" PRIMARY KEY ("id")
 );
@@ -282,6 +292,28 @@ CREATE TABLE "api_keys" (
     CONSTRAINT "api_keys_pkey" PRIMARY KEY ("id")
 );
 
+-- CreateTable
+CREATE TABLE "scraping_logs" (
+    "id" TEXT NOT NULL,
+    "tenantId" TEXT NOT NULL,
+    "sourcePortal" TEXT NOT NULL,
+    "status" "ScrapingStatus" NOT NULL DEFAULT 'PENDING',
+    "startedAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "completedAt" TIMESTAMP(3),
+    "pagesProcessed" INTEGER NOT NULL DEFAULT 0,
+    "totalPages" INTEGER,
+    "tendersFound" INTEGER NOT NULL DEFAULT 0,
+    "tendersImported" INTEGER NOT NULL DEFAULT 0,
+    "tendersUpdated" INTEGER NOT NULL DEFAULT 0,
+    "tendersSkipped" INTEGER NOT NULL DEFAULT 0,
+    "errorMessage" TEXT,
+    "errorDetails" JSONB,
+    "metadata" JSONB NOT NULL DEFAULT '{}',
+    "triggeredBy" TEXT NOT NULL,
+
+    CONSTRAINT "scraping_logs_pkey" PRIMARY KEY ("id")
+);
+
 -- CreateIndex
 CREATE UNIQUE INDEX "tenants_subdomain_key" ON "tenants"("subdomain");
 
@@ -320,6 +352,15 @@ CREATE INDEX "tenders_externalId_idx" ON "tenders"("externalId");
 
 -- CreateIndex
 CREATE INDEX "tenders_createdBy_idx" ON "tenders"("createdBy");
+
+-- CreateIndex
+CREATE INDEX "tenders_sourcePortal_idx" ON "tenders"("sourcePortal");
+
+-- CreateIndex
+CREATE INDEX "tenders_scrapedAt_idx" ON "tenders"("scrapedAt");
+
+-- CreateIndex
+CREATE INDEX "tenders_sourcePortal_externalId_idx" ON "tenders"("sourcePortal", "externalId");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "tender_assignments_tenderId_userId_key" ON "tender_assignments"("tenderId", "userId");
@@ -438,6 +479,18 @@ CREATE INDEX "api_keys_tenantId_idx" ON "api_keys"("tenantId");
 -- CreateIndex
 CREATE INDEX "api_keys_isActive_idx" ON "api_keys"("isActive");
 
+-- CreateIndex
+CREATE INDEX "scraping_logs_tenantId_status_idx" ON "scraping_logs"("tenantId", "status");
+
+-- CreateIndex
+CREATE INDEX "scraping_logs_sourcePortal_idx" ON "scraping_logs"("sourcePortal");
+
+-- CreateIndex
+CREATE INDEX "scraping_logs_startedAt_idx" ON "scraping_logs"("startedAt");
+
+-- CreateIndex
+CREATE INDEX "scraping_logs_status_idx" ON "scraping_logs"("status");
+
 -- AddForeignKey
 ALTER TABLE "users" ADD CONSTRAINT "users_tenantId_fkey" FOREIGN KEY ("tenantId") REFERENCES "tenants"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
@@ -498,14 +551,20 @@ ALTER TABLE "audit_logs" ADD CONSTRAINT "audit_logs_userId_fkey" FOREIGN KEY ("u
 -- AddForeignKey
 ALTER TABLE "api_keys" ADD CONSTRAINT "api_keys_tenantId_fkey" FOREIGN KEY ("tenantId") REFERENCES "tenants"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
+-- AddForeignKey
+ALTER TABLE "scraping_logs" ADD CONSTRAINT "scraping_logs_tenantId_fkey" FOREIGN KEY ("tenantId") REFERENCES "tenants"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "scraping_logs" ADD CONSTRAINT "scraping_logs_triggeredBy_fkey" FOREIGN KEY ("triggeredBy") REFERENCES "users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
 -- Create full-text search indexes for PostgreSQL
-CREATE INDEX CONCURRENTLY IF NOT EXISTS tender_search_idx ON tenders USING GIN(to_tsvector('english', title || ' ' || COALESCE(description, '')));
-CREATE INDEX CONCURRENTLY IF NOT EXISTS document_search_idx ON documents USING GIN(to_tsvector('english', filename || ' ' || original_name));
+CREATE INDEX IF NOT EXISTS tender_search_idx ON tenders USING GIN(to_tsvector('english', title || ' ' || COALESCE(description, '')));
+CREATE INDEX IF NOT EXISTS document_search_idx ON documents USING GIN(to_tsvector('english', filename || ' ' || "originalName"));
 
 -- Create system configuration defaults
-INSERT INTO system_config (id, key, value, description) VALUES
-  (gen_random_uuid(), 'max_file_size', '104857600', 'Maximum file upload size in bytes (100MB)'),
-  (gen_random_uuid(), 'allowed_file_types', '["pdf", "doc", "docx", "xls", "xlsx", "txt", "jpg", "jpeg", "png", "gif"]', 'Allowed file types for upload'),
-  (gen_random_uuid(), 'tender_auto_archive_days', '365', 'Days after which completed tenders are auto-archived'),
-  (gen_random_uuid(), 'notification_batch_size', '50', 'Number of notifications to process in a single batch'),
-  (gen_random_uuid(), 'audit_retention_days', '2555', 'Days to retain audit logs (7 years for compliance)');
+INSERT INTO system_config (id, key, value, description, "createdAt", "updatedAt") VALUES
+  (gen_random_uuid(), 'max_file_size', '104857600', 'Maximum file upload size in bytes (100MB)', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+  (gen_random_uuid(), 'allowed_file_types', '["pdf", "doc", "docx", "xls", "xlsx", "txt", "jpg", "jpeg", "png", "gif"]', 'Allowed file types for upload', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+  (gen_random_uuid(), 'tender_auto_archive_days', '365', 'Days after which completed tenders are auto-archived', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+  (gen_random_uuid(), 'notification_batch_size', '50', 'Number of notifications to process in a single batch', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+  (gen_random_uuid(), 'audit_retention_days', '2555', 'Days to retain audit logs (7 years for compliance)', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);

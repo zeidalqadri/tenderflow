@@ -1,0 +1,479 @@
+{
+  "statusLine": {
+    "type": "command",
+    "command": "python3 $CLAUDE_PROJECT_DIR/.claude/statusline/pyccsl.py folder,git,model --theme minimal --style pipes"
+  },
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 $CLAUDE_PROJECT_DIR/.claude/hooks/trace-event.py"
+          }
+        ]
+      },
+      {
+        "matcher": "Edit|MultiEdit|Write|mcp|Bash|Read|Grep",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 $CLAUDE_PROJECT_DIR/.claude/hooks/check-ignore-patterns.py"
+          }
+        ]
+      },
+      {
+        "matcher": "Edit|MultiEdit|Write|mcp|Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 $CLAUDE_PROJECT_DIR/.claude/hooks/check-immutable-patterns.py"
+          }
+        ]
+      },
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 $CLAUDE_PROJECT_DIR/.claude/hooks/prevent-unsafe-commands.py"
+          }
+        ]
+      },
+      {
+        "matcher": "mcp__supabase",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 $CLAUDE_PROJECT_DIR/.claude/hooks/require-human-approval.py"
+          }
+        ]
+      },
+      {
+        "matcher": "mcp__stripe",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 $CLAUDE_PROJECT_DIR/.claude/hooks/require-human-approval.py"
+          }
+        ]
+      },
+      {
+        "matcher": "mcp__github",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 $CLAUDE_PROJECT_DIR/.claude/hooks/require-human-approval.py"
+          }
+        ]
+      },
+      {
+        "matcher": "mcp__cloudflare",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 $CLAUDE_PROJECT_DIR/.claude/hooks/require-human-approval.py"
+          }
+        ]
+      },
+      {
+        "matcher": "mcp__consult7",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 $CLAUDE_PROJECT_DIR/.claude/hooks/require-human-approval.py"
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 $CLAUDE_PROJECT_DIR/.claude/hooks/trace-event.py"
+          }
+        ]
+      },
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 $CLAUDE_PROJECT_DIR/.claude/hooks/log-bash-commands.py"
+          }
+        ]
+      },
+      {
+        "matcher": "mcp",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 $CLAUDE_PROJECT_DIR/.claude/hooks/log-mcp-commands.py"
+          }
+        ]
+      }
+    ],
+    "Notification": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 $CLAUDE_PROJECT_DIR/.claude/hooks/trace-event.py"
+          }
+        ]
+      }
+    ],
+    "UserPromptSubmit": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 $CLAUDE_PROJECT_DIR/.claude/hooks/trace-event.py"
+          },
+          {
+            "type": "command",
+            "command": "python3 $CLAUDE_PROJECT_DIR/.claude/hooks/check-required-tools.py"
+          },
+          {
+            "type": "command",
+            "command": "python3 $CLAUDE_PROJECT_DIR/.claude/hooks/git-checkpoint.py"
+          },
+          {
+            "type": "command",
+            "command": "python3 $CLAUDE_PROJECT_DIR/.claude/hooks/no-secrets-prompted.py"
+          },
+          {
+            "type": "command",
+            "command": "python3 $CLAUDE_PROJECT_DIR/.claude/hooks/prevent-learning-secrets.py"
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 $CLAUDE_PROJECT_DIR/.claude/hooks/trace-event.py"
+          },
+          {
+            "type": "command",
+            "command": "python3 $CLAUDE_PROJECT_DIR/.claude/hooks/audio-summary.py"
+          },
+          {
+            "type": "command",
+            "command": "python3 $CLAUDE_PROJECT_DIR/.claude/hooks/enforce-completion-checks.py"
+          }
+        ]
+      }
+    ],
+    "SubagentStop": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 $CLAUDE_PROJECT_DIR/.claude/hooks/trace-event.py"
+          }
+        ]
+      }
+    ],
+    "PreCompact": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 $CLAUDE_PROJECT_DIR/.claude/hooks/trace-event.py"
+          }
+        ]
+      }
+    ],
+    "SessionStart": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 $CLAUDE_PROJECT_DIR/.claude/hooks/remind-rules.py"
+          },
+          {
+            "type": "command",
+            "command": "python3 $CLAUDE_PROJECT_DIR/.claude/hooks/trace-event.py"
+          }
+        ]
+      }
+    ]
+  },
+  "permissions": {
+    "allow": [
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(say:*)",
+      "Bash(ls:*)",
+      "Bash(pwd:*)",
+      "mcp__context7__resolve-library-id",
+      "mcp__context7__get-library-docs"
+    ],
+    "deny": [
+      "Read(.env)",
+      "Read(secret)",
+      "Read(private)",
+      "Read(dist)",
+      "Read(build)",
+      "Read(.env.local)",
+      "Read(.env.example)",
+      "Read(.env.dev)",
+      "Read(.env.development)",
+      "Read(.env.stage)",
+      "Read(.env.staging)",
+      "Read(.env.sandbox)",
+      "Read(.env.preprod)",
+      "Read(.env.prod)",
+      "Read(.env.production)",
+      "Read(.env.test)",
+      "Read(.env.ci)",
+      "Read(.envrc)",
+      "Read(.env.docker)",
+      "Read(.env.override)",
+      "Read(.env.backup)",
+      "Read(.env.old)",
+      "Read(.env.tmp)",
+      "Read(.env.temp)",
+      "Read(.env.bak)",
+      "Read(secret/)",
+      "Read(private/)",
+      "Read(dist/)",
+      "Read(build/)",
+      "Read(.aws/credentials)",
+      "Read(.aws/config)",
+      "Read(.ssh/)",
+      "Write(.ssh/)",
+      "Edit(.ssh/)",
+      "Delete(.ssh/)",
+      "Read(.git-credentials)",
+      "Read(.gitconfig)",
+      "Read(.docker/config.json)",
+      "Read(.dockercfg)",
+      "Read(.bashrc)",
+      "Read(.bash_profile)",
+      "Read(.zshrc)",
+      "Read(.cshrc)",
+      "Read(.tcshrc)",
+      "Read(.fishrc)",
+      "Read(.pgpass)",
+      "Read(my.cnf)",
+      "Read(.mysql_history)",
+      "Read(.psql_history)",
+      "Read(.rediscli_history)",
+      "Read(.mongorc.js)",
+      "Read(.mongo_history)",
+      "Read(.vault-token)",
+      "Read(.kube/config)",
+      "Read(.kubeconfig)",
+      "Read(.netrc)",
+      "Read(.authinfo)",
+      "Read(.authinfo.gpg)",
+      "Read(.gnupg/)",
+      "Read(.gpg/)",
+      "Bash(chmod:*)",
+      "Bash(chown:*)",
+      "Bash(chgrp:*)",
+      "Bash(chattr:*)",
+      "Bash(lsattr:*)",
+      "Bash(unlink:*)",
+      "Bash(shred:*)",
+      "Bash(git reset:*)",
+      "Bash(git branch -d:*)",
+      "Bash(git branch -D:*)",
+      "Bash(git rebase:*)",
+      "Bash(git push:*)",
+      "Bash(git clean:*)",
+      "Bash(git gc --prune:*)",
+      "Bash(dd:*)",
+      "Bash(format:*)",
+      "Bash(fdisk:*)",
+      "Bash(parted:*)",
+      "Bash(mkfs:*)",
+      "Bash(kill -9:*)",
+      "Bash(killall:*)",
+      "Bash(pkill:*)",
+      "Bash(service stop:*)",
+      "Bash(systemctl stop:*)",
+      "Bash(systemctl disable:*)",
+      "Bash(apt remove:*)",
+      "Bash(apt purge:*)",
+      "Bash(yum remove:*)",
+      "Bash(brew uninstall:*)",
+      "Bash(drop database:*)",
+      "Bash(drop table:*)",
+      "Bash(truncate table:*)",
+      "Bash(delete from:*)",
+      "Bash(drop policy:*)",
+      "Bash(drop role:*)",
+      "Bash(drop user:*)",
+      "Bash(drop index:*)",
+      "Bash(drop view:*)",
+      "Bash(drop function:*)",
+      "Bash(drop procedure:*)",
+      "Bash(drop trigger:*)",
+      "Bash(drop constraint:*)",
+      "Bash(drop sequence:*)",
+      "Bash(drop type:*)",
+      "Bash(drop schema:*)",
+      "Bash(drop extension:*)",
+      "Bash(exec:*)",
+      "Bash(execute:*)",
+      "Bash(source:*)",
+      "Bash(cat .env)",
+      "Bash(cat .env.local)",
+      "Bash(cat .env.example)",
+      "Bash(cat .env.dev)",
+      "Bash(cat .env.development)",
+      "Bash(cat .env.stage)",
+      "Bash(cat .env.staging)",
+      "Bash(cat .env.sandbox)",
+      "Bash(cat .env.preprod)",
+      "Bash(cat .env.prod)",
+      "Bash(cat .env.production)",
+      "Bash(cat .env.test)",
+      "Bash(cat .env.ci)",
+      "Bash(cat .envrc)",
+      "Bash(cat .env.docker)",
+      "Bash(cat .env.override)",
+      "Bash(cat .env.backup)",
+      "Bash(cat .env.old)",
+      "Bash(cat .env.tmp)",
+      "Bash(cat .env.temp)",
+      "Bash(cat .env.bak)",
+      "Bash(less .env)",
+      "Bash(less .env.local)",
+      "Bash(less .env.example)",
+      "Bash(less .env.dev)",
+      "Bash(less .env.development)",
+      "Bash(less .env.stage)",
+      "Bash(less .env.staging)",
+      "Bash(less .env.sandbox)",
+      "Bash(less .env.preprod)",
+      "Bash(less .env.prod)",
+      "Bash(less .env.production)",
+      "Bash(more .env)",
+      "Bash(more .env.local)",
+      "Bash(more .env.example)",
+      "Bash(more .env.dev)",
+      "Bash(more .env.development)",
+      "Bash(more .env.stage)",
+      "Bash(more .env.staging)",
+      "Bash(more .env.sandbox)",
+      "Bash(more .env.preprod)",
+      "Bash(more .env.prod)",
+      "Bash(more .env.production)",
+      "Bash(head .env)",
+      "Bash(head .env.local)",
+      "Bash(head .env.example)",
+      "Bash(head .env.dev)",
+      "Bash(head .env.development)",
+      "Bash(head .env.stage)",
+      "Bash(head .env.staging)",
+      "Bash(head .env.sandbox)",
+      "Bash(head .env.preprod)",
+      "Bash(head .env.prod)",
+      "Bash(head .env.production)",
+      "Bash(tail .env)",
+      "Bash(tail .env.local)",
+      "Bash(tail .env.example)",
+      "Bash(tail .env.dev)",
+      "Bash(tail .env.development)",
+      "Bash(tail .env.stage)",
+      "Bash(tail .env.staging)",
+      "Bash(tail .env.sandbox)",
+      "Bash(tail .env.preprod)",
+      "Bash(tail .env.prod)",
+      "Bash(tail .env.production)",
+      "Bash(strings .env)",
+      "Bash(strings .env.local)",
+      "Bash(strings .env.example)",
+      "Bash(strings .env.dev)",
+      "Bash(strings .env.development)",
+      "Bash(strings .env.stage)",
+      "Bash(strings .env.staging)",
+      "Bash(strings .env.sandbox)",
+      "Bash(strings .env.preprod)",
+      "Bash(strings .env.prod)",
+      "Bash(strings .env.production)",
+      "Bash(hexdump .env)",
+      "Bash(hexdump .env.local)",
+      "Bash(hexdump .env.example)",
+      "Bash(hexdump .env.dev)",
+      "Bash(hexdump .env.development)",
+      "Bash(hexdump .env.stage)",
+      "Bash(hexdump .env.staging)",
+      "Bash(hexdump .env.sandbox)",
+      "Bash(hexdump .env.preprod)",
+      "Bash(hexdump .env.prod)",
+      "Bash(hexdump .env.production)",
+      "Bash(xxd .env)",
+      "Bash(xxd .env.local)",
+      "Bash(xxd .env.example)",
+      "Bash(xxd .env.dev)",
+      "Bash(xxd .env.development)",
+      "Bash(xxd .env.stage)",
+      "Bash(xxd .env.staging)",
+      "Bash(xxd .env.sandbox)",
+      "Bash(xxd .env.preprod)",
+      "Bash(xxd .env.prod)",
+      "Bash(xxd .env.production)",
+      "Bash(cat .ssh/)",
+      "Bash(cat id_rsa)",
+      "Bash(cat id_ed25519)",
+      "Bash(cat .pem)",
+      "Bash(cat .key)",
+      "Bash(cat config)",
+      "Bash(cat .config)",
+      "Bash(cat .aws/credentials)",
+      "Bash(cat .aws/config)",
+      "Bash(cat .git-credentials)",
+      "Bash(cat .gitconfig)",
+      "Bash(cat .docker/config.json)",
+      "Bash(cat .dockercfg)",
+      "Bash(cat .bashrc)",
+      "Bash(cat .bash_profile)",
+      "Bash(cat .zshrc)",
+      "Bash(cat .cshrc)",
+      "Bash(cat .tcshrc)",
+      "Bash(cat .fishrc)",
+      "Bash(cat .pgpass)",
+      "Bash(cat my.cnf)",
+      "Bash(cat .mysql_history)",
+      "Bash(cat .psql_history)",
+      "Bash(cat .rediscli_history)",
+      "Bash(cat .mongorc.js)",
+      "Bash(cat .mongo_history)",
+      "Bash(cat .vault-token)",
+      "Bash(cat .kube/config)",
+      "Bash(cat .kubeconfig)",
+      "Bash(cat .netrc)",
+      "Bash(cat .authinfo)",
+      "Bash(cat .authinfo.gpg)",
+      "Bash(netstat -a:*)",
+      "Bash(ss -a:*)",
+      "Bash(ifconfig:*)",
+      "Bash(ps -ef:*)",
+      "Bash(ps -e:*)",
+      "Bash(mv /:*)",
+      "Bash(cp /:*)",
+      "Bash(ln -s /:*)",
+      "Bash(userdel:*)",
+      "Bash(groupdel:*)",
+      "Bash(passwd:*)",
+      "Bash(crontab -r:*)",
+      "Bash(crontab -l:*)"
+    ]
+  }
+}

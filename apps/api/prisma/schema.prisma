@@ -91,6 +91,14 @@ enum AuditAction {
   LOGOUT
 }
 
+enum ScrapingStatus {
+  PENDING
+  RUNNING
+  COMPLETED
+  FAILED
+  CANCELLED
+}
+
 // ============================================================================
 // CORE MODELS
 // ============================================================================
@@ -100,16 +108,20 @@ model Tenant {
   name        String
   subdomain   String   @unique
   settings    Json     @default("{}")
+  webhookUrl  String?  // Optional webhook URL for notifications
+  metadata    Json     @default("{}")
   isActive    Boolean  @default(true)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
   deletedAt   DateTime?
 
   // Relations
-  users       User[]
-  tenders     Tender[]
-  audits      AuditLog[]
-  apiKeys     ApiKey[]
+  users         User[]
+  tenders       Tender[]
+  audits        AuditLog[]
+  apiKeys       ApiKey[]
+  scrapingLogs  ScrapingLog[]
+  notificationLogs NotificationLog[]
 
   @@index([subdomain])
   @@index([isActive])
@@ -117,29 +129,35 @@ model Tenant {
 }
 
 model User {
-  id          String    @id @default(uuid())
-  tenantId    String
-  email       String
-  firstName   String
-  lastName    String
-  role        UserRole  @default(member)
-  isActive    Boolean   @default(true)
-  lastLoginAt DateTime?
-  settings    Json      @default("{}")
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
-  deletedAt   DateTime?
+  id           String    @id @default(uuid())
+  tenantId     String
+  email        String
+  passwordHash String?   // bcrypt hash of user password
+  firstName    String
+  lastName     String
+  phone        String?   // Phone number for SMS notifications
+  role         UserRole  @default(member)
+  isActive     Boolean   @default(true)
+  lastLoginAt  DateTime?
+  settings     Json      @default("{}")
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+  deletedAt    DateTime?
 
   // Relations
-  tenant          Tenant             @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  tenant            Tenant             @relation(fields: [tenantId], references: [id], onDelete: Cascade)
   tenderAssignments TenderAssignment[]
-  createdTenders  Tender[]           @relation("TenderCreator")
-  ownedBids       Bid[]              @relation("BidOwner")
-  documents       Document[]         @relation("DocumentUploader")
-  submissions     Submission[]       @relation("SubmissionCreator")
-  comments        Comment[]
-  notifications   Notification[]
-  audits          AuditLog[]         @relation("AuditUser")
+  createdTenders    Tender[]           @relation("TenderCreator")
+  ownedBids         Bid[]              @relation("BidOwner")
+  documents         Document[]         @relation("DocumentUploader")
+  submissions       Submission[]       @relation("SubmissionCreator")
+  comments          Comment[]
+  notifications     Notification[]
+  audits            AuditLog[]         @relation("AuditUser")
+  triggeredScrapings ScrapingLog[]     @relation("ScrapingTriggeredBy")
+  sessions          Session[]
+  notificationPreferences NotificationPreference[]
+  notificationLogs  NotificationLog[]
 
   @@unique([tenantId, email])
   @@index([tenantId, role])
@@ -168,6 +186,15 @@ model Tender {
   updatedAt       DateTime       @updatedAt
   deletedAt       DateTime?
 
+  // Scraper-specific fields
+  scrapedAt       DateTime?      // When tender was scraped
+  sourcePortal    String?        // Portal name (e.g., "zakup.sk.kz")
+  originalTitle   String?        // Original title in source language
+  originalStatus  String?        // Original status from source
+  originalValue   String?        // Original value string with currency
+  exchangeRates   Json?          // Currency conversion rates used
+  sourceUrl       String?        // Original tender URL
+
   // Relations
   tenant          Tenant             @relation(fields: [tenantId], references: [id], onDelete: Cascade)
   creator         User               @relation("TenderCreator", fields: [createdBy], references: [id])
@@ -186,6 +213,9 @@ model Tender {
   @@index([publishedAt])
   @@index([externalId])
   @@index([createdBy])
+  @@index([sourcePortal])
+  @@index([scrapedAt])
+  @@index([sourcePortal, externalId])
   @@map("tenders")
 }
 
@@ -209,7 +239,7 @@ model TenderAssignment {
 
 model Document {
   id          String       @id @default(uuid())
-  tenderId    String
+  tenderId    String?
   uploadedBy  String
   filename    String
   originalName String
@@ -224,7 +254,7 @@ model Document {
   updatedAt   DateTime     @updatedAt
 
   // Relations
-  tender      Tender       @relation(fields: [tenderId], references: [id], onDelete: Cascade)
+  tender      Tender?      @relation(fields: [tenderId], references: [id], onDelete: Cascade)
   uploader    User         @relation("DocumentUploader", fields: [uploadedBy], references: [id])
 
   @@index([tenderId, type])
@@ -387,6 +417,8 @@ model AuditLog {
   ipAddress   String?
   userAgent   String?
   timestamp   DateTime    @default(now())
+  archived    Boolean     @default(false)
+  archivedAt  DateTime?
 
   // Relations
   tenant      Tenant      @relation(fields: [tenantId], references: [id], onDelete: Cascade)
@@ -396,6 +428,7 @@ model AuditLog {
   @@index([userId])
   @@index([resource, resourceId])
   @@index([action])
+  @@index([archived, timestamp])
   @@map("audit_logs")
 }
 
@@ -455,6 +488,98 @@ model ApiKey {
   @@index([tenantId])
   @@index([isActive])
   @@map("api_keys")
+}
+
+model ScrapingLog {
+  id               String         @id @default(uuid())
+  tenantId         String
+  sourcePortal     String         // e.g., "zakup.sk.kz"
+  status           ScrapingStatus @default(PENDING)
+  startedAt        DateTime       @default(now())
+  completedAt      DateTime?
+  pagesProcessed   Int            @default(0)
+  totalPages       Int?
+  tendersFound     Int            @default(0)
+  tendersImported  Int            @default(0)
+  tendersUpdated   Int            @default(0)
+  tendersSkipped   Int            @default(0)
+  errorMessage     String?
+  errorDetails     Json?
+  metadata         Json           @default("{}")
+  triggeredBy      String         // User ID who triggered the scraping
+  
+  // Relations
+  tenant           Tenant         @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  triggeredByUser  User           @relation("ScrapingTriggeredBy", fields: [triggeredBy], references: [id])
+
+  @@index([tenantId, status])
+  @@index([sourcePortal])
+  @@index([startedAt])
+  @@index([status])
+  @@map("scraping_logs")
+}
+
+// ============================================================================
+// SESSION MANAGEMENT
+// ============================================================================
+
+model Session {
+  id           String    @id @default(cuid())
+  sessionToken String    @unique @map("session_token")
+  userId       String    @map("user_id")
+  expiresAt    DateTime  @map("expires_at")
+  createdAt    DateTime  @default(now()) @map("created_at")
+  updatedAt    DateTime  @updatedAt @map("updated_at")
+  
+  // JSON metadata
+  data         Json      @default("{}")
+  
+  // Relations
+  user         User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@index([userId])
+  @@index([expiresAt])
+  @@map("sessions")
+}
+
+model NotificationPreference {
+  id           String    @id @default(cuid())
+  userId       String    @map("user_id")
+  type         String
+  enabled      Boolean   @default(true)
+  channels     String[]  @default(["email", "inApp"])
+  createdAt    DateTime  @default(now()) @map("created_at")
+  updatedAt    DateTime  @updatedAt @map("updated_at")
+  
+  // Relations
+  user         User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@unique([userId, type])
+  @@index([userId])
+  @@map("notification_preferences")
+}
+
+model NotificationLog {
+  id           String    @id @default(cuid())
+  type         String
+  tenantId     String    @map("tenant_id")
+  userId       String?   @map("user_id")
+  priority     String    @default("normal")
+  channels     String[]
+  recipients   String[]
+  metadata     Json      @default("{}")
+  sentAt       DateTime? @map("sent_at")
+  createdAt    DateTime  @default(now()) @map("created_at")
+  
+  // Relations
+  tenant       Tenant    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  user         User?     @relation(fields: [userId], references: [id], onDelete: SetNull)
+  
+  @@index([tenantId])
+  @@index([userId])
+  @@index([type])
+  @@index([sentAt])
+  @@map("notification_logs")
 }
 
 // ============================================================================

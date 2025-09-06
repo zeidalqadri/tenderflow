@@ -1,7 +1,7 @@
 // Test server factory for TenderFlow API tests
 import { FastifyInstance } from 'fastify';
 import { createServer } from '../../server';
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient } from '../../generated/prisma';
 
 export interface TestServerConfig {
   isolateDatabase?: boolean;

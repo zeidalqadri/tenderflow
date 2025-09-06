@@ -1,8 +1,9 @@
 // Authentication routes for TenderFlow API
 import { FastifyInstance, FastifyPluginAsync } from 'fastify';
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient } from '../generated/prisma';
 import bcrypt from 'bcrypt';
 import { z } from 'zod';
+import { zodToJsonSchema } from 'zod-to-json-schema';
 import {
   LoginSchema,
   RefreshTokenSchema,
@@ -27,13 +28,13 @@ const authRoutes: FastifyPluginAsync = async (fastify: FastifyInstance) => {
     schema: {
       description: 'Authenticate user and return JWT tokens',
       tags: ['Authentication'],
-      body: LoginSchema,
+      body: zodToJsonSchema(LoginSchema),
       response: {
-        200: ApiResponseSchema(z.object({
+        200: zodToJsonSchema(ApiResponseSchema(z.object({
           user: UserBaseSchema,
           accessToken: z.string(),
           refreshToken: z.string(),
-        })),
+        }))),
         401: {
           type: 'object',
           properties: {
@@ -82,9 +83,12 @@ const authRoutes: FastifyPluginAsync = async (fastify: FastifyInstance) => {
         throw new AuthenticationError('User account is disabled');
       }
 
-      // For demo purposes - in real implementation, passwords would be properly hashed
-      // TODO: Add password hashing field to User model
-      const isValidPassword = password === 'password123'; // Mock validation
+      // Verify password hash
+      if (!user.passwordHash) {
+        throw new AuthenticationError('Account setup incomplete. Please contact administrator.');
+      }
+      
+      const isValidPassword = await bcrypt.compare(password, user.passwordHash);
       if (!isValidPassword) {
         throw new AuthenticationError('Invalid email or password');
       }
@@ -149,12 +153,12 @@ const authRoutes: FastifyPluginAsync = async (fastify: FastifyInstance) => {
     schema: {
       description: 'Refresh access token using refresh token',
       tags: ['Authentication'],
-      body: RefreshTokenSchema,
+      body: zodToJsonSchema(RefreshTokenSchema),
       response: {
-        200: ApiResponseSchema(z.object({
+        200: zodToJsonSchema(ApiResponseSchema(z.object({
           accessToken: z.string(),
           refreshToken: z.string(),
-        })),
+        }))),
       },
     },
   }, async (request, reply) => {
@@ -207,9 +211,9 @@ const authRoutes: FastifyPluginAsync = async (fastify: FastifyInstance) => {
       tags: ['Authentication'],
       security: [{ bearerAuth: [] }],
       response: {
-        200: ApiResponseSchema(z.object({
+        200: zodToJsonSchema(ApiResponseSchema(z.object({
           message: z.string(),
-        })),
+        }))),
       },
     },
     preHandler: fastify.authenticate,
@@ -241,9 +245,9 @@ const authRoutes: FastifyPluginAsync = async (fastify: FastifyInstance) => {
     schema: {
       description: 'Register new tenant and admin user',
       tags: ['Authentication'],
-      body: RegisterSchema,
+      body: zodToJsonSchema(RegisterSchema),
       response: {
-        201: ApiResponseSchema(z.object({
+        201: zodToJsonSchema(ApiResponseSchema(z.object({
           user: UserBaseSchema,
           tenant: z.object({
             id: z.string(),
@@ -252,7 +256,7 @@ const authRoutes: FastifyPluginAsync = async (fastify: FastifyInstance) => {
           }),
           accessToken: z.string(),
           refreshToken: z.string(),
-        })),
+        }))),
       },
     },
   }, async (request, reply) => {
@@ -277,8 +281,8 @@ const authRoutes: FastifyPluginAsync = async (fastify: FastifyInstance) => {
         throw new ConflictError('Subdomain already taken');
       }
 
-      // TODO: Hash password properly
-      // const hashedPassword = await bcrypt.hash(password, 12);
+      // Hash password securely
+      const hashedPassword = await bcrypt.hash(password, 12);
 
       // Create tenant and user in transaction
       const result = await prisma.$transaction(async (tx) => {
@@ -296,6 +300,7 @@ const authRoutes: FastifyPluginAsync = async (fastify: FastifyInstance) => {
           data: {
             tenantId: tenant.id,
             email,
+            passwordHash: hashedPassword,
             firstName,
             lastName,
             role: 'admin',
@@ -371,11 +376,11 @@ const authRoutes: FastifyPluginAsync = async (fastify: FastifyInstance) => {
     schema: {
       description: 'Request password reset',
       tags: ['Authentication'],
-      body: PasswordResetSchema,
+      body: zodToJsonSchema(PasswordResetSchema),
       response: {
-        200: ApiResponseSchema(z.object({
+        200: zodToJsonSchema(ApiResponseSchema(z.object({
           message: z.string(),
-        })),
+        }))),
       },
     },
   }, async (request, reply) => {
@@ -390,7 +395,7 @@ const authRoutes: FastifyPluginAsync = async (fastify: FastifyInstance) => {
       });
 
       if (!user) {
-        // Don't reveal if email exists or not
+        // Don't reveal if email exists or not - return success anyway
         return reply.send({
           success: true,
           data: {
@@ -399,17 +404,37 @@ const authRoutes: FastifyPluginAsync = async (fastify: FastifyInstance) => {
         });
       }
 
-      // In a real implementation, you would:
-      // 1. Generate a secure reset token
-      // 2. Store it with expiration time
-      // 3. Send email with reset link
-      
-      fastify.log.info({ email }, 'Password reset requested');
+      // Generate a secure reset token (valid for 1 hour)
+      const resetToken = await fastify.jwt.sign(
+        { 
+          userId: user.id, 
+          purpose: 'password_reset',
+          email: user.email 
+        },
+        { expiresIn: '1h' }
+      );
+
+      // Store reset token in user settings (in production, use dedicated table)
+      await prisma.user.update({
+        where: { id: user.id },
+        data: {
+          settings: {
+            ...((user.settings as any) || {}),
+            passwordResetToken: resetToken,
+            passwordResetExpires: new Date(Date.now() + 60 * 60 * 1000).toISOString(), // 1 hour
+          },
+        },
+      });
+
+      // In production, send email with reset link containing the token
+      fastify.log.info({ email }, 'Password reset token generated');
 
       return reply.send({
         success: true,
         data: {
           message: 'If the email exists, a reset link has been sent',
+          // In development, return the token for testing
+          ...(fastify.config.NODE_ENV === 'development' && { resetToken }),
         },
       });
     } catch (error) {
@@ -423,24 +448,76 @@ const authRoutes: FastifyPluginAsync = async (fastify: FastifyInstance) => {
     schema: {
       description: 'Confirm password reset with token',
       tags: ['Authentication'],
-      body: PasswordResetConfirmSchema,
+      body: zodToJsonSchema(PasswordResetConfirmSchema),
       response: {
-        200: ApiResponseSchema(z.object({
+        200: zodToJsonSchema(ApiResponseSchema(z.object({
           message: z.string(),
-        })),
+        }))),
       },
     },
   }, async (request, reply) => {
     const { token, password } = request.body as any;
 
     try {
-      // In a real implementation, you would:
-      // 1. Verify the reset token
-      // 2. Check if it's not expired
-      // 3. Update the user's password
-      // 4. Invalidate the token
+      // Verify the reset token
+      const payload = await fastify.jwt.verify(token) as any;
+      
+      if (payload.purpose !== 'password_reset') {
+        throw new NotFoundError('Invalid reset token');
+      }
 
-      throw new NotFoundError('Invalid or expired reset token');
+      // Find user and verify token matches
+      const user = await prisma.user.findUnique({
+        where: { id: payload.userId },
+      });
+
+      if (!user) {
+        throw new NotFoundError('User not found');
+      }
+
+      const userSettings = (user.settings as any) || {};
+      if (!userSettings.passwordResetToken || 
+          userSettings.passwordResetToken !== token ||
+          new Date() > new Date(userSettings.passwordResetExpires)) {
+        throw new NotFoundError('Invalid or expired reset token');
+      }
+
+      // Hash the new password
+      const hashedPassword = await bcrypt.hash(password, 12);
+
+      // Update password and clear reset token
+      await prisma.user.update({
+        where: { id: user.id },
+        data: {
+          passwordHash: hashedPassword,
+          settings: {
+            ...userSettings,
+            passwordResetToken: null,
+            passwordResetExpires: null,
+          },
+        },
+      });
+
+      // Audit log
+      await fastify.audit({
+        tenantId: user.tenantId,
+        userId: user.id,
+        action: 'UPDATE',
+        resource: 'user',
+        resourceId: user.id,
+        newValues: { passwordReset: true },
+        ipAddress: request.ip,
+        userAgent: request.headers['user-agent'],
+      });
+
+      fastify.log.info({ userId: user.id }, 'Password reset completed successfully');
+
+      return reply.send({
+        success: true,
+        data: {
+          message: 'Password reset successfully',
+        },
+      });
     } catch (error) {
       if (error instanceof NotFoundError) {
         throw error;
@@ -457,13 +534,13 @@ const authRoutes: FastifyPluginAsync = async (fastify: FastifyInstance) => {
       tags: ['Authentication'],
       security: [{ bearerAuth: [] }],
       response: {
-        200: ApiResponseSchema(UserBaseSchema.extend({
+        200: zodToJsonSchema(ApiResponseSchema(UserBaseSchema.extend({
           tenant: z.object({
             id: z.string(),
             name: z.string(),
             subdomain: z.string(),
           }),
-        })),
+        }))),
       },
     },
     preHandler: fastify.authenticate,

@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 import { PrismaClient, TenderStatus, TenderCategory, UserRole, TenderRole, DocumentType } from '../generated/prisma';
 import bcrypt from 'bcrypt';
 

@@ -1,3 +1,4 @@
+import React from 'react'
 import { NextRequest, NextResponse } from 'next/server'
 import { useAuthStore } from '@/stores/auth-store'
 import type { UserRole } from '@tenderflow/shared'

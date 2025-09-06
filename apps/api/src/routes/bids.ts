@@ -1,7 +1,8 @@
 // Bid workspace routes for TenderFlow API
 import { FastifyInstance, FastifyPluginAsync } from 'fastify';
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient } from '../generated/prisma';
 import { z } from 'zod';
+import { toJsonSchema } from '../utils/schema-converter';
 import {
   BidBaseSchema,
   UpdateBidSchema,
@@ -20,8 +21,8 @@ const bidRoutes: FastifyPluginAsync = async (fastify: FastifyInstance) => {
       description: 'Get bid workspace for tender',
       tags: ['Bids'],
       security: [{ bearerAuth: [] }],
-      params: z.object({ tenderId: UuidSchema }),
-      response: { 200: ApiResponseSchema(BidBaseSchema.nullable()) },
+      params: toJsonSchema(z.object({ tenderId: UuidSchema })),
+      response: { 200: toJsonSchema(ApiResponseSchema(BidBaseSchema.nullable())) },
     },
     preHandler: [
       fastify.authenticate,
@@ -52,9 +53,9 @@ const bidRoutes: FastifyPluginAsync = async (fastify: FastifyInstance) => {
       description: 'Update bid workspace',
       tags: ['Bids'],
       security: [{ bearerAuth: [] }],
-      params: z.object({ tenderId: UuidSchema }),
-      body: UpdateBidSchema,
-      response: { 200: ApiResponseSchema(BidBaseSchema) },
+      params: toJsonSchema(z.object({ tenderId: UuidSchema })),
+      body: toJsonSchema(UpdateBidSchema),
+      response: { 200: toJsonSchema(ApiResponseSchema(BidBaseSchema)) },
     },
     preHandler: [
       fastify.authenticate,
@@ -102,9 +103,9 @@ const bidRoutes: FastifyPluginAsync = async (fastify: FastifyInstance) => {
       description: 'Submit bid for tender',
       tags: ['Bids'],
       security: [{ bearerAuth: [] }],
-      params: z.object({ tenderId: UuidSchema }),
-      body: SubmitBidSchema,
-      response: { 200: ApiResponseSchema(BidBaseSchema) },
+      params: toJsonSchema(z.object({ tenderId: UuidSchema })),
+      body: toJsonSchema(SubmitBidSchema),
+      response: { 200: toJsonSchema(ApiResponseSchema(BidBaseSchema)) },
     },
     preHandler: [
       fastify.authenticate,

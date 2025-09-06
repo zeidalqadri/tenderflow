@@ -107,12 +107,19 @@ public
 .yarn/install-state.gz
 .pnp.*
 
-# Environment Variables
+# Environment Variables - SECURITY CRITICAL
 .env
+.env.*
 .env.local
 .env.development.local
 .env.test.local
 .env.production.local
+.env.staging
+.env.backup
+.env.supabase.backup
+*.env.backup
+**/credential-backups/
+**/secrets/
 
 # Vercel
 .vercel

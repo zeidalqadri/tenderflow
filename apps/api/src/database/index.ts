@@ -228,6 +228,7 @@ export async function initializeDatabase(config?: DatabaseConfig): Promise<{
     // Get initial stats
     const stats = await getDatabaseStats();
 
+    // eslint-disable-next-line no-console
     console.log('✅ Database initialized successfully');
     
     return {
@@ -236,6 +237,7 @@ export async function initializeDatabase(config?: DatabaseConfig): Promise<{
       stats: stats || undefined,
     };
   } catch (error) {
+    // eslint-disable-next-line no-console
     console.error('❌ Database initialization failed:', error);
     throw error;
   }
@@ -245,8 +247,10 @@ export async function initializeDatabase(config?: DatabaseConfig): Promise<{
 export async function shutdownDatabase(): Promise<void> {
   try {
     await prisma.$disconnect();
+    // eslint-disable-next-line no-console
     console.log('✅ Database connection closed gracefully');
   } catch (error) {
+    // eslint-disable-next-line no-console
     console.error('❌ Error during database shutdown:', error);
     throw error;
   }

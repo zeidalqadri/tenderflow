@@ -1,168 +1,296 @@
 import { create } from 'zustand'
-import { persist, createJSONStorage } from 'zustand/middleware'
+import { persist } from 'zustand/middleware'
 
-type Screen = 
-  | 'inbox' 
-  | 'validate' 
-  | 'categorize' 
-  | 'alerts' 
-  | 'docs' 
-  | 'bid-workspace' 
-  | 'submissions' 
-  | 'reports' 
-  | 'outcomes'
+export type Theme = 'light' | 'dark' | 'system'
+export type ViewMode = 'table' | 'grid' | 'list'
 
-interface UIState {
-  activeScreen: Screen
-  sidebarCollapsed: boolean
-  showHelp: boolean
-  showNotes: boolean
-  notifications: Array<{
-    id: string
-    type: 'success' | 'error' | 'warning' | 'info'
-    title: string
-    message: string
-    timestamp: Date
-    read: boolean
-  }>
-  filters: {
-    search: string
-    status: string[]
-    assignee: string[]
-    dateRange: {
-      from: Date | null
-      to: Date | null
-    }
+export interface PreferencesState {
+  keyboardShortcutsEnabled: boolean
+  autoSave: boolean
+  compactMode: boolean
+  showTooltips: boolean
+}
+
+export interface FilterState {
+  search: string
+  status: string[]
+  category: string[]
+  priority: string[]
+  source: string[]
+  dateRange: {
+    from: Date | null
+    to: Date | null
   }
-  preferences: {
-    itemsPerPage: number
-    defaultView: 'table' | 'cards' | 'list'
-    autoRefresh: boolean
-    showArchivedItems: boolean
-    keyboardShortcutsEnabled: boolean
+  valueRange: {
+    min: number | null
+    max: number | null
   }
 }
 
-interface UIActions {
-  setActiveScreen: (screen: Screen) => void
+export interface UIState {
+  // Theme and appearance
+  theme: Theme
+  sidebarCollapsed: boolean
+  showNotes: boolean
+  
+  // Navigation and screen state
+  activeScreen: string
+  showHelp: boolean
+  
+  // User preferences
+  preferences: PreferencesState
+  
+  // View preferences
+  viewMode: ViewMode
+  itemsPerPage: number
+  
+  // Filters
+  filters: FilterState
+  
+  // UI state
+  isLoading: boolean
+  notifications: Notification[]
+  modals: {
+    [key: string]: boolean
+  }
+  
+  // Actions
+  setTheme: (theme: Theme) => void
   toggleSidebar: () => void
   setSidebarCollapsed: (collapsed: boolean) => void
-  toggleHelp: () => void
   toggleNotes: () => void
-  addNotification: (notification: Omit<UIState['notifications'][0], 'id' | 'timestamp' | 'read'>) => void
-  markNotificationRead: (id: string) => void
-  clearNotifications: () => void
-  updateFilters: (filters: Partial<UIState['filters']>) => void
+  setShowNotes: (show: boolean) => void
+  
+  // Navigation actions
+  setActiveScreen: (screen: string) => void
+  toggleHelp: () => void
+  setShowHelp: (show: boolean) => void
+  
+  // Preferences actions
+  updatePreferences: (preferences: Partial<PreferencesState>) => void
+  
+  setViewMode: (mode: ViewMode) => void
+  setItemsPerPage: (count: number) => void
+  
+  updateFilters: (filters: Partial<FilterState>) => void
   clearFilters: () => void
-  updatePreferences: (preferences: Partial<UIState['preferences']>) => void
-  getKeyboardShortcuts: () => Record<string, Screen>
+  
+  setLoading: (loading: boolean) => void
+  
+  addNotification: (notification: Omit<Notification, 'id'>) => void
+  removeNotification: (id: string) => void
+  clearNotifications: () => void
+  
+  openModal: (modalId: string) => void
+  closeModal: (modalId: string) => void
+  toggleModal: (modalId: string) => void
 }
 
-type UIStore = UIState & UIActions
+export interface Notification {
+  id: string
+  type: 'info' | 'success' | 'warning' | 'error'
+  title: string
+  message: string
+  timestamp: Date
+  read: boolean
+  persistent?: boolean
+}
 
-export const useUIStore = create<UIStore>()(
+const defaultFilters: FilterState = {
+  search: '',
+  status: [],
+  category: [],
+  priority: [],
+  source: [],
+  dateRange: {
+    from: null,
+    to: null,
+  },
+  valueRange: {
+    min: null,
+    max: null,
+  },
+}
+
+const defaultPreferences: PreferencesState = {
+  keyboardShortcutsEnabled: true,
+  autoSave: true,
+  compactMode: false,
+  showTooltips: true,
+}
+
+export const useUIStore = create<UIState>()(
   persist(
     (set, get) => ({
-      // State
-      activeScreen: 'inbox',
+      // Initial state
+      theme: 'system',
       sidebarCollapsed: false,
+      showNotes: true, // Show development notes by default
+      
+      // Navigation and screen state
+      activeScreen: 'inbox', // Default to inbox screen
       showHelp: false,
-      showNotes: false,
+      
+      // User preferences
+      preferences: defaultPreferences,
+      
+      viewMode: 'list',
+      itemsPerPage: 20,
+      
+      filters: defaultFilters,
+      
+      isLoading: false,
       notifications: [],
-      filters: {
-        search: '',
-        status: [],
-        assignee: [],
-        dateRange: {
-          from: null,
-          to: null,
-        },
+      modals: {},
+      
+      // Theme and appearance actions
+      setTheme: (theme: Theme) => {
+        set({ theme })
+        
+        // Apply theme to document
+        if (typeof document !== 'undefined') {
+          const root = document.documentElement
+          
+          if (theme === 'system') {
+            const systemTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
+            root.classList.toggle('dark', systemTheme === 'dark')
+          } else {
+            root.classList.toggle('dark', theme === 'dark')
+          }
+        }
       },
-      preferences: {
-        itemsPerPage: 20,
-        defaultView: 'table',
-        autoRefresh: true,
-        showArchivedItems: false,
-        keyboardShortcutsEnabled: true,
+      
+      toggleSidebar: () => {
+        set(state => ({ sidebarCollapsed: !state.sidebarCollapsed }))
       },
-
-      // Actions
-      setActiveScreen: (screen) => set({ activeScreen: screen }),
-
-      toggleSidebar: () =>
-        set((state) => ({ sidebarCollapsed: !state.sidebarCollapsed })),
-
-      setSidebarCollapsed: (collapsed) => set({ sidebarCollapsed: collapsed }),
-
-      toggleHelp: () => set((state) => ({ showHelp: !state.showHelp })),
-
-      toggleNotes: () => set((state) => ({ showNotes: !state.showNotes })),
-
-      addNotification: (notification) =>
-        set((state) => ({
-          notifications: [
-            {
-              ...notification,
-              id: Math.random().toString(36).substr(2, 9),
-              timestamp: new Date(),
-              read: false,
-            },
-            ...state.notifications,
-          ],
-        })),
-
-      markNotificationRead: (id) =>
-        set((state) => ({
-          notifications: state.notifications.map((n) =>
-            n.id === id ? { ...n, read: true } : n
-          ),
-        })),
-
-      clearNotifications: () => set({ notifications: [] }),
-
-      updateFilters: (filters) =>
-        set((state) => ({
-          filters: { ...state.filters, ...filters },
-        })),
-
-      clearFilters: () =>
-        set({
-          filters: {
-            search: '',
-            status: [],
-            assignee: [],
-            dateRange: {
-              from: null,
-              to: null,
-            },
-          },
-        }),
-
-      updatePreferences: (preferences) =>
-        set((state) => ({
-          preferences: { ...state.preferences, ...preferences },
-        })),
-
-      getKeyboardShortcuts: () => ({
-        g: 'inbox',
-        v: 'validate', 
-        c: 'categorize',
-        a: 'alerts',
-        d: 'docs',
-        b: 'bid-workspace',
-        s: 'submissions',
-        r: 'reports',
-        o: 'outcomes',
-      }),
+      
+      setSidebarCollapsed: (collapsed: boolean) => {
+        set({ sidebarCollapsed: collapsed })
+      },
+      
+      toggleNotes: () => {
+        set(state => ({ showNotes: !state.showNotes }))
+      },
+      
+      setShowNotes: (show: boolean) => {
+        set({ showNotes: show })
+      },
+      
+      // Navigation actions
+      setActiveScreen: (screen: string) => {
+        set({ activeScreen: screen })
+      },
+      
+      toggleHelp: () => {
+        set(state => ({ showHelp: !state.showHelp }))
+      },
+      
+      setShowHelp: (show: boolean) => {
+        set({ showHelp: show })
+      },
+      
+      // Preferences actions
+      updatePreferences: (newPreferences: Partial<PreferencesState>) => {
+        set(state => ({
+          preferences: { ...state.preferences, ...newPreferences }
+        }))
+      },
+      
+      // View preferences
+      setViewMode: (mode: ViewMode) => {
+        set({ viewMode: mode })
+      },
+      
+      setItemsPerPage: (count: number) => {
+        set({ itemsPerPage: count })
+      },
+      
+      // Filter actions
+      updateFilters: (newFilters: Partial<FilterState>) => {
+        set(state => ({
+          filters: { ...state.filters, ...newFilters }
+        }))
+      },
+      
+      clearFilters: () => {
+        set({ filters: defaultFilters })
+      },
+      
+      // Loading state
+      setLoading: (loading: boolean) => {
+        set({ isLoading: loading })
+      },
+      
+      // Notification actions
+      addNotification: (notification: Omit<Notification, 'id'>) => {
+        const id = `notification_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
+        const newNotification: Notification = {
+          ...notification,
+          id,
+          timestamp: new Date(),
+          read: false,
+        }
+        
+        set(state => ({
+          notifications: [newNotification, ...state.notifications].slice(0, 50) // Keep max 50 notifications
+        }))
+        
+        // Auto-remove non-persistent notifications after 5 seconds
+        if (!notification.persistent) {
+          setTimeout(() => {
+            get().removeNotification(id)
+          }, 5000)
+        }
+      },
+      
+      removeNotification: (id: string) => {
+        set(state => ({
+          notifications: state.notifications.filter(n => n.id !== id)
+        }))
+      },
+      
+      clearNotifications: () => {
+        set({ notifications: [] })
+      },
+      
+      // Modal actions
+      openModal: (modalId: string) => {
+        set(state => ({
+          modals: { ...state.modals, [modalId]: true }
+        }))
+      },
+      
+      closeModal: (modalId: string) => {
+        set(state => ({
+          modals: { ...state.modals, [modalId]: false }
+        }))
+      },
+      
+      toggleModal: (modalId: string) => {
+        set(state => ({
+          modals: { ...state.modals, [modalId]: !state.modals[modalId] }
+        }))
+      },
     }),
     {
       name: 'tenderflow-ui',
-      storage: createJSONStorage(() => localStorage),
       partialize: (state) => ({
+        theme: state.theme,
         sidebarCollapsed: state.sidebarCollapsed,
         showNotes: state.showNotes,
+        activeScreen: state.activeScreen,
+        showHelp: state.showHelp,
         preferences: state.preferences,
+        viewMode: state.viewMode,
+        itemsPerPage: state.itemsPerPage,
+        filters: state.filters,
       }),
+      onRehydrateStorage: () => (state) => {
+        if (state && typeof document !== 'undefined') {
+          // Apply theme on rehydration
+          state.setTheme(state.theme)
+        }
+      },
     }
   )
 )

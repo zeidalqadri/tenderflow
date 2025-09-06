@@ -11,7 +11,11 @@ export const metadata: Metadata = {
   keywords: ['tender management', 'procurement', 'bid management', 'business automation'],
   authors: [{ name: 'TenderFlow Team' }],
   icons: {
-    icon: '/favicon.svg',
+    icon: [
+      { url: '/favicon.ico', sizes: '32x32', type: 'image/x-icon' },
+      { url: '/favicon.svg', type: 'image/svg+xml' },
+    ],
+    shortcut: '/favicon.ico',
   },
 };
 

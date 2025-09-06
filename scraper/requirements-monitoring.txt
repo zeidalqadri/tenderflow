@@ -1,0 +1,28 @@
+# Monitoring dependencies for TenderFlow Scraper
+# OpenTelemetry
+opentelemetry-api==1.21.0
+opentelemetry-sdk==1.21.0
+opentelemetry-instrumentation==0.42b0
+opentelemetry-instrumentation-requests==0.42b0
+opentelemetry-instrumentation-psycopg2==0.42b0
+opentelemetry-instrumentation-redis==0.42b0
+opentelemetry-instrumentation-sqlalchemy==0.42b0
+
+# GCP exporters
+opentelemetry-exporter-gcp-monitoring==1.6.0
+opentelemetry-exporter-gcp-trace==1.6.0
+google-cloud-monitoring==2.16.0
+google-cloud-trace==1.11.3
+
+# Prometheus
+prometheus-client==0.19.0
+opentelemetry-exporter-prometheus==0.42b0
+
+# System monitoring
+psutil==5.9.6
+py-cpuinfo==9.0.0
+
+# HTTP server for health checks
+flask==3.0.0
+gunicorn==21.2.0
+werkzeug==3.0.1

@@ -278,8 +278,8 @@ JWT_REFRESH_SECRET="your-super-secret-refresh-jwt-key-change-in-production"
 # Storage
 MINIO_ENDPOINT="localhost"
 MINIO_PORT="9000"
-MINIO_ACCESS_KEY="minioadmin"
-MINIO_SECRET_KEY="minioadmin"
+MINIO_ACCESS_KEY="[SECURE_CREDENTIAL]"
+MINIO_SECRET_KEY="[SECURE_CREDENTIAL]"
 
 # Features
 ENABLE_OCR="true"

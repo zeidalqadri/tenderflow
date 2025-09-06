@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Socket.IO Test</title>
+    <script src="https://cdn.socket.io/4.6.0/socket.io.min.js"></script>
+</head>
+<body>
+    <h1>Socket.IO Connection Test</h1>
+    <div id="status">Connecting...</div>
+    <div id="messages"></div>
+    
+    <button onclick="subscribeToScraper()">Subscribe to Scraper</button>
+    <button onclick="testSearch()">Test Search</button>
+    
+    <script>
+        // Connect to Socket.IO server
+        const socket = io('http://localhost:3457', {
+            path: '/ws',
+            transports: ['websocket', 'polling'],
+            auth: {
+                token: 'dev-token',
+                userId: 'dev-user-001',
+                tenantId: 'dev-tenant-001'
+            }
+        });
+        
+        const statusEl = document.getElementById('status');
+        const messagesEl = document.getElementById('messages');
+        
+        function addMessage(msg) {
+            const div = document.createElement('div');
+            div.textContent = `[${new Date().toLocaleTimeString()}] ${msg}`;
+            messagesEl.appendChild(div);
+            console.log(msg);
+        }
+        
+        // Connection event handlers
+        socket.on('connect', () => {
+            statusEl.textContent = '✅ Connected! Socket ID: ' + socket.id;
+            statusEl.style.color = 'green';
+            addMessage('Connected to server');
+        });
+        
+        socket.on('disconnect', (reason) => {
+            statusEl.textContent = '❌ Disconnected: ' + reason;
+            statusEl.style.color = 'red';
+            addMessage('Disconnected: ' + reason);
+        });
+        
+        socket.on('connect_error', (error) => {
+            statusEl.textContent = '❌ Connection Error';
+            statusEl.style.color = 'red';
+            addMessage('Connection error: ' + error.message);
+            console.error('Socket.IO connection error:', error);
+        });
+        
+        // Listen for messages from server
+        socket.on('connected', (data) => {
+            addMessage('Server welcome: ' + JSON.stringify(data));
+        });
+        
+        socket.on('tender:new', (tender) => {
+            addMessage('New tender: ' + tender.title);
+        });
+        
+        socket.on('tender:update', (update) => {
+            addMessage('Tender updated: ' + update.id);
+        });
+        
+        socket.on('scraper:status', (status) => {
+            addMessage('Scraper status: ' + JSON.stringify(status));
+        });
+        
+        socket.on('scraper:completed', (data) => {
+            addMessage('Scraping completed: ' + JSON.stringify(data));
+        });
+        
+        socket.on('statistics:update', (stats) => {
+            addMessage('Statistics update: ' + JSON.stringify(stats));
+        });
+        
+        // Test functions
+        function subscribeToScraper() {
+            socket.emit('subscribe:scraper');
+            addMessage('Subscribed to scraper updates');
+        }
+        
+        function testSearch() {
+            socket.emit('search:tenders', 'test');
+            addMessage('Searching for "test"...');
+            
+            socket.once('search:results', (results) => {
+                addMessage('Search results: ' + results.length + ' tenders found');
+            });
+            
+            socket.once('search:error', (error) => {
+                addMessage('Search error: ' + error.message);
+            });
+        }
+    </script>
+</body>
+</html>

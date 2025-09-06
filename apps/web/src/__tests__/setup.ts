@@ -1,4 +1,5 @@
 // Test setup for TenderFlow Web application
+import React from 'react';
 import '@testing-library/jest-dom';
 import { server } from './__mocks__/msw/server';
 

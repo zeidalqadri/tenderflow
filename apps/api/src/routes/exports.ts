@@ -1,7 +1,8 @@
 // Export routes for TenderFlow API
 import { FastifyInstance, FastifyPluginAsync } from 'fastify';
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient } from '../generated/prisma';
 import { z } from 'zod';
+import { toJsonSchema } from '../utils/schema-converter';
 import {
   ExportRequestSchema,
   ExportStatusSchema,
@@ -18,12 +19,12 @@ const exportRoutes: FastifyPluginAsync = async (fastify: FastifyInstance) => {
       description: 'Request data export',
       tags: ['Exports'],
       security: [{ bearerAuth: [] }],
-      body: ExportRequestSchema,
+      body: toJsonSchema(ExportRequestSchema),
       response: {
-        202: ApiResponseSchema(z.object({
+        202: toJsonSchema(ApiResponseSchema(z.object({
           exportId: z.string(),
           message: z.string(),
-        })),
+        }))),
       },
     },
     preHandler: [fastify.authenticate, fastify.requireTenant],
@@ -69,8 +70,8 @@ const exportRoutes: FastifyPluginAsync = async (fastify: FastifyInstance) => {
       description: 'Get export job status',
       tags: ['Exports'],
       security: [{ bearerAuth: [] }],
-      params: z.object({ exportId: z.string() }),
-      response: { 200: ApiResponseSchema(ExportStatusSchema) },
+      params: toJsonSchema(z.object({ exportId: z.string() })),
+      response: { 200: toJsonSchema(ApiResponseSchema(ExportStatusSchema)) },
     },
     preHandler: [fastify.authenticate, fastify.requireTenant],
   }, async (request, reply) => {
@@ -104,7 +105,7 @@ const exportRoutes: FastifyPluginAsync = async (fastify: FastifyInstance) => {
       description: 'Download export file',
       tags: ['Exports'],
       security: [{ bearerAuth: [] }],
-      params: z.object({ exportId: z.string() }),
+      params: toJsonSchema(z.object({ exportId: z.string() })),
     },
     preHandler: [fastify.authenticate, fastify.requireTenant],
   }, async (request, reply) => {

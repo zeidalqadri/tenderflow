@@ -1,7 +1,8 @@
 // Submission tracking routes for TenderFlow API
 import { FastifyInstance, FastifyPluginAsync } from 'fastify';
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient } from '../generated/prisma';
 import { z } from 'zod';
+import { toJsonSchema } from '../utils/schema-converter';
 import {
   SubmissionBaseSchema,
   CreateSubmissionSchema,
@@ -22,9 +23,9 @@ const submissionRoutes: FastifyPluginAsync = async (fastify: FastifyInstance) =>
       description: 'Get paginated list of submissions',
       tags: ['Submissions'],
       security: [{ bearerAuth: [] }],
-      querystring: SubmissionQuerySchema,
+      querystring: toJsonSchema(SubmissionQuerySchema),
       response: {
-        200: PaginatedResponseSchema(SubmissionBaseSchema.extend({
+        200: toJsonSchema(PaginatedResponseSchema(SubmissionBaseSchema.extend({
           tender: z.object({
             id: z.string(),
             title: z.string(),
@@ -33,7 +34,7 @@ const submissionRoutes: FastifyPluginAsync = async (fastify: FastifyInstance) =>
             firstName: z.string(),
             lastName: z.string(),
           }),
-        })),
+        }))),
       },
     },
     preHandler: [fastify.authenticate, fastify.requireTenant],
@@ -91,8 +92,8 @@ const submissionRoutes: FastifyPluginAsync = async (fastify: FastifyInstance) =>
       description: 'Create new submission record',
       tags: ['Submissions'],
       security: [{ bearerAuth: [] }],
-      body: CreateSubmissionSchema,
-      response: { 201: ApiResponseSchema(SubmissionBaseSchema) },
+      body: toJsonSchema(CreateSubmissionSchema),
+      response: { 201: toJsonSchema(ApiResponseSchema(SubmissionBaseSchema)) },
     },
     preHandler: [
       fastify.authenticate,
@@ -160,9 +161,9 @@ const submissionRoutes: FastifyPluginAsync = async (fastify: FastifyInstance) =>
       description: 'Update submission record',
       tags: ['Submissions'],
       security: [{ bearerAuth: [] }],
-      params: z.object({ id: UuidSchema }),
-      body: UpdateSubmissionSchema,
-      response: { 200: ApiResponseSchema(SubmissionBaseSchema) },
+      params: toJsonSchema(z.object({ id: UuidSchema })),
+      body: toJsonSchema(UpdateSubmissionSchema),
+      response: { 200: toJsonSchema(ApiResponseSchema(SubmissionBaseSchema)) },
     },
     preHandler: [fastify.authenticate, fastify.requireTenant],
   }, async (request, reply) => {
@@ -214,12 +215,12 @@ const submissionRoutes: FastifyPluginAsync = async (fastify: FastifyInstance) =>
       description: 'Trigger receipt parsing for submission',
       tags: ['Submissions'],
       security: [{ bearerAuth: [] }],
-      params: z.object({ id: UuidSchema }),
+      params: toJsonSchema(z.object({ id: UuidSchema })),
       response: {
-        200: ApiResponseSchema(z.object({
+        200: toJsonSchema(ApiResponseSchema(z.object({
           message: z.string(),
           jobId: z.string().optional(),
-        })),
+        }))),
       },
     },
     preHandler: [fastify.authenticate, fastify.requireTenant],

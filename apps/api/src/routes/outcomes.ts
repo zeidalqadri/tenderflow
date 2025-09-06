@@ -1,7 +1,8 @@
 // Tender outcome routes for TenderFlow API
 import { FastifyInstance, FastifyPluginAsync } from 'fastify';
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient } from '../generated/prisma';
 import { z } from 'zod';
+import { toJsonSchema } from '../utils/schema-converter';
 import {
   TenderBaseSchema,
   ApiResponseSchema,
@@ -18,14 +19,14 @@ const outcomeRoutes: FastifyPluginAsync = async (fastify: FastifyInstance) => {
       description: 'Mark tender as WON',
       tags: ['Tender Outcomes'],
       security: [{ bearerAuth: [] }],
-      params: z.object({ tenderId: UuidSchema }),
-      body: z.object({
+      params: toJsonSchema(z.object({ tenderId: UuidSchema })),
+      body: toJsonSchema(z.object({
         notes: z.string().optional(),
         contractValue: z.number().optional(),
         startDate: z.coerce.date().optional(),
         endDate: z.coerce.date().optional(),
-      }),
-      response: { 200: ApiResponseSchema(TenderBaseSchema) },
+      })),
+      response: { 200: toJsonSchema(ApiResponseSchema(TenderBaseSchema)) },
     },
     preHandler: [
       fastify.authenticate,
@@ -117,13 +118,13 @@ const outcomeRoutes: FastifyPluginAsync = async (fastify: FastifyInstance) => {
       description: 'Mark tender as LOST',
       tags: ['Tender Outcomes'],
       security: [{ bearerAuth: [] }],
-      params: z.object({ tenderId: UuidSchema }),
-      body: z.object({
+      params: toJsonSchema(z.object({ tenderId: UuidSchema })),
+      body: toJsonSchema(z.object({
         reason: z.string().optional(),
         feedback: z.string().optional(),
         competitorInfo: z.record(z.unknown()).optional(),
-      }),
-      response: { 200: ApiResponseSchema(TenderBaseSchema) },
+      })),
+      response: { 200: toJsonSchema(ApiResponseSchema(TenderBaseSchema)) },
     },
     preHandler: [
       fastify.authenticate,

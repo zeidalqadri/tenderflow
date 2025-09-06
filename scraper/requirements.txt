@@ -1,0 +1,59 @@
+# Core scraping dependencies
+selenium>=4.15.0
+beautifulsoup4>=4.12.0
+lxml>=4.9.0
+webdriver-manager>=4.0.0
+undetected-chromedriver>=3.5.0
+selenium-stealth>=1.0.6
+fake-useragent>=1.4.0
+randomua>=0.0.7
+
+# Data processing
+pandas>=2.1.0
+numpy>=1.25.0
+tqdm>=4.66.0
+
+# Database and storage
+psycopg2-binary==2.9.9
+sqlalchemy==2.0.23
+redis==5.0.1
+
+# HTTP and networking
+requests>=2.31.0
+urllib3==2.1.0
+certifi==2023.11.17
+aiohttp==3.9.1
+httpx==0.25.2
+
+# Translation and localization
+googletrans==4.0.0rc1
+forex-python>=1.9.0
+
+# Utilities
+python-dotenv>=1.0.0
+pytz>=2023.3
+pydantic==2.5.2
+tenacity==8.2.3
+schedule==1.2.0
+python-dateutil==2.8.2
+
+# Security
+cryptography==41.0.7
+PyJWT==2.8.0
+
+# Logging
+colorlog==6.8.0
+python-json-logger==2.0.7
+
+# System monitoring
+psutil>=5.9.0
+
+# Web server for health checks
+flask==3.0.0
+gunicorn==21.2.0
+
+# Testing (optional)
+pytest==7.4.3
+pytest-asyncio==0.21.1
+pytest-mock==3.12.0
+faker==20.1.0

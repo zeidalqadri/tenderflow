@@ -30,15 +30,15 @@ import { useLogout } from '@/hooks/use-api'
 import { cn } from '@/lib/utils'
 
 const screens = [
-  { key: 'inbox', label: 'Inbox', icon: Inbox, shortcut: 'g' },
-  { key: 'validate', label: 'Validate', icon: CheckCircle, shortcut: 'v' },
-  { key: 'categorize', label: 'Categorize', icon: Tag, shortcut: 'c' },
-  { key: 'alerts', label: 'Alerts', icon: Bell, shortcut: 'a' },
-  { key: 'docs', label: 'Docs', icon: FileText, shortcut: 'd' },
-  { key: 'bid-workspace', label: 'Bid Workspace', icon: Briefcase, shortcut: 'b' },
-  { key: 'submissions', label: 'Submissions', icon: Send, shortcut: 's' },
-  { key: 'reports', label: 'Reports', icon: BarChart3, shortcut: 'r' },
-  { key: 'outcomes', label: 'Outcomes', icon: MessageSquare, shortcut: 'o' },
+  { key: 'inbox', label: '📥 Smart Inbox', icon: Inbox, shortcut: 'g', emoji: '📥' },
+  { key: 'validate', label: '✅ Validation Queue', icon: CheckCircle, shortcut: 'v', emoji: '✅' },
+  { key: 'categorize', label: '🏷️ Qualification', icon: Tag, shortcut: 'c', emoji: '🏷️' },
+  { key: 'alerts', label: '🔔 Alerts & Notifications', icon: Bell, shortcut: 'a', emoji: '🔔' },
+  { key: 'docs', label: '📄 Document Hub', icon: FileText, shortcut: 'd', emoji: '📄' },
+  { key: 'bid-workspace', label: '💼 Bid Workspace', icon: Briefcase, shortcut: 'b', emoji: '💼' },
+  { key: 'submissions', label: '📤 Submission Portal', icon: Send, shortcut: 's', emoji: '📤' },
+  { key: 'outcomes', label: '🏆 Outcome Tracking', icon: MessageSquare, shortcut: 'o', emoji: '🏆' },
+  { key: 'reports', label: '📊 Analytics', icon: BarChart3, shortcut: 'r', emoji: '📊' },
 ] as const
 
 interface DashboardLayoutProps {
@@ -49,17 +49,17 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
   const router = useRouter()
   const { theme, setTheme } = useTheme()
   const { 
-    activeScreen, 
-    sidebarCollapsed, 
-    showHelp, 
-    showNotes,
-    preferences,
-    setActiveScreen, 
-    toggleSidebar, 
-    toggleHelp, 
-    toggleNotes,
-    updateFilters,
-    filters
+    activeScreen = 'inbox', 
+    sidebarCollapsed = false, 
+    showHelp = false, 
+    showNotes = true,
+    preferences = { keyboardShortcutsEnabled: true, autoSave: true, compactMode: false, showTooltips: true },
+    setActiveScreen = () => {}, 
+    toggleSidebar = () => {}, 
+    toggleHelp = () => {}, 
+    toggleNotes = () => {},
+    updateFilters = () => {},
+    filters = {}
   } = useUIStore()
   const { user } = useAuthStore()
   const logoutMutation = useLogout()
@@ -131,17 +131,15 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
       >
         {/* Header */}
         <div className="p-4 border-b border-border">
-          <div className="flex items-center gap-2">
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={toggleSidebar}
-              className="h-8 w-8"
-            >
-              <Menu className="h-4 w-4" />
-            </Button>
+          <div className="flex items-center gap-3">
             {!sidebarCollapsed && (
-              <h1 className="font-semibold tracking-tight">TenderFlow</h1>
+              <div className="flex items-center gap-2">
+                <span className="text-2xl">🏢</span>
+                <h1 className="text-xl font-bold text-blue-600">TenderFlow</h1>
+              </div>
+            )}
+            {sidebarCollapsed && (
+              <span className="text-2xl">🏢</span>
             )}
           </div>
         </div>
@@ -158,8 +156,9 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
                   key={screen.key}
                   variant={isActive ? 'secondary' : 'ghost'}
                   className={cn(
-                    'w-full justify-start gap-2 h-9',
-                    sidebarCollapsed && 'px-2'
+                    'w-full justify-start gap-3 h-10 text-sm font-medium',
+                    sidebarCollapsed && 'px-2',
+                    isActive && 'bg-blue-50 text-blue-600 border-blue-200'
                   )}
                   onClick={() => {
                     setActiveScreen(screen.key as any)
@@ -167,14 +166,9 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
                   }}
                   title={sidebarCollapsed ? `${screen.label} (${index + 1})` : undefined}
                 >
-                  <Icon className="h-4 w-4" />
+                  <span className="text-base">{screen.emoji}</span>
                   {!sidebarCollapsed && (
-                    <>
-                      <span className="flex-1">{screen.label}</span>
-                      <span className="text-xs text-muted-foreground">
-                        {index + 1}
-                      </span>
-                    </>
+                    <span className="flex-1 text-left">{screen.label.replace(/^[^\s]+ /, '')}</span>
                   )}
                 </Button>
               )
@@ -244,46 +238,50 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
       {/* Main Content */}
       <div className="flex-1 flex flex-col min-w-0">
         {/* Top Bar */}
-        <header className="h-14 border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-          <div className="h-full px-4 flex items-center gap-4">
-            {/* Search */}
-            <div className="flex-1 max-w-md">
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                <Input
-                  placeholder="Search tenders... (q)"
-                  value={filters.search}
-                  onChange={(e) => updateFilters({ search: e.target.value })}
-                  className="pl-9"
-                />
+        <header className="bg-white border-b border-gray-200 px-8 py-4 sticky top-0 z-50">
+          <div className="flex items-center justify-between">
+            {/* Logo and Title - Only show when sidebar is collapsed */}
+            {sidebarCollapsed && (
+              <div className="flex items-center gap-2">
+                <span className="text-2xl">🏢</span>
+                <h1 className="text-xl font-bold text-blue-600">TenderFlow</h1>
               </div>
-            </div>
+            )}
+            
+            {/* Spacer when sidebar is expanded */}
+            {!sidebarCollapsed && <div />}
 
-            {/* Controls */}
-            <div className="flex items-center gap-2">
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={toggleNotes}
-                className="text-xs"
-              >
-                {showNotes ? 'Hide notes' : 'Show notes'}
-              </Button>
+            {/* User Menu */}
+            <div className="flex items-center gap-4">
+              <div className="flex items-center gap-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={toggleNotes}
+                  className="text-xs"
+                >
+                  {showNotes ? 'Hide Notes' : 'Show Notes'}
+                </Button>
+              </div>
               
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={toggleHelp}
-                className="text-xs"
-              >
-                Help (?)
-              </Button>
+              {/* Notification Bell with Badge */}
+              <div className="relative cursor-pointer hover:bg-gray-100 p-2 rounded-lg transition-colors">
+                <Bell className="w-5 h-5 text-gray-600" />
+                <div className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 text-white rounded-full flex items-center justify-center text-xs font-medium">
+                  3
+                </div>
+              </div>
+
+              {/* User Avatar */}
+              <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center text-white font-medium cursor-pointer hover:bg-blue-700 transition-colors">
+                {user?.name?.charAt(0) || 'JD'}
+              </div>
             </div>
           </div>
         </header>
 
         {/* Content Area */}
-        <main className="flex-1 overflow-auto">
+        <main className="flex-1 overflow-auto bg-gray-50 min-h-0">
           {children}
         </main>
       </div>

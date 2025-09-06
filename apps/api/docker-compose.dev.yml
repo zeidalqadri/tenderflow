@@ -49,8 +49,8 @@ services:
     container_name: tenderflow-minio
     restart: unless-stopped
     environment:
-      MINIO_ROOT_USER: minioadmin
-      MINIO_ROOT_PASSWORD: minioadmin
+      MINIO_ROOT_USER: e4f1b188558052aa53848d523f4967bd
+      MINIO_ROOT_PASSWORD: 58a4e6f2e7502fbe4fa397f9881ab26af20b49f5b4ac60710205c1c65154cf5d
       MINIO_DOMAIN: localhost
     command: server /data --console-address ":9001"
     ports:
@@ -75,7 +75,7 @@ services:
     entrypoint: >
       /bin/sh -c "
       sleep 10;
-      /usr/bin/mc alias set minio http://minio:9000 minioadmin minioadmin;
+      /usr/bin/mc alias set minio http://minio:9000 e4f1b188558052aa53848d523f4967bd 58a4e6f2e7502fbe4fa397f9881ab26af20b49f5b4ac60710205c1c65154cf5d;
       /usr/bin/mc mb minio/tenderflow-documents --ignore-existing;
       /usr/bin/mc policy set public minio/tenderflow-documents;
       /usr/bin/mc mb minio/tenderflow-receipts --ignore-existing;

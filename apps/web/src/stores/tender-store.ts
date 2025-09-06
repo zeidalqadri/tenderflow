@@ -1,260 +1,240 @@
 import { create } from 'zustand'
-import { immer } from 'zustand/middleware/immer'
-import type { Tender, TenderStatus } from '@tenderflow/shared'
+import { persist } from 'zustand/middleware'
 
-interface TenderState {
-  tenders: Map<string, Tender>
+export interface Tender {
+  id: string
+  title: string
+  description?: string
+  organization: string
+  publishedDate: string
+  deadline: string
+  value?: number
+  currency: string
+  status: 'scraped' | 'validated' | 'categorized' | 'qualified' | 'archived'
+  priority: 'low' | 'medium' | 'high'
+  aiScore?: number
+  tags: string[]
+  source: string
+  category?: string
+  assignedTo?: string[]
+  notes?: string
+  documents?: TenderDocument[]
+  bids?: TenderBid[]
+  metadata?: Record<string, any>
+}
+
+export interface TenderDocument {
+  id: string
+  name: string
+  type: string
+  size: number
+  url: string
+  uploadedAt: string
+  uploadedBy: string
+}
+
+export interface TenderBid {
+  id: string
+  amount: number
+  currency: string
+  status: 'draft' | 'submitted' | 'accepted' | 'rejected'
+  submittedAt?: string
+  notes?: string
+}
+
+export interface TenderState {
+  // Selected tender
   selectedTender: Tender | null
-  loadingStates: {
-    list: boolean
-    details: boolean
-    create: boolean
-    update: boolean
-    delete: boolean
-  }
-  error: string | null
-  lastUpdated: Date | null
-  pagination: {
-    page: number
-    totalPages: number
-    totalItems: number
-    hasMore: boolean
-  }
-  realTimeUpdates: {
-    enabled: boolean
-    lastSync: Date | null
-    pendingChanges: string[]
-  }
-}
-
-interface TenderActions {
-  // CRUD Operations
-  setTenders: (tenders: Tender[]) => void
-  addTender: (tender: Tender) => void
-  updateTender: (id: string, updates: Partial<Tender>) => void
-  removeTender: (id: string) => void
   
-  // Selection
+  // Recently viewed tenders
+  recentTenders: Tender[]
+  
+  // Favorites
+  favoriteTenders: string[]
+  
+  // Local tender edits (before saving)
+  draftChanges: Record<string, Partial<Tender>>
+  
+  // Actions
   selectTender: (tender: Tender | null) => void
-  selectTenderById: (id: string) => void
+  updateSelectedTender: (updates: Partial<Tender>) => void
+  addToRecent: (tender: Tender) => void
+  toggleFavorite: (tenderId: string) => void
+  isFavorite: (tenderId: string) => boolean
   
-  // Loading States
-  setLoading: (operation: keyof TenderState['loadingStates'], loading: boolean) => void
+  // Draft changes
+  saveDraftChanges: (tenderId: string, changes: Partial<Tender>) => void
+  getDraftChanges: (tenderId: string) => Partial<Tender> | undefined
+  clearDraftChanges: (tenderId: string) => void
+  hasDraftChanges: (tenderId: string) => boolean
   
-  // Error Handling
-  setError: (error: string | null) => void
-  clearError: () => void
+  // Bulk operations
+  bulkUpdateStatus: (tenderIds: string[], status: Tender['status']) => void
+  bulkUpdatePriority: (tenderIds: string[], priority: Tender['priority']) => void
+  bulkAddTag: (tenderIds: string[], tag: string) => void
+  bulkAssign: (tenderIds: string[], userId: string) => void
   
-  // Status Updates
-  updateTenderStatus: (id: string, status: TenderStatus) => void
-  batchUpdateStatus: (ids: string[], status: TenderStatus) => void
-  
-  // Pagination
-  setPagination: (pagination: Partial<TenderState['pagination']>) => void
-  
-  // Real-time Updates
-  enableRealTimeUpdates: (enabled: boolean) => void
-  addPendingChange: (tenderId: string) => void
-  clearPendingChanges: () => void
-  
-  // Utility Functions
-  getTenderById: (id: string) => Tender | undefined
-  getTendersByStatus: (status: TenderStatus) => Tender[]
-  getFilteredTenders: (filters: {
-    search?: string
-    status?: TenderStatus[]
-    assignee?: string[]
-    dateRange?: { from: Date; to: Date }
-  }) => Tender[]
-  
-  // Reset
-  reset: () => void
+  // Utilities
+  getTendersByStatus: (status: Tender['status']) => Tender[]
+  getTendersByPriority: (priority: Tender['priority']) => Tender[]
+  getExpiringSoon: (days?: number) => Tender[]
+  clearAll: () => void
 }
 
-type TenderStore = TenderState & TenderActions
-
-const initialState: TenderState = {
-  tenders: new Map(),
-  selectedTender: null,
-  loadingStates: {
-    list: false,
-    details: false,
-    create: false,
-    update: false,
-    delete: false,
-  },
-  error: null,
-  lastUpdated: null,
-  pagination: {
-    page: 1,
-    totalPages: 0,
-    totalItems: 0,
-    hasMore: false,
-  },
-  realTimeUpdates: {
-    enabled: true,
-    lastSync: null,
-    pendingChanges: [],
-  },
-}
-
-export const useTenderStore = create<TenderStore>()(
-  immer((set, get) => ({
-    ...initialState,
-
-    // CRUD Operations
-    setTenders: (tenders) =>
-      set((state) => {
-        state.tenders = new Map(tenders.map((t) => [t.id, t]))
-        state.lastUpdated = new Date()
-      }),
-
-    addTender: (tender) =>
-      set((state) => {
-        state.tenders.set(tender.id, tender)
-        state.lastUpdated = new Date()
-      }),
-
-    updateTender: (id, updates) =>
-      set((state) => {
-        const existing = state.tenders.get(id)
-        if (existing) {
-          state.tenders.set(id, { ...existing, ...updates, updatedAt: new Date() })
-          if (state.selectedTender?.id === id) {
-            state.selectedTender = { ...state.selectedTender, ...updates }
-          }
-          state.lastUpdated = new Date()
-        }
-      }),
-
-    removeTender: (id) =>
-      set((state) => {
-        state.tenders.delete(id)
-        if (state.selectedTender?.id === id) {
-          state.selectedTender = null
-        }
-        state.lastUpdated = new Date()
-      }),
-
-    // Selection
-    selectTender: (tender) =>
-      set((state) => {
-        state.selectedTender = tender
-      }),
-
-    selectTenderById: (id) =>
-      set((state) => {
-        const tender = state.tenders.get(id)
-        state.selectedTender = tender || null
-      }),
-
-    // Loading States
-    setLoading: (operation, loading) =>
-      set((state) => {
-        state.loadingStates[operation] = loading
-      }),
-
-    // Error Handling
-    setError: (error) =>
-      set((state) => {
-        state.error = error
-      }),
-
-    clearError: () =>
-      set((state) => {
-        state.error = null
-      }),
-
-    // Status Updates
-    updateTenderStatus: (id, status) =>
-      set((state) => {
-        const tender = state.tenders.get(id)
+export const useTenderStore = create<TenderState>()(
+  persist(
+    (set, get) => ({
+      // Initial state
+      selectedTender: null,
+      recentTenders: [],
+      favoriteTenders: [],
+      draftChanges: {},
+      
+      // Selection actions
+      selectTender: (tender: Tender | null) => {
+        set({ selectedTender: tender })
+        
         if (tender) {
-          const updatedTender = { ...tender, status, updatedAt: new Date() }
-          state.tenders.set(id, updatedTender)
-          if (state.selectedTender?.id === id) {
-            state.selectedTender = updatedTender
-          }
+          get().addToRecent(tender)
         }
-      }),
-
-    batchUpdateStatus: (ids, status) =>
-      set((state) => {
-        ids.forEach((id) => {
-          const tender = state.tenders.get(id)
-          if (tender) {
-            state.tenders.set(id, { ...tender, status, updatedAt: new Date() })
+      },
+      
+      updateSelectedTender: (updates: Partial<Tender>) => {
+        set(state => ({
+          selectedTender: state.selectedTender 
+            ? { ...state.selectedTender, ...updates }
+            : null
+        }))
+      },
+      
+      // Recent tenders
+      addToRecent: (tender: Tender) => {
+        set(state => {
+          const filtered = state.recentTenders.filter(t => t.id !== tender.id)
+          return {
+            recentTenders: [tender, ...filtered].slice(0, 10) // Keep last 10
           }
         })
-        state.lastUpdated = new Date()
-      }),
-
-    // Pagination
-    setPagination: (pagination) =>
-      set((state) => {
-        Object.assign(state.pagination, pagination)
-      }),
-
-    // Real-time Updates
-    enableRealTimeUpdates: (enabled) =>
-      set((state) => {
-        state.realTimeUpdates.enabled = enabled
-      }),
-
-    addPendingChange: (tenderId) =>
-      set((state) => {
-        if (!state.realTimeUpdates.pendingChanges.includes(tenderId)) {
-          state.realTimeUpdates.pendingChanges.push(tenderId)
-        }
-      }),
-
-    clearPendingChanges: () =>
-      set((state) => {
-        state.realTimeUpdates.pendingChanges = []
-        state.realTimeUpdates.lastSync = new Date()
-      }),
-
-    // Utility Functions
-    getTenderById: (id) => get().tenders.get(id),
-
-    getTendersByStatus: (status) =>
-      Array.from(get().tenders.values()).filter((t) => t.status === status),
-
-    getFilteredTenders: (filters) => {
-      const { tenders } = get()
-      let filtered = Array.from(tenders.values())
-
-      if (filters.search) {
-        const search = filters.search.toLowerCase()
-        filtered = filtered.filter(
-          (t) =>
-            t.title.toLowerCase().includes(search) ||
-            t.description.toLowerCase().includes(search)
-        )
-      }
-
-      if (filters.status && filters.status.length > 0) {
-        filtered = filtered.filter((t) => filters.status!.includes(t.status))
-      }
-
-      if (filters.assignee && filters.assignee.length > 0) {
-        filtered = filtered.filter((t) =>
-          t.assignedTo?.some((a) => filters.assignee!.includes(a))
-        )
-      }
-
-      if (filters.dateRange) {
-        const { from, to } = filters.dateRange
-        filtered = filtered.filter((t) => {
-          const deadline = new Date(t.deadline)
-          return deadline >= from && deadline <= to
+      },
+      
+      // Favorites
+      toggleFavorite: (tenderId: string) => {
+        set(state => ({
+          favoriteTenders: state.favoriteTenders.includes(tenderId)
+            ? state.favoriteTenders.filter(id => id !== tenderId)
+            : [...state.favoriteTenders, tenderId]
+        }))
+      },
+      
+      isFavorite: (tenderId: string) => {
+        return get().favoriteTenders.includes(tenderId)
+      },
+      
+      // Draft changes
+      saveDraftChanges: (tenderId: string, changes: Partial<Tender>) => {
+        set(state => ({
+          draftChanges: {
+            ...state.draftChanges,
+            [tenderId]: {
+              ...state.draftChanges[tenderId],
+              ...changes
+            }
+          }
+        }))
+      },
+      
+      getDraftChanges: (tenderId: string) => {
+        return get().draftChanges[tenderId]
+      },
+      
+      clearDraftChanges: (tenderId: string) => {
+        set(state => {
+          const { [tenderId]: removed, ...rest } = state.draftChanges
+          return { draftChanges: rest }
         })
-      }
-
-      return filtered
-    },
-
-    // Reset
-    reset: () => set(() => ({ ...initialState })),
-  }))
+      },
+      
+      hasDraftChanges: (tenderId: string) => {
+        const changes = get().draftChanges[tenderId]
+        return changes && Object.keys(changes).length > 0
+      },
+      
+      // Bulk operations (these would typically trigger API calls)
+      bulkUpdateStatus: (tenderIds: string[], status: Tender['status']) => {
+        // This would typically make API calls to update multiple tenders
+        // For now, we'll update any selected tender if it's in the list
+        const state = get()
+        if (state.selectedTender && tenderIds.includes(state.selectedTender.id)) {
+          state.updateSelectedTender({ status })
+        }
+      },
+      
+      bulkUpdatePriority: (tenderIds: string[], priority: Tender['priority']) => {
+        const state = get()
+        if (state.selectedTender && tenderIds.includes(state.selectedTender.id)) {
+          state.updateSelectedTender({ priority })
+        }
+      },
+      
+      bulkAddTag: (tenderIds: string[], tag: string) => {
+        const state = get()
+        if (state.selectedTender && tenderIds.includes(state.selectedTender.id)) {
+          const currentTags = state.selectedTender.tags || []
+          if (!currentTags.includes(tag)) {
+            state.updateSelectedTender({ 
+              tags: [...currentTags, tag] 
+            })
+          }
+        }
+      },
+      
+      bulkAssign: (tenderIds: string[], userId: string) => {
+        const state = get()
+        if (state.selectedTender && tenderIds.includes(state.selectedTender.id)) {
+          const currentAssignees = state.selectedTender.assignedTo || []
+          if (!currentAssignees.includes(userId)) {
+            state.updateSelectedTender({ 
+              assignedTo: [...currentAssignees, userId] 
+            })
+          }
+        }
+      },
+      
+      // Utility functions
+      getTendersByStatus: (status: Tender['status']) => {
+        return get().recentTenders.filter(tender => tender.status === status)
+      },
+      
+      getTendersByPriority: (priority: Tender['priority']) => {
+        return get().recentTenders.filter(tender => tender.priority === priority)
+      },
+      
+      getExpiringSoon: (days: number = 7) => {
+        const cutoffDate = new Date()
+        cutoffDate.setDate(cutoffDate.getDate() + days)
+        
+        return get().recentTenders.filter(tender => {
+          const deadline = new Date(tender.deadline)
+          return deadline <= cutoffDate && deadline > new Date()
+        })
+      },
+      
+      clearAll: () => {
+        set({
+          selectedTender: null,
+          recentTenders: [],
+          favoriteTenders: [],
+          draftChanges: {},
+        })
+      },
+    }),
+    {
+      name: 'tenderflow-tenders',
+      partialize: (state) => ({
+        recentTenders: state.recentTenders,
+        favoriteTenders: state.favoriteTenders,
+        draftChanges: state.draftChanges,
+      }),
+    }
+  )
 )

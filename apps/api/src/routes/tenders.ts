@@ -18,6 +18,7 @@ import {
   BusinessLogicError,
   AuthorizationError 
 } from '../plugins/error-handler';
+import { DataTransformer } from '../services/data-transformer';
 
 // Define valid state transitions
 const VALID_TRANSITIONS: Record<string, string[]> = {

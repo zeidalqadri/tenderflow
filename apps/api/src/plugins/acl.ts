@@ -1,7 +1,7 @@
 // Access Control List (ACL) plugin for TenderFlow API
 import { FastifyInstance, FastifyPluginAsync, FastifyRequest } from 'fastify';
 import fp from 'fastify-plugin';
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient } from '../generated/prisma';
 import { AuthorizationError, NotFoundError } from './error-handler';
 
 export type TenderRole = 'owner' | 'contributor' | 'viewer';

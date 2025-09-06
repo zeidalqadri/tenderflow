@@ -1,4 +1,7 @@
 import { PrismaClient, Prisma } from '../generated/prisma';
+import { createLogger, logError, logInfo, logWarning, logDebug } from '../utils/logger';
+
+const logger = createLogger('DATABASE');
 
 // Global for Prisma client to avoid re-instantiation during development
 declare global {
@@ -41,10 +44,11 @@ const createPrismaClient = () => {
   // Log queries in development
   if (process.env.NODE_ENV === 'development') {
     client.$on('query', (e) => {
-      console.log('Query: ' + e.query);
-      console.log('Params: ' + e.params);
-      console.log('Duration: ' + e.duration + 'ms');
-      console.log('---');
+      logDebug('QUERY', 'Database Query', {
+        query: e.query,
+        params: e.params,
+        duration: e.duration + 'ms'
+      });
     });
   }
 
@@ -70,7 +74,7 @@ export async function healthCheck(): Promise<{ status: 'healthy' | 'unhealthy'; 
     await prisma.$queryRaw`SELECT 1`;
     return { status: 'healthy' };
   } catch (error) {
-    console.error('Database health check failed:', error);
+    logError('HEALTH_CHECK', 'Database health check failed', error as Error);
     return {
       status: 'unhealthy',
       details: error instanceof Error ? error.message : 'Unknown database error',
@@ -90,7 +94,7 @@ export async function getConnectionInfo() {
       timestamp: new Date(),
     };
   } catch (error) {
-    console.error('Failed to get connection info:', error);
+    logError('CONNECTION_INFO', 'Failed to get connection info', error as Error);
     return null;
   }
 }
@@ -136,7 +140,7 @@ export async function getDatabaseStats() {
       timestamp: new Date(),
     };
   } catch (error) {
-    console.error('Failed to get database stats:', error);
+    logError('STATS', 'Failed to get database stats', error as Error);
     return null;
   }
 }
@@ -163,7 +167,7 @@ export async function withRetry<T>(
         throw error;
       }
 
-      console.warn(`Database operation failed (attempt ${attempt}/${maxRetries}):`, error);
+      logWarning('RETRY', `Database operation failed (attempt ${attempt}/${maxRetries})`, error);
 
       if (attempt < maxRetries) {
         await new Promise(resolve => setTimeout(resolve, retryDelay * attempt));
@@ -306,7 +310,7 @@ export class DatabaseMaintenance {
       
       return slowQueries;
     } catch (error) {
-      console.warn('pg_stat_statements not available:', error);
+      logWarning('STATS', 'pg_stat_statements not available', error);
       return [];
     }
   }
@@ -352,7 +356,7 @@ export class DatabaseMaintenance {
       await prisma.$executeRaw`VACUUM ANALYZE`;
       return { success: true };
     } catch (error) {
-      console.error('Vacuum analyze failed:', error);
+      logError('MAINTENANCE', 'Vacuum analyze failed', error as Error);
       return { success: false, error: error.message };
     }
   }

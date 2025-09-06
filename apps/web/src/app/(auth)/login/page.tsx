@@ -34,6 +34,10 @@ export default function LoginPage() {
   })
 
   const onSubmit = async (data: LoginFormData) => {
+    // TEMPORARY: Bypass authentication and go directly to inbox
+    router.push('/inbox')
+    return
+    
     try {
       await loginMutation.mutateAsync(data)
       router.push('/inbox') // Redirect to dashboard

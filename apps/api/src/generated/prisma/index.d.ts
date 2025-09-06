@@ -88,6 +88,26 @@ export type JobQueue = $Result.DefaultSelection<Prisma.$JobQueuePayload>
  * 
  */
 export type ApiKey = $Result.DefaultSelection<Prisma.$ApiKeyPayload>
+/**
+ * Model ScrapingLog
+ * 
+ */
+export type ScrapingLog = $Result.DefaultSelection<Prisma.$ScrapingLogPayload>
+/**
+ * Model Session
+ * 
+ */
+export type Session = $Result.DefaultSelection<Prisma.$SessionPayload>
+/**
+ * Model NotificationPreference
+ * 
+ */
+export type NotificationPreference = $Result.DefaultSelection<Prisma.$NotificationPreferencePayload>
+/**
+ * Model NotificationLog
+ * 
+ */
+export type NotificationLog = $Result.DefaultSelection<Prisma.$NotificationLogPayload>
 
 /**
  * Enums
@@ -191,6 +211,17 @@ export const AuditAction: {
 
 export type AuditAction = (typeof AuditAction)[keyof typeof AuditAction]
 
+
+export const ScrapingStatus: {
+  PENDING: 'PENDING',
+  RUNNING: 'RUNNING',
+  COMPLETED: 'COMPLETED',
+  FAILED: 'FAILED',
+  CANCELLED: 'CANCELLED'
+};
+
+export type ScrapingStatus = (typeof ScrapingStatus)[keyof typeof ScrapingStatus]
+
 }
 
 export type UserRole = $Enums.UserRole
@@ -224,6 +255,10 @@ export const NotificationType: typeof $Enums.NotificationType
 export type AuditAction = $Enums.AuditAction
 
 export const AuditAction: typeof $Enums.AuditAction
+
+export type ScrapingStatus = $Enums.ScrapingStatus
+
+export const ScrapingStatus: typeof $Enums.ScrapingStatus
 
 /**
  * ##  Prisma Client ʲˢ
@@ -497,6 +532,46 @@ export class PrismaClient<
     * ```
     */
   get apiKey(): Prisma.ApiKeyDelegate<ExtArgs>;
+
+  /**
+   * `prisma.scrapingLog`: Exposes CRUD operations for the **ScrapingLog** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more ScrapingLogs
+    * const scrapingLogs = await prisma.scrapingLog.findMany()
+    * ```
+    */
+  get scrapingLog(): Prisma.ScrapingLogDelegate<ExtArgs>;
+
+  /**
+   * `prisma.session`: Exposes CRUD operations for the **Session** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more Sessions
+    * const sessions = await prisma.session.findMany()
+    * ```
+    */
+  get session(): Prisma.SessionDelegate<ExtArgs>;
+
+  /**
+   * `prisma.notificationPreference`: Exposes CRUD operations for the **NotificationPreference** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more NotificationPreferences
+    * const notificationPreferences = await prisma.notificationPreference.findMany()
+    * ```
+    */
+  get notificationPreference(): Prisma.NotificationPreferenceDelegate<ExtArgs>;
+
+  /**
+   * `prisma.notificationLog`: Exposes CRUD operations for the **NotificationLog** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more NotificationLogs
+    * const notificationLogs = await prisma.notificationLog.findMany()
+    * ```
+    */
+  get notificationLog(): Prisma.NotificationLogDelegate<ExtArgs>;
 }
 
 export namespace Prisma {
@@ -952,7 +1027,11 @@ export namespace Prisma {
     AuditLog: 'AuditLog',
     SystemConfig: 'SystemConfig',
     JobQueue: 'JobQueue',
-    ApiKey: 'ApiKey'
+    ApiKey: 'ApiKey',
+    ScrapingLog: 'ScrapingLog',
+    Session: 'Session',
+    NotificationPreference: 'NotificationPreference',
+    NotificationLog: 'NotificationLog'
   };
 
   export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -968,7 +1047,7 @@ export namespace Prisma {
 
   export type TypeMap<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, ClientOptions = {}> = {
     meta: {
-      modelProps: "tenant" | "user" | "tender" | "tenderAssignment" | "document" | "bid" | "submission" | "tenderValidation" | "stateTransition" | "comment" | "notification" | "auditLog" | "systemConfig" | "jobQueue" | "apiKey"
+      modelProps: "tenant" | "user" | "tender" | "tenderAssignment" | "document" | "bid" | "submission" | "tenderValidation" | "stateTransition" | "comment" | "notification" | "auditLog" | "systemConfig" | "jobQueue" | "apiKey" | "scrapingLog" | "session" | "notificationPreference" | "notificationLog"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -2022,6 +2101,286 @@ export namespace Prisma {
           }
         }
       }
+      ScrapingLog: {
+        payload: Prisma.$ScrapingLogPayload<ExtArgs>
+        fields: Prisma.ScrapingLogFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.ScrapingLogFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ScrapingLogPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.ScrapingLogFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ScrapingLogPayload>
+          }
+          findFirst: {
+            args: Prisma.ScrapingLogFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ScrapingLogPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.ScrapingLogFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ScrapingLogPayload>
+          }
+          findMany: {
+            args: Prisma.ScrapingLogFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ScrapingLogPayload>[]
+          }
+          create: {
+            args: Prisma.ScrapingLogCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ScrapingLogPayload>
+          }
+          createMany: {
+            args: Prisma.ScrapingLogCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.ScrapingLogCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ScrapingLogPayload>[]
+          }
+          delete: {
+            args: Prisma.ScrapingLogDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ScrapingLogPayload>
+          }
+          update: {
+            args: Prisma.ScrapingLogUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ScrapingLogPayload>
+          }
+          deleteMany: {
+            args: Prisma.ScrapingLogDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.ScrapingLogUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          upsert: {
+            args: Prisma.ScrapingLogUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ScrapingLogPayload>
+          }
+          aggregate: {
+            args: Prisma.ScrapingLogAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateScrapingLog>
+          }
+          groupBy: {
+            args: Prisma.ScrapingLogGroupByArgs<ExtArgs>
+            result: $Utils.Optional<ScrapingLogGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.ScrapingLogCountArgs<ExtArgs>
+            result: $Utils.Optional<ScrapingLogCountAggregateOutputType> | number
+          }
+        }
+      }
+      Session: {
+        payload: Prisma.$SessionPayload<ExtArgs>
+        fields: Prisma.SessionFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.SessionFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SessionPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.SessionFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SessionPayload>
+          }
+          findFirst: {
+            args: Prisma.SessionFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SessionPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.SessionFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SessionPayload>
+          }
+          findMany: {
+            args: Prisma.SessionFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SessionPayload>[]
+          }
+          create: {
+            args: Prisma.SessionCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SessionPayload>
+          }
+          createMany: {
+            args: Prisma.SessionCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.SessionCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SessionPayload>[]
+          }
+          delete: {
+            args: Prisma.SessionDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SessionPayload>
+          }
+          update: {
+            args: Prisma.SessionUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SessionPayload>
+          }
+          deleteMany: {
+            args: Prisma.SessionDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.SessionUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          upsert: {
+            args: Prisma.SessionUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SessionPayload>
+          }
+          aggregate: {
+            args: Prisma.SessionAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateSession>
+          }
+          groupBy: {
+            args: Prisma.SessionGroupByArgs<ExtArgs>
+            result: $Utils.Optional<SessionGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.SessionCountArgs<ExtArgs>
+            result: $Utils.Optional<SessionCountAggregateOutputType> | number
+          }
+        }
+      }
+      NotificationPreference: {
+        payload: Prisma.$NotificationPreferencePayload<ExtArgs>
+        fields: Prisma.NotificationPreferenceFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.NotificationPreferenceFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$NotificationPreferencePayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.NotificationPreferenceFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$NotificationPreferencePayload>
+          }
+          findFirst: {
+            args: Prisma.NotificationPreferenceFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$NotificationPreferencePayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.NotificationPreferenceFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$NotificationPreferencePayload>
+          }
+          findMany: {
+            args: Prisma.NotificationPreferenceFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$NotificationPreferencePayload>[]
+          }
+          create: {
+            args: Prisma.NotificationPreferenceCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$NotificationPreferencePayload>
+          }
+          createMany: {
+            args: Prisma.NotificationPreferenceCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.NotificationPreferenceCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$NotificationPreferencePayload>[]
+          }
+          delete: {
+            args: Prisma.NotificationPreferenceDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$NotificationPreferencePayload>
+          }
+          update: {
+            args: Prisma.NotificationPreferenceUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$NotificationPreferencePayload>
+          }
+          deleteMany: {
+            args: Prisma.NotificationPreferenceDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.NotificationPreferenceUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          upsert: {
+            args: Prisma.NotificationPreferenceUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$NotificationPreferencePayload>
+          }
+          aggregate: {
+            args: Prisma.NotificationPreferenceAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateNotificationPreference>
+          }
+          groupBy: {
+            args: Prisma.NotificationPreferenceGroupByArgs<ExtArgs>
+            result: $Utils.Optional<NotificationPreferenceGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.NotificationPreferenceCountArgs<ExtArgs>
+            result: $Utils.Optional<NotificationPreferenceCountAggregateOutputType> | number
+          }
+        }
+      }
+      NotificationLog: {
+        payload: Prisma.$NotificationLogPayload<ExtArgs>
+        fields: Prisma.NotificationLogFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.NotificationLogFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$NotificationLogPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.NotificationLogFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$NotificationLogPayload>
+          }
+          findFirst: {
+            args: Prisma.NotificationLogFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$NotificationLogPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.NotificationLogFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$NotificationLogPayload>
+          }
+          findMany: {
+            args: Prisma.NotificationLogFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$NotificationLogPayload>[]
+          }
+          create: {
+            args: Prisma.NotificationLogCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$NotificationLogPayload>
+          }
+          createMany: {
+            args: Prisma.NotificationLogCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.NotificationLogCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$NotificationLogPayload>[]
+          }
+          delete: {
+            args: Prisma.NotificationLogDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$NotificationLogPayload>
+          }
+          update: {
+            args: Prisma.NotificationLogUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$NotificationLogPayload>
+          }
+          deleteMany: {
+            args: Prisma.NotificationLogDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.NotificationLogUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          upsert: {
+            args: Prisma.NotificationLogUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$NotificationLogPayload>
+          }
+          aggregate: {
+            args: Prisma.NotificationLogAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateNotificationLog>
+          }
+          groupBy: {
+            args: Prisma.NotificationLogGroupByArgs<ExtArgs>
+            result: $Utils.Optional<NotificationLogGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.NotificationLogCountArgs<ExtArgs>
+            result: $Utils.Optional<NotificationLogCountAggregateOutputType> | number
+          }
+        }
+      }
     }
   } & {
     other: {
@@ -2187,6 +2546,8 @@ export namespace Prisma {
     tenders: number
     audits: number
     apiKeys: number
+    scrapingLogs: number
+    notificationLogs: number
   }
 
   export type TenantCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -2194,6 +2555,8 @@ export namespace Prisma {
     tenders?: boolean | TenantCountOutputTypeCountTendersArgs
     audits?: boolean | TenantCountOutputTypeCountAuditsArgs
     apiKeys?: boolean | TenantCountOutputTypeCountApiKeysArgs
+    scrapingLogs?: boolean | TenantCountOutputTypeCountScrapingLogsArgs
+    notificationLogs?: boolean | TenantCountOutputTypeCountNotificationLogsArgs
   }
 
   // Custom InputTypes
@@ -2235,6 +2598,20 @@ export namespace Prisma {
     where?: ApiKeyWhereInput
   }
 
+  /**
+   * TenantCountOutputType without action
+   */
+  export type TenantCountOutputTypeCountScrapingLogsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: ScrapingLogWhereInput
+  }
+
+  /**
+   * TenantCountOutputType without action
+   */
+  export type TenantCountOutputTypeCountNotificationLogsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: NotificationLogWhereInput
+  }
+
 
   /**
    * Count Type UserCountOutputType
@@ -2249,6 +2626,10 @@ export namespace Prisma {
     comments: number
     notifications: number
     audits: number
+    triggeredScrapings: number
+    sessions: number
+    notificationPreferences: number
+    notificationLogs: number
   }
 
   export type UserCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -2260,6 +2641,10 @@ export namespace Prisma {
     comments?: boolean | UserCountOutputTypeCountCommentsArgs
     notifications?: boolean | UserCountOutputTypeCountNotificationsArgs
     audits?: boolean | UserCountOutputTypeCountAuditsArgs
+    triggeredScrapings?: boolean | UserCountOutputTypeCountTriggeredScrapingsArgs
+    sessions?: boolean | UserCountOutputTypeCountSessionsArgs
+    notificationPreferences?: boolean | UserCountOutputTypeCountNotificationPreferencesArgs
+    notificationLogs?: boolean | UserCountOutputTypeCountNotificationLogsArgs
   }
 
   // Custom InputTypes
@@ -2327,6 +2712,34 @@ export namespace Prisma {
    */
   export type UserCountOutputTypeCountAuditsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: AuditLogWhereInput
+  }
+
+  /**
+   * UserCountOutputType without action
+   */
+  export type UserCountOutputTypeCountTriggeredScrapingsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: ScrapingLogWhereInput
+  }
+
+  /**
+   * UserCountOutputType without action
+   */
+  export type UserCountOutputTypeCountSessionsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: SessionWhereInput
+  }
+
+  /**
+   * UserCountOutputType without action
+   */
+  export type UserCountOutputTypeCountNotificationPreferencesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: NotificationPreferenceWhereInput
+  }
+
+  /**
+   * UserCountOutputType without action
+   */
+  export type UserCountOutputTypeCountNotificationLogsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: NotificationLogWhereInput
   }
 
 
@@ -2442,6 +2855,7 @@ export namespace Prisma {
     id: string | null
     name: string | null
     subdomain: string | null
+    webhookUrl: string | null
     isActive: boolean | null
     createdAt: Date | null
     updatedAt: Date | null
@@ -2452,6 +2866,7 @@ export namespace Prisma {
     id: string | null
     name: string | null
     subdomain: string | null
+    webhookUrl: string | null
     isActive: boolean | null
     createdAt: Date | null
     updatedAt: Date | null
@@ -2463,6 +2878,8 @@ export namespace Prisma {
     name: number
     subdomain: number
     settings: number
+    webhookUrl: number
+    metadata: number
     isActive: number
     createdAt: number
     updatedAt: number
@@ -2475,6 +2892,7 @@ export namespace Prisma {
     id?: true
     name?: true
     subdomain?: true
+    webhookUrl?: true
     isActive?: true
     createdAt?: true
     updatedAt?: true
@@ -2485,6 +2903,7 @@ export namespace Prisma {
     id?: true
     name?: true
     subdomain?: true
+    webhookUrl?: true
     isActive?: true
     createdAt?: true
     updatedAt?: true
@@ -2496,6 +2915,8 @@ export namespace Prisma {
     name?: true
     subdomain?: true
     settings?: true
+    webhookUrl?: true
+    metadata?: true
     isActive?: true
     createdAt?: true
     updatedAt?: true
@@ -2580,6 +3001,8 @@ export namespace Prisma {
     name: string
     subdomain: string
     settings: JsonValue
+    webhookUrl: string | null
+    metadata: JsonValue
     isActive: boolean
     createdAt: Date
     updatedAt: Date
@@ -2608,6 +3031,8 @@ export namespace Prisma {
     name?: boolean
     subdomain?: boolean
     settings?: boolean
+    webhookUrl?: boolean
+    metadata?: boolean
     isActive?: boolean
     createdAt?: boolean
     updatedAt?: boolean
@@ -2616,6 +3041,8 @@ export namespace Prisma {
     tenders?: boolean | Tenant$tendersArgs<ExtArgs>
     audits?: boolean | Tenant$auditsArgs<ExtArgs>
     apiKeys?: boolean | Tenant$apiKeysArgs<ExtArgs>
+    scrapingLogs?: boolean | Tenant$scrapingLogsArgs<ExtArgs>
+    notificationLogs?: boolean | Tenant$notificationLogsArgs<ExtArgs>
     _count?: boolean | TenantCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["tenant"]>
 
@@ -2624,6 +3051,8 @@ export namespace Prisma {
     name?: boolean
     subdomain?: boolean
     settings?: boolean
+    webhookUrl?: boolean
+    metadata?: boolean
     isActive?: boolean
     createdAt?: boolean
     updatedAt?: boolean
@@ -2635,6 +3064,8 @@ export namespace Prisma {
     name?: boolean
     subdomain?: boolean
     settings?: boolean
+    webhookUrl?: boolean
+    metadata?: boolean
     isActive?: boolean
     createdAt?: boolean
     updatedAt?: boolean
@@ -2646,6 +3077,8 @@ export namespace Prisma {
     tenders?: boolean | Tenant$tendersArgs<ExtArgs>
     audits?: boolean | Tenant$auditsArgs<ExtArgs>
     apiKeys?: boolean | Tenant$apiKeysArgs<ExtArgs>
+    scrapingLogs?: boolean | Tenant$scrapingLogsArgs<ExtArgs>
+    notificationLogs?: boolean | Tenant$notificationLogsArgs<ExtArgs>
     _count?: boolean | TenantCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type TenantIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
@@ -2657,12 +3090,16 @@ export namespace Prisma {
       tenders: Prisma.$TenderPayload<ExtArgs>[]
       audits: Prisma.$AuditLogPayload<ExtArgs>[]
       apiKeys: Prisma.$ApiKeyPayload<ExtArgs>[]
+      scrapingLogs: Prisma.$ScrapingLogPayload<ExtArgs>[]
+      notificationLogs: Prisma.$NotificationLogPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
       name: string
       subdomain: string
       settings: Prisma.JsonValue
+      webhookUrl: string | null
+      metadata: Prisma.JsonValue
       isActive: boolean
       createdAt: Date
       updatedAt: Date
@@ -3035,6 +3472,8 @@ export namespace Prisma {
     tenders<T extends Tenant$tendersArgs<ExtArgs> = {}>(args?: Subset<T, Tenant$tendersArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$TenderPayload<ExtArgs>, T, "findMany"> | Null>
     audits<T extends Tenant$auditsArgs<ExtArgs> = {}>(args?: Subset<T, Tenant$auditsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AuditLogPayload<ExtArgs>, T, "findMany"> | Null>
     apiKeys<T extends Tenant$apiKeysArgs<ExtArgs> = {}>(args?: Subset<T, Tenant$apiKeysArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ApiKeyPayload<ExtArgs>, T, "findMany"> | Null>
+    scrapingLogs<T extends Tenant$scrapingLogsArgs<ExtArgs> = {}>(args?: Subset<T, Tenant$scrapingLogsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ScrapingLogPayload<ExtArgs>, T, "findMany"> | Null>
+    notificationLogs<T extends Tenant$notificationLogsArgs<ExtArgs> = {}>(args?: Subset<T, Tenant$notificationLogsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$NotificationLogPayload<ExtArgs>, T, "findMany"> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -3068,6 +3507,8 @@ export namespace Prisma {
     readonly name: FieldRef<"Tenant", 'String'>
     readonly subdomain: FieldRef<"Tenant", 'String'>
     readonly settings: FieldRef<"Tenant", 'Json'>
+    readonly webhookUrl: FieldRef<"Tenant", 'String'>
+    readonly metadata: FieldRef<"Tenant", 'Json'>
     readonly isActive: FieldRef<"Tenant", 'Boolean'>
     readonly createdAt: FieldRef<"Tenant", 'DateTime'>
     readonly updatedAt: FieldRef<"Tenant", 'DateTime'>
@@ -3466,6 +3907,46 @@ export namespace Prisma {
   }
 
   /**
+   * Tenant.scrapingLogs
+   */
+  export type Tenant$scrapingLogsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ScrapingLog
+     */
+    select?: ScrapingLogSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ScrapingLogInclude<ExtArgs> | null
+    where?: ScrapingLogWhereInput
+    orderBy?: ScrapingLogOrderByWithRelationInput | ScrapingLogOrderByWithRelationInput[]
+    cursor?: ScrapingLogWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: ScrapingLogScalarFieldEnum | ScrapingLogScalarFieldEnum[]
+  }
+
+  /**
+   * Tenant.notificationLogs
+   */
+  export type Tenant$notificationLogsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the NotificationLog
+     */
+    select?: NotificationLogSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: NotificationLogInclude<ExtArgs> | null
+    where?: NotificationLogWhereInput
+    orderBy?: NotificationLogOrderByWithRelationInput | NotificationLogOrderByWithRelationInput[]
+    cursor?: NotificationLogWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: NotificationLogScalarFieldEnum | NotificationLogScalarFieldEnum[]
+  }
+
+  /**
    * Tenant without action
    */
   export type TenantDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -3494,8 +3975,10 @@ export namespace Prisma {
     id: string | null
     tenantId: string | null
     email: string | null
+    passwordHash: string | null
     firstName: string | null
     lastName: string | null
+    phone: string | null
     role: $Enums.UserRole | null
     isActive: boolean | null
     lastLoginAt: Date | null
@@ -3508,8 +3991,10 @@ export namespace Prisma {
     id: string | null
     tenantId: string | null
     email: string | null
+    passwordHash: string | null
     firstName: string | null
     lastName: string | null
+    phone: string | null
     role: $Enums.UserRole | null
     isActive: boolean | null
     lastLoginAt: Date | null
@@ -3522,8 +4007,10 @@ export namespace Prisma {
     id: number
     tenantId: number
     email: number
+    passwordHash: number
     firstName: number
     lastName: number
+    phone: number
     role: number
     isActive: number
     lastLoginAt: number
@@ -3539,8 +4026,10 @@ export namespace Prisma {
     id?: true
     tenantId?: true
     email?: true
+    passwordHash?: true
     firstName?: true
     lastName?: true
+    phone?: true
     role?: true
     isActive?: true
     lastLoginAt?: true
@@ -3553,8 +4042,10 @@ export namespace Prisma {
     id?: true
     tenantId?: true
     email?: true
+    passwordHash?: true
     firstName?: true
     lastName?: true
+    phone?: true
     role?: true
     isActive?: true
     lastLoginAt?: true
@@ -3567,8 +4058,10 @@ export namespace Prisma {
     id?: true
     tenantId?: true
     email?: true
+    passwordHash?: true
     firstName?: true
     lastName?: true
+    phone?: true
     role?: true
     isActive?: true
     lastLoginAt?: true
@@ -3655,8 +4148,10 @@ export namespace Prisma {
     id: string
     tenantId: string
     email: string
+    passwordHash: string | null
     firstName: string
     lastName: string
+    phone: string | null
     role: $Enums.UserRole
     isActive: boolean
     lastLoginAt: Date | null
@@ -3687,8 +4182,10 @@ export namespace Prisma {
     id?: boolean
     tenantId?: boolean
     email?: boolean
+    passwordHash?: boolean
     firstName?: boolean
     lastName?: boolean
+    phone?: boolean
     role?: boolean
     isActive?: boolean
     lastLoginAt?: boolean
@@ -3705,6 +4202,10 @@ export namespace Prisma {
     comments?: boolean | User$commentsArgs<ExtArgs>
     notifications?: boolean | User$notificationsArgs<ExtArgs>
     audits?: boolean | User$auditsArgs<ExtArgs>
+    triggeredScrapings?: boolean | User$triggeredScrapingsArgs<ExtArgs>
+    sessions?: boolean | User$sessionsArgs<ExtArgs>
+    notificationPreferences?: boolean | User$notificationPreferencesArgs<ExtArgs>
+    notificationLogs?: boolean | User$notificationLogsArgs<ExtArgs>
     _count?: boolean | UserCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["user"]>
 
@@ -3712,8 +4213,10 @@ export namespace Prisma {
     id?: boolean
     tenantId?: boolean
     email?: boolean
+    passwordHash?: boolean
     firstName?: boolean
     lastName?: boolean
+    phone?: boolean
     role?: boolean
     isActive?: boolean
     lastLoginAt?: boolean
@@ -3728,8 +4231,10 @@ export namespace Prisma {
     id?: boolean
     tenantId?: boolean
     email?: boolean
+    passwordHash?: boolean
     firstName?: boolean
     lastName?: boolean
+    phone?: boolean
     role?: boolean
     isActive?: boolean
     lastLoginAt?: boolean
@@ -3749,6 +4254,10 @@ export namespace Prisma {
     comments?: boolean | User$commentsArgs<ExtArgs>
     notifications?: boolean | User$notificationsArgs<ExtArgs>
     audits?: boolean | User$auditsArgs<ExtArgs>
+    triggeredScrapings?: boolean | User$triggeredScrapingsArgs<ExtArgs>
+    sessions?: boolean | User$sessionsArgs<ExtArgs>
+    notificationPreferences?: boolean | User$notificationPreferencesArgs<ExtArgs>
+    notificationLogs?: boolean | User$notificationLogsArgs<ExtArgs>
     _count?: boolean | UserCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type UserIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -3767,13 +4276,19 @@ export namespace Prisma {
       comments: Prisma.$CommentPayload<ExtArgs>[]
       notifications: Prisma.$NotificationPayload<ExtArgs>[]
       audits: Prisma.$AuditLogPayload<ExtArgs>[]
+      triggeredScrapings: Prisma.$ScrapingLogPayload<ExtArgs>[]
+      sessions: Prisma.$SessionPayload<ExtArgs>[]
+      notificationPreferences: Prisma.$NotificationPreferencePayload<ExtArgs>[]
+      notificationLogs: Prisma.$NotificationLogPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
       tenantId: string
       email: string
+      passwordHash: string | null
       firstName: string
       lastName: string
+      phone: string | null
       role: $Enums.UserRole
       isActive: boolean
       lastLoginAt: Date | null
@@ -4154,6 +4669,10 @@ export namespace Prisma {
     comments<T extends User$commentsArgs<ExtArgs> = {}>(args?: Subset<T, User$commentsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$CommentPayload<ExtArgs>, T, "findMany"> | Null>
     notifications<T extends User$notificationsArgs<ExtArgs> = {}>(args?: Subset<T, User$notificationsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$NotificationPayload<ExtArgs>, T, "findMany"> | Null>
     audits<T extends User$auditsArgs<ExtArgs> = {}>(args?: Subset<T, User$auditsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AuditLogPayload<ExtArgs>, T, "findMany"> | Null>
+    triggeredScrapings<T extends User$triggeredScrapingsArgs<ExtArgs> = {}>(args?: Subset<T, User$triggeredScrapingsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ScrapingLogPayload<ExtArgs>, T, "findMany"> | Null>
+    sessions<T extends User$sessionsArgs<ExtArgs> = {}>(args?: Subset<T, User$sessionsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$SessionPayload<ExtArgs>, T, "findMany"> | Null>
+    notificationPreferences<T extends User$notificationPreferencesArgs<ExtArgs> = {}>(args?: Subset<T, User$notificationPreferencesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$NotificationPreferencePayload<ExtArgs>, T, "findMany"> | Null>
+    notificationLogs<T extends User$notificationLogsArgs<ExtArgs> = {}>(args?: Subset<T, User$notificationLogsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$NotificationLogPayload<ExtArgs>, T, "findMany"> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -4186,8 +4705,10 @@ export namespace Prisma {
     readonly id: FieldRef<"User", 'String'>
     readonly tenantId: FieldRef<"User", 'String'>
     readonly email: FieldRef<"User", 'String'>
+    readonly passwordHash: FieldRef<"User", 'String'>
     readonly firstName: FieldRef<"User", 'String'>
     readonly lastName: FieldRef<"User", 'String'>
+    readonly phone: FieldRef<"User", 'String'>
     readonly role: FieldRef<"User", 'UserRole'>
     readonly isActive: FieldRef<"User", 'Boolean'>
     readonly lastLoginAt: FieldRef<"User", 'DateTime'>
@@ -4673,6 +5194,86 @@ export namespace Prisma {
   }
 
   /**
+   * User.triggeredScrapings
+   */
+  export type User$triggeredScrapingsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ScrapingLog
+     */
+    select?: ScrapingLogSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ScrapingLogInclude<ExtArgs> | null
+    where?: ScrapingLogWhereInput
+    orderBy?: ScrapingLogOrderByWithRelationInput | ScrapingLogOrderByWithRelationInput[]
+    cursor?: ScrapingLogWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: ScrapingLogScalarFieldEnum | ScrapingLogScalarFieldEnum[]
+  }
+
+  /**
+   * User.sessions
+   */
+  export type User$sessionsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Session
+     */
+    select?: SessionSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SessionInclude<ExtArgs> | null
+    where?: SessionWhereInput
+    orderBy?: SessionOrderByWithRelationInput | SessionOrderByWithRelationInput[]
+    cursor?: SessionWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: SessionScalarFieldEnum | SessionScalarFieldEnum[]
+  }
+
+  /**
+   * User.notificationPreferences
+   */
+  export type User$notificationPreferencesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the NotificationPreference
+     */
+    select?: NotificationPreferenceSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: NotificationPreferenceInclude<ExtArgs> | null
+    where?: NotificationPreferenceWhereInput
+    orderBy?: NotificationPreferenceOrderByWithRelationInput | NotificationPreferenceOrderByWithRelationInput[]
+    cursor?: NotificationPreferenceWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: NotificationPreferenceScalarFieldEnum | NotificationPreferenceScalarFieldEnum[]
+  }
+
+  /**
+   * User.notificationLogs
+   */
+  export type User$notificationLogsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the NotificationLog
+     */
+    select?: NotificationLogSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: NotificationLogInclude<ExtArgs> | null
+    where?: NotificationLogWhereInput
+    orderBy?: NotificationLogOrderByWithRelationInput | NotificationLogOrderByWithRelationInput[]
+    cursor?: NotificationLogWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: NotificationLogScalarFieldEnum | NotificationLogScalarFieldEnum[]
+  }
+
+  /**
    * User without action
    */
   export type UserDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -4724,6 +5325,12 @@ export namespace Prisma {
     createdAt: Date | null
     updatedAt: Date | null
     deletedAt: Date | null
+    scrapedAt: Date | null
+    sourcePortal: string | null
+    originalTitle: string | null
+    originalStatus: string | null
+    originalValue: string | null
+    sourceUrl: string | null
   }
 
   export type TenderMaxAggregateOutputType = {
@@ -4743,6 +5350,12 @@ export namespace Prisma {
     createdAt: Date | null
     updatedAt: Date | null
     deletedAt: Date | null
+    scrapedAt: Date | null
+    sourcePortal: string | null
+    originalTitle: string | null
+    originalStatus: string | null
+    originalValue: string | null
+    sourceUrl: string | null
   }
 
   export type TenderCountAggregateOutputType = {
@@ -4764,6 +5377,13 @@ export namespace Prisma {
     createdAt: number
     updatedAt: number
     deletedAt: number
+    scrapedAt: number
+    sourcePortal: number
+    originalTitle: number
+    originalStatus: number
+    originalValue: number
+    exchangeRates: number
+    sourceUrl: number
     _all: number
   }
 
@@ -4793,6 +5413,12 @@ export namespace Prisma {
     createdAt?: true
     updatedAt?: true
     deletedAt?: true
+    scrapedAt?: true
+    sourcePortal?: true
+    originalTitle?: true
+    originalStatus?: true
+    originalValue?: true
+    sourceUrl?: true
   }
 
   export type TenderMaxAggregateInputType = {
@@ -4812,6 +5438,12 @@ export namespace Prisma {
     createdAt?: true
     updatedAt?: true
     deletedAt?: true
+    scrapedAt?: true
+    sourcePortal?: true
+    originalTitle?: true
+    originalStatus?: true
+    originalValue?: true
+    sourceUrl?: true
   }
 
   export type TenderCountAggregateInputType = {
@@ -4833,6 +5465,13 @@ export namespace Prisma {
     createdAt?: true
     updatedAt?: true
     deletedAt?: true
+    scrapedAt?: true
+    sourcePortal?: true
+    originalTitle?: true
+    originalStatus?: true
+    originalValue?: true
+    exchangeRates?: true
+    sourceUrl?: true
     _all?: true
   }
 
@@ -4941,6 +5580,13 @@ export namespace Prisma {
     createdAt: Date
     updatedAt: Date
     deletedAt: Date | null
+    scrapedAt: Date | null
+    sourcePortal: string | null
+    originalTitle: string | null
+    originalStatus: string | null
+    originalValue: string | null
+    exchangeRates: JsonValue | null
+    sourceUrl: string | null
     _count: TenderCountAggregateOutputType | null
     _avg: TenderAvgAggregateOutputType | null
     _sum: TenderSumAggregateOutputType | null
@@ -4981,6 +5627,13 @@ export namespace Prisma {
     createdAt?: boolean
     updatedAt?: boolean
     deletedAt?: boolean
+    scrapedAt?: boolean
+    sourcePortal?: boolean
+    originalTitle?: boolean
+    originalStatus?: boolean
+    originalValue?: boolean
+    exchangeRates?: boolean
+    sourceUrl?: boolean
     tenant?: boolean | TenantDefaultArgs<ExtArgs>
     creator?: boolean | UserDefaultArgs<ExtArgs>
     assignments?: boolean | Tender$assignmentsArgs<ExtArgs>
@@ -5013,6 +5666,13 @@ export namespace Prisma {
     createdAt?: boolean
     updatedAt?: boolean
     deletedAt?: boolean
+    scrapedAt?: boolean
+    sourcePortal?: boolean
+    originalTitle?: boolean
+    originalStatus?: boolean
+    originalValue?: boolean
+    exchangeRates?: boolean
+    sourceUrl?: boolean
     tenant?: boolean | TenantDefaultArgs<ExtArgs>
     creator?: boolean | UserDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["tender"]>
@@ -5036,6 +5696,13 @@ export namespace Prisma {
     createdAt?: boolean
     updatedAt?: boolean
     deletedAt?: boolean
+    scrapedAt?: boolean
+    sourcePortal?: boolean
+    originalTitle?: boolean
+    originalStatus?: boolean
+    originalValue?: boolean
+    exchangeRates?: boolean
+    sourceUrl?: boolean
   }
 
   export type TenderInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -5089,6 +5756,13 @@ export namespace Prisma {
       createdAt: Date
       updatedAt: Date
       deletedAt: Date | null
+      scrapedAt: Date | null
+      sourcePortal: string | null
+      originalTitle: string | null
+      originalStatus: string | null
+      originalValue: string | null
+      exchangeRates: Prisma.JsonValue | null
+      sourceUrl: string | null
     }, ExtArgs["result"]["tender"]>
     composites: {}
   }
@@ -5510,6 +6184,13 @@ export namespace Prisma {
     readonly createdAt: FieldRef<"Tender", 'DateTime'>
     readonly updatedAt: FieldRef<"Tender", 'DateTime'>
     readonly deletedAt: FieldRef<"Tender", 'DateTime'>
+    readonly scrapedAt: FieldRef<"Tender", 'DateTime'>
+    readonly sourcePortal: FieldRef<"Tender", 'String'>
+    readonly originalTitle: FieldRef<"Tender", 'String'>
+    readonly originalStatus: FieldRef<"Tender", 'String'>
+    readonly originalValue: FieldRef<"Tender", 'String'>
+    readonly exchangeRates: FieldRef<"Tender", 'Json'>
+    readonly sourceUrl: FieldRef<"Tender", 'String'>
   }
     
 
@@ -7170,7 +7851,7 @@ export namespace Prisma {
 
   export type DocumentGroupByOutputType = {
     id: string
-    tenderId: string
+    tenderId: string | null
     uploadedBy: string
     filename: string
     originalName: string
@@ -7219,7 +7900,7 @@ export namespace Prisma {
     isDeleted?: boolean
     uploadedAt?: boolean
     updatedAt?: boolean
-    tender?: boolean | TenderDefaultArgs<ExtArgs>
+    tender?: boolean | Document$tenderArgs<ExtArgs>
     uploader?: boolean | UserDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["document"]>
 
@@ -7238,7 +7919,7 @@ export namespace Prisma {
     isDeleted?: boolean
     uploadedAt?: boolean
     updatedAt?: boolean
-    tender?: boolean | TenderDefaultArgs<ExtArgs>
+    tender?: boolean | Document$tenderArgs<ExtArgs>
     uploader?: boolean | UserDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["document"]>
 
@@ -7260,23 +7941,23 @@ export namespace Prisma {
   }
 
   export type DocumentInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    tender?: boolean | TenderDefaultArgs<ExtArgs>
+    tender?: boolean | Document$tenderArgs<ExtArgs>
     uploader?: boolean | UserDefaultArgs<ExtArgs>
   }
   export type DocumentIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    tender?: boolean | TenderDefaultArgs<ExtArgs>
+    tender?: boolean | Document$tenderArgs<ExtArgs>
     uploader?: boolean | UserDefaultArgs<ExtArgs>
   }
 
   export type $DocumentPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "Document"
     objects: {
-      tender: Prisma.$TenderPayload<ExtArgs>
+      tender: Prisma.$TenderPayload<ExtArgs> | null
       uploader: Prisma.$UserPayload<ExtArgs>
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
-      tenderId: string
+      tenderId: string | null
       uploadedBy: string
       filename: string
       originalName: string
@@ -7653,7 +8334,7 @@ export namespace Prisma {
    */
   export interface Prisma__DocumentClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
-    tender<T extends TenderDefaultArgs<ExtArgs> = {}>(args?: Subset<T, TenderDefaultArgs<ExtArgs>>): Prisma__TenderClient<$Result.GetResult<Prisma.$TenderPayload<ExtArgs>, T, "findUniqueOrThrow"> | Null, Null, ExtArgs>
+    tender<T extends Document$tenderArgs<ExtArgs> = {}>(args?: Subset<T, Document$tenderArgs<ExtArgs>>): Prisma__TenderClient<$Result.GetResult<Prisma.$TenderPayload<ExtArgs>, T, "findUniqueOrThrow"> | null, null, ExtArgs>
     uploader<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow"> | Null, Null, ExtArgs>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
@@ -8013,6 +8694,21 @@ export namespace Prisma {
      * Filter which Documents to delete
      */
     where?: DocumentWhereInput
+  }
+
+  /**
+   * Document.tender
+   */
+  export type Document$tenderArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Tender
+     */
+    select?: TenderSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TenderInclude<ExtArgs> | null
+    where?: TenderWhereInput
   }
 
   /**
@@ -14240,6 +14936,8 @@ export namespace Prisma {
     ipAddress: string | null
     userAgent: string | null
     timestamp: Date | null
+    archived: boolean | null
+    archivedAt: Date | null
   }
 
   export type AuditLogMaxAggregateOutputType = {
@@ -14252,6 +14950,8 @@ export namespace Prisma {
     ipAddress: string | null
     userAgent: string | null
     timestamp: Date | null
+    archived: boolean | null
+    archivedAt: Date | null
   }
 
   export type AuditLogCountAggregateOutputType = {
@@ -14267,6 +14967,8 @@ export namespace Prisma {
     ipAddress: number
     userAgent: number
     timestamp: number
+    archived: number
+    archivedAt: number
     _all: number
   }
 
@@ -14281,6 +14983,8 @@ export namespace Prisma {
     ipAddress?: true
     userAgent?: true
     timestamp?: true
+    archived?: true
+    archivedAt?: true
   }
 
   export type AuditLogMaxAggregateInputType = {
@@ -14293,6 +14997,8 @@ export namespace Prisma {
     ipAddress?: true
     userAgent?: true
     timestamp?: true
+    archived?: true
+    archivedAt?: true
   }
 
   export type AuditLogCountAggregateInputType = {
@@ -14308,6 +15014,8 @@ export namespace Prisma {
     ipAddress?: true
     userAgent?: true
     timestamp?: true
+    archived?: true
+    archivedAt?: true
     _all?: true
   }
 
@@ -14396,6 +15104,8 @@ export namespace Prisma {
     ipAddress: string | null
     userAgent: string | null
     timestamp: Date
+    archived: boolean
+    archivedAt: Date | null
     _count: AuditLogCountAggregateOutputType | null
     _min: AuditLogMinAggregateOutputType | null
     _max: AuditLogMaxAggregateOutputType | null
@@ -14428,6 +15138,8 @@ export namespace Prisma {
     ipAddress?: boolean
     userAgent?: boolean
     timestamp?: boolean
+    archived?: boolean
+    archivedAt?: boolean
     tenant?: boolean | TenantDefaultArgs<ExtArgs>
     user?: boolean | AuditLog$userArgs<ExtArgs>
   }, ExtArgs["result"]["auditLog"]>
@@ -14445,6 +15157,8 @@ export namespace Prisma {
     ipAddress?: boolean
     userAgent?: boolean
     timestamp?: boolean
+    archived?: boolean
+    archivedAt?: boolean
     tenant?: boolean | TenantDefaultArgs<ExtArgs>
     user?: boolean | AuditLog$userArgs<ExtArgs>
   }, ExtArgs["result"]["auditLog"]>
@@ -14462,6 +15176,8 @@ export namespace Prisma {
     ipAddress?: boolean
     userAgent?: boolean
     timestamp?: boolean
+    archived?: boolean
+    archivedAt?: boolean
   }
 
   export type AuditLogInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -14492,6 +15208,8 @@ export namespace Prisma {
       ipAddress: string | null
       userAgent: string | null
       timestamp: Date
+      archived: boolean
+      archivedAt: Date | null
     }, ExtArgs["result"]["auditLog"]>
     composites: {}
   }
@@ -14899,6 +15617,8 @@ export namespace Prisma {
     readonly ipAddress: FieldRef<"AuditLog", 'String'>
     readonly userAgent: FieldRef<"AuditLog", 'String'>
     readonly timestamp: FieldRef<"AuditLog", 'DateTime'>
+    readonly archived: FieldRef<"AuditLog", 'Boolean'>
+    readonly archivedAt: FieldRef<"AuditLog", 'DateTime'>
   }
     
 
@@ -18149,6 +18869,4031 @@ export namespace Prisma {
 
 
   /**
+   * Model ScrapingLog
+   */
+
+  export type AggregateScrapingLog = {
+    _count: ScrapingLogCountAggregateOutputType | null
+    _avg: ScrapingLogAvgAggregateOutputType | null
+    _sum: ScrapingLogSumAggregateOutputType | null
+    _min: ScrapingLogMinAggregateOutputType | null
+    _max: ScrapingLogMaxAggregateOutputType | null
+  }
+
+  export type ScrapingLogAvgAggregateOutputType = {
+    pagesProcessed: number | null
+    totalPages: number | null
+    tendersFound: number | null
+    tendersImported: number | null
+    tendersUpdated: number | null
+    tendersSkipped: number | null
+  }
+
+  export type ScrapingLogSumAggregateOutputType = {
+    pagesProcessed: number | null
+    totalPages: number | null
+    tendersFound: number | null
+    tendersImported: number | null
+    tendersUpdated: number | null
+    tendersSkipped: number | null
+  }
+
+  export type ScrapingLogMinAggregateOutputType = {
+    id: string | null
+    tenantId: string | null
+    sourcePortal: string | null
+    status: $Enums.ScrapingStatus | null
+    startedAt: Date | null
+    completedAt: Date | null
+    pagesProcessed: number | null
+    totalPages: number | null
+    tendersFound: number | null
+    tendersImported: number | null
+    tendersUpdated: number | null
+    tendersSkipped: number | null
+    errorMessage: string | null
+    triggeredBy: string | null
+  }
+
+  export type ScrapingLogMaxAggregateOutputType = {
+    id: string | null
+    tenantId: string | null
+    sourcePortal: string | null
+    status: $Enums.ScrapingStatus | null
+    startedAt: Date | null
+    completedAt: Date | null
+    pagesProcessed: number | null
+    totalPages: number | null
+    tendersFound: number | null
+    tendersImported: number | null
+    tendersUpdated: number | null
+    tendersSkipped: number | null
+    errorMessage: string | null
+    triggeredBy: string | null
+  }
+
+  export type ScrapingLogCountAggregateOutputType = {
+    id: number
+    tenantId: number
+    sourcePortal: number
+    status: number
+    startedAt: number
+    completedAt: number
+    pagesProcessed: number
+    totalPages: number
+    tendersFound: number
+    tendersImported: number
+    tendersUpdated: number
+    tendersSkipped: number
+    errorMessage: number
+    errorDetails: number
+    metadata: number
+    triggeredBy: number
+    _all: number
+  }
+
+
+  export type ScrapingLogAvgAggregateInputType = {
+    pagesProcessed?: true
+    totalPages?: true
+    tendersFound?: true
+    tendersImported?: true
+    tendersUpdated?: true
+    tendersSkipped?: true
+  }
+
+  export type ScrapingLogSumAggregateInputType = {
+    pagesProcessed?: true
+    totalPages?: true
+    tendersFound?: true
+    tendersImported?: true
+    tendersUpdated?: true
+    tendersSkipped?: true
+  }
+
+  export type ScrapingLogMinAggregateInputType = {
+    id?: true
+    tenantId?: true
+    sourcePortal?: true
+    status?: true
+    startedAt?: true
+    completedAt?: true
+    pagesProcessed?: true
+    totalPages?: true
+    tendersFound?: true
+    tendersImported?: true
+    tendersUpdated?: true
+    tendersSkipped?: true
+    errorMessage?: true
+    triggeredBy?: true
+  }
+
+  export type ScrapingLogMaxAggregateInputType = {
+    id?: true
+    tenantId?: true
+    sourcePortal?: true
+    status?: true
+    startedAt?: true
+    completedAt?: true
+    pagesProcessed?: true
+    totalPages?: true
+    tendersFound?: true
+    tendersImported?: true
+    tendersUpdated?: true
+    tendersSkipped?: true
+    errorMessage?: true
+    triggeredBy?: true
+  }
+
+  export type ScrapingLogCountAggregateInputType = {
+    id?: true
+    tenantId?: true
+    sourcePortal?: true
+    status?: true
+    startedAt?: true
+    completedAt?: true
+    pagesProcessed?: true
+    totalPages?: true
+    tendersFound?: true
+    tendersImported?: true
+    tendersUpdated?: true
+    tendersSkipped?: true
+    errorMessage?: true
+    errorDetails?: true
+    metadata?: true
+    triggeredBy?: true
+    _all?: true
+  }
+
+  export type ScrapingLogAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which ScrapingLog to aggregate.
+     */
+    where?: ScrapingLogWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of ScrapingLogs to fetch.
+     */
+    orderBy?: ScrapingLogOrderByWithRelationInput | ScrapingLogOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: ScrapingLogWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` ScrapingLogs from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` ScrapingLogs.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned ScrapingLogs
+    **/
+    _count?: true | ScrapingLogCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: ScrapingLogAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: ScrapingLogSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: ScrapingLogMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: ScrapingLogMaxAggregateInputType
+  }
+
+  export type GetScrapingLogAggregateType<T extends ScrapingLogAggregateArgs> = {
+        [P in keyof T & keyof AggregateScrapingLog]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateScrapingLog[P]>
+      : GetScalarType<T[P], AggregateScrapingLog[P]>
+  }
+
+
+
+
+  export type ScrapingLogGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: ScrapingLogWhereInput
+    orderBy?: ScrapingLogOrderByWithAggregationInput | ScrapingLogOrderByWithAggregationInput[]
+    by: ScrapingLogScalarFieldEnum[] | ScrapingLogScalarFieldEnum
+    having?: ScrapingLogScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: ScrapingLogCountAggregateInputType | true
+    _avg?: ScrapingLogAvgAggregateInputType
+    _sum?: ScrapingLogSumAggregateInputType
+    _min?: ScrapingLogMinAggregateInputType
+    _max?: ScrapingLogMaxAggregateInputType
+  }
+
+  export type ScrapingLogGroupByOutputType = {
+    id: string
+    tenantId: string
+    sourcePortal: string
+    status: $Enums.ScrapingStatus
+    startedAt: Date
+    completedAt: Date | null
+    pagesProcessed: number
+    totalPages: number | null
+    tendersFound: number
+    tendersImported: number
+    tendersUpdated: number
+    tendersSkipped: number
+    errorMessage: string | null
+    errorDetails: JsonValue | null
+    metadata: JsonValue
+    triggeredBy: string
+    _count: ScrapingLogCountAggregateOutputType | null
+    _avg: ScrapingLogAvgAggregateOutputType | null
+    _sum: ScrapingLogSumAggregateOutputType | null
+    _min: ScrapingLogMinAggregateOutputType | null
+    _max: ScrapingLogMaxAggregateOutputType | null
+  }
+
+  type GetScrapingLogGroupByPayload<T extends ScrapingLogGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<ScrapingLogGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof ScrapingLogGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], ScrapingLogGroupByOutputType[P]>
+            : GetScalarType<T[P], ScrapingLogGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type ScrapingLogSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    tenantId?: boolean
+    sourcePortal?: boolean
+    status?: boolean
+    startedAt?: boolean
+    completedAt?: boolean
+    pagesProcessed?: boolean
+    totalPages?: boolean
+    tendersFound?: boolean
+    tendersImported?: boolean
+    tendersUpdated?: boolean
+    tendersSkipped?: boolean
+    errorMessage?: boolean
+    errorDetails?: boolean
+    metadata?: boolean
+    triggeredBy?: boolean
+    tenant?: boolean | TenantDefaultArgs<ExtArgs>
+    triggeredByUser?: boolean | UserDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["scrapingLog"]>
+
+  export type ScrapingLogSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    tenantId?: boolean
+    sourcePortal?: boolean
+    status?: boolean
+    startedAt?: boolean
+    completedAt?: boolean
+    pagesProcessed?: boolean
+    totalPages?: boolean
+    tendersFound?: boolean
+    tendersImported?: boolean
+    tendersUpdated?: boolean
+    tendersSkipped?: boolean
+    errorMessage?: boolean
+    errorDetails?: boolean
+    metadata?: boolean
+    triggeredBy?: boolean
+    tenant?: boolean | TenantDefaultArgs<ExtArgs>
+    triggeredByUser?: boolean | UserDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["scrapingLog"]>
+
+  export type ScrapingLogSelectScalar = {
+    id?: boolean
+    tenantId?: boolean
+    sourcePortal?: boolean
+    status?: boolean
+    startedAt?: boolean
+    completedAt?: boolean
+    pagesProcessed?: boolean
+    totalPages?: boolean
+    tendersFound?: boolean
+    tendersImported?: boolean
+    tendersUpdated?: boolean
+    tendersSkipped?: boolean
+    errorMessage?: boolean
+    errorDetails?: boolean
+    metadata?: boolean
+    triggeredBy?: boolean
+  }
+
+  export type ScrapingLogInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    tenant?: boolean | TenantDefaultArgs<ExtArgs>
+    triggeredByUser?: boolean | UserDefaultArgs<ExtArgs>
+  }
+  export type ScrapingLogIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    tenant?: boolean | TenantDefaultArgs<ExtArgs>
+    triggeredByUser?: boolean | UserDefaultArgs<ExtArgs>
+  }
+
+  export type $ScrapingLogPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "ScrapingLog"
+    objects: {
+      tenant: Prisma.$TenantPayload<ExtArgs>
+      triggeredByUser: Prisma.$UserPayload<ExtArgs>
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      tenantId: string
+      sourcePortal: string
+      status: $Enums.ScrapingStatus
+      startedAt: Date
+      completedAt: Date | null
+      pagesProcessed: number
+      totalPages: number | null
+      tendersFound: number
+      tendersImported: number
+      tendersUpdated: number
+      tendersSkipped: number
+      errorMessage: string | null
+      errorDetails: Prisma.JsonValue | null
+      metadata: Prisma.JsonValue
+      triggeredBy: string
+    }, ExtArgs["result"]["scrapingLog"]>
+    composites: {}
+  }
+
+  type ScrapingLogGetPayload<S extends boolean | null | undefined | ScrapingLogDefaultArgs> = $Result.GetResult<Prisma.$ScrapingLogPayload, S>
+
+  type ScrapingLogCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = 
+    Omit<ScrapingLogFindManyArgs, 'select' | 'include' | 'distinct'> & {
+      select?: ScrapingLogCountAggregateInputType | true
+    }
+
+  export interface ScrapingLogDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['ScrapingLog'], meta: { name: 'ScrapingLog' } }
+    /**
+     * Find zero or one ScrapingLog that matches the filter.
+     * @param {ScrapingLogFindUniqueArgs} args - Arguments to find a ScrapingLog
+     * @example
+     * // Get one ScrapingLog
+     * const scrapingLog = await prisma.scrapingLog.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends ScrapingLogFindUniqueArgs>(args: SelectSubset<T, ScrapingLogFindUniqueArgs<ExtArgs>>): Prisma__ScrapingLogClient<$Result.GetResult<Prisma.$ScrapingLogPayload<ExtArgs>, T, "findUnique"> | null, null, ExtArgs>
+
+    /**
+     * Find one ScrapingLog that matches the filter or throw an error with `error.code='P2025'` 
+     * if no matches were found.
+     * @param {ScrapingLogFindUniqueOrThrowArgs} args - Arguments to find a ScrapingLog
+     * @example
+     * // Get one ScrapingLog
+     * const scrapingLog = await prisma.scrapingLog.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends ScrapingLogFindUniqueOrThrowArgs>(args: SelectSubset<T, ScrapingLogFindUniqueOrThrowArgs<ExtArgs>>): Prisma__ScrapingLogClient<$Result.GetResult<Prisma.$ScrapingLogPayload<ExtArgs>, T, "findUniqueOrThrow">, never, ExtArgs>
+
+    /**
+     * Find the first ScrapingLog that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ScrapingLogFindFirstArgs} args - Arguments to find a ScrapingLog
+     * @example
+     * // Get one ScrapingLog
+     * const scrapingLog = await prisma.scrapingLog.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends ScrapingLogFindFirstArgs>(args?: SelectSubset<T, ScrapingLogFindFirstArgs<ExtArgs>>): Prisma__ScrapingLogClient<$Result.GetResult<Prisma.$ScrapingLogPayload<ExtArgs>, T, "findFirst"> | null, null, ExtArgs>
+
+    /**
+     * Find the first ScrapingLog that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ScrapingLogFindFirstOrThrowArgs} args - Arguments to find a ScrapingLog
+     * @example
+     * // Get one ScrapingLog
+     * const scrapingLog = await prisma.scrapingLog.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends ScrapingLogFindFirstOrThrowArgs>(args?: SelectSubset<T, ScrapingLogFindFirstOrThrowArgs<ExtArgs>>): Prisma__ScrapingLogClient<$Result.GetResult<Prisma.$ScrapingLogPayload<ExtArgs>, T, "findFirstOrThrow">, never, ExtArgs>
+
+    /**
+     * Find zero or more ScrapingLogs that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ScrapingLogFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all ScrapingLogs
+     * const scrapingLogs = await prisma.scrapingLog.findMany()
+     * 
+     * // Get first 10 ScrapingLogs
+     * const scrapingLogs = await prisma.scrapingLog.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const scrapingLogWithIdOnly = await prisma.scrapingLog.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends ScrapingLogFindManyArgs>(args?: SelectSubset<T, ScrapingLogFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ScrapingLogPayload<ExtArgs>, T, "findMany">>
+
+    /**
+     * Create a ScrapingLog.
+     * @param {ScrapingLogCreateArgs} args - Arguments to create a ScrapingLog.
+     * @example
+     * // Create one ScrapingLog
+     * const ScrapingLog = await prisma.scrapingLog.create({
+     *   data: {
+     *     // ... data to create a ScrapingLog
+     *   }
+     * })
+     * 
+     */
+    create<T extends ScrapingLogCreateArgs>(args: SelectSubset<T, ScrapingLogCreateArgs<ExtArgs>>): Prisma__ScrapingLogClient<$Result.GetResult<Prisma.$ScrapingLogPayload<ExtArgs>, T, "create">, never, ExtArgs>
+
+    /**
+     * Create many ScrapingLogs.
+     * @param {ScrapingLogCreateManyArgs} args - Arguments to create many ScrapingLogs.
+     * @example
+     * // Create many ScrapingLogs
+     * const scrapingLog = await prisma.scrapingLog.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends ScrapingLogCreateManyArgs>(args?: SelectSubset<T, ScrapingLogCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many ScrapingLogs and returns the data saved in the database.
+     * @param {ScrapingLogCreateManyAndReturnArgs} args - Arguments to create many ScrapingLogs.
+     * @example
+     * // Create many ScrapingLogs
+     * const scrapingLog = await prisma.scrapingLog.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many ScrapingLogs and only return the `id`
+     * const scrapingLogWithIdOnly = await prisma.scrapingLog.createManyAndReturn({ 
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends ScrapingLogCreateManyAndReturnArgs>(args?: SelectSubset<T, ScrapingLogCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ScrapingLogPayload<ExtArgs>, T, "createManyAndReturn">>
+
+    /**
+     * Delete a ScrapingLog.
+     * @param {ScrapingLogDeleteArgs} args - Arguments to delete one ScrapingLog.
+     * @example
+     * // Delete one ScrapingLog
+     * const ScrapingLog = await prisma.scrapingLog.delete({
+     *   where: {
+     *     // ... filter to delete one ScrapingLog
+     *   }
+     * })
+     * 
+     */
+    delete<T extends ScrapingLogDeleteArgs>(args: SelectSubset<T, ScrapingLogDeleteArgs<ExtArgs>>): Prisma__ScrapingLogClient<$Result.GetResult<Prisma.$ScrapingLogPayload<ExtArgs>, T, "delete">, never, ExtArgs>
+
+    /**
+     * Update one ScrapingLog.
+     * @param {ScrapingLogUpdateArgs} args - Arguments to update one ScrapingLog.
+     * @example
+     * // Update one ScrapingLog
+     * const scrapingLog = await prisma.scrapingLog.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends ScrapingLogUpdateArgs>(args: SelectSubset<T, ScrapingLogUpdateArgs<ExtArgs>>): Prisma__ScrapingLogClient<$Result.GetResult<Prisma.$ScrapingLogPayload<ExtArgs>, T, "update">, never, ExtArgs>
+
+    /**
+     * Delete zero or more ScrapingLogs.
+     * @param {ScrapingLogDeleteManyArgs} args - Arguments to filter ScrapingLogs to delete.
+     * @example
+     * // Delete a few ScrapingLogs
+     * const { count } = await prisma.scrapingLog.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends ScrapingLogDeleteManyArgs>(args?: SelectSubset<T, ScrapingLogDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more ScrapingLogs.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ScrapingLogUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many ScrapingLogs
+     * const scrapingLog = await prisma.scrapingLog.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends ScrapingLogUpdateManyArgs>(args: SelectSubset<T, ScrapingLogUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create or update one ScrapingLog.
+     * @param {ScrapingLogUpsertArgs} args - Arguments to update or create a ScrapingLog.
+     * @example
+     * // Update or create a ScrapingLog
+     * const scrapingLog = await prisma.scrapingLog.upsert({
+     *   create: {
+     *     // ... data to create a ScrapingLog
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the ScrapingLog we want to update
+     *   }
+     * })
+     */
+    upsert<T extends ScrapingLogUpsertArgs>(args: SelectSubset<T, ScrapingLogUpsertArgs<ExtArgs>>): Prisma__ScrapingLogClient<$Result.GetResult<Prisma.$ScrapingLogPayload<ExtArgs>, T, "upsert">, never, ExtArgs>
+
+
+    /**
+     * Count the number of ScrapingLogs.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ScrapingLogCountArgs} args - Arguments to filter ScrapingLogs to count.
+     * @example
+     * // Count the number of ScrapingLogs
+     * const count = await prisma.scrapingLog.count({
+     *   where: {
+     *     // ... the filter for the ScrapingLogs we want to count
+     *   }
+     * })
+    **/
+    count<T extends ScrapingLogCountArgs>(
+      args?: Subset<T, ScrapingLogCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], ScrapingLogCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a ScrapingLog.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ScrapingLogAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends ScrapingLogAggregateArgs>(args: Subset<T, ScrapingLogAggregateArgs>): Prisma.PrismaPromise<GetScrapingLogAggregateType<T>>
+
+    /**
+     * Group by ScrapingLog.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ScrapingLogGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends ScrapingLogGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: ScrapingLogGroupByArgs['orderBy'] }
+        : { orderBy?: ScrapingLogGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, ScrapingLogGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetScrapingLogGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the ScrapingLog model
+   */
+  readonly fields: ScrapingLogFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for ScrapingLog.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__ScrapingLogClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    tenant<T extends TenantDefaultArgs<ExtArgs> = {}>(args?: Subset<T, TenantDefaultArgs<ExtArgs>>): Prisma__TenantClient<$Result.GetResult<Prisma.$TenantPayload<ExtArgs>, T, "findUniqueOrThrow"> | Null, Null, ExtArgs>
+    triggeredByUser<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow"> | Null, Null, ExtArgs>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the ScrapingLog model
+   */ 
+  interface ScrapingLogFieldRefs {
+    readonly id: FieldRef<"ScrapingLog", 'String'>
+    readonly tenantId: FieldRef<"ScrapingLog", 'String'>
+    readonly sourcePortal: FieldRef<"ScrapingLog", 'String'>
+    readonly status: FieldRef<"ScrapingLog", 'ScrapingStatus'>
+    readonly startedAt: FieldRef<"ScrapingLog", 'DateTime'>
+    readonly completedAt: FieldRef<"ScrapingLog", 'DateTime'>
+    readonly pagesProcessed: FieldRef<"ScrapingLog", 'Int'>
+    readonly totalPages: FieldRef<"ScrapingLog", 'Int'>
+    readonly tendersFound: FieldRef<"ScrapingLog", 'Int'>
+    readonly tendersImported: FieldRef<"ScrapingLog", 'Int'>
+    readonly tendersUpdated: FieldRef<"ScrapingLog", 'Int'>
+    readonly tendersSkipped: FieldRef<"ScrapingLog", 'Int'>
+    readonly errorMessage: FieldRef<"ScrapingLog", 'String'>
+    readonly errorDetails: FieldRef<"ScrapingLog", 'Json'>
+    readonly metadata: FieldRef<"ScrapingLog", 'Json'>
+    readonly triggeredBy: FieldRef<"ScrapingLog", 'String'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * ScrapingLog findUnique
+   */
+  export type ScrapingLogFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ScrapingLog
+     */
+    select?: ScrapingLogSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ScrapingLogInclude<ExtArgs> | null
+    /**
+     * Filter, which ScrapingLog to fetch.
+     */
+    where: ScrapingLogWhereUniqueInput
+  }
+
+  /**
+   * ScrapingLog findUniqueOrThrow
+   */
+  export type ScrapingLogFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ScrapingLog
+     */
+    select?: ScrapingLogSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ScrapingLogInclude<ExtArgs> | null
+    /**
+     * Filter, which ScrapingLog to fetch.
+     */
+    where: ScrapingLogWhereUniqueInput
+  }
+
+  /**
+   * ScrapingLog findFirst
+   */
+  export type ScrapingLogFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ScrapingLog
+     */
+    select?: ScrapingLogSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ScrapingLogInclude<ExtArgs> | null
+    /**
+     * Filter, which ScrapingLog to fetch.
+     */
+    where?: ScrapingLogWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of ScrapingLogs to fetch.
+     */
+    orderBy?: ScrapingLogOrderByWithRelationInput | ScrapingLogOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for ScrapingLogs.
+     */
+    cursor?: ScrapingLogWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` ScrapingLogs from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` ScrapingLogs.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of ScrapingLogs.
+     */
+    distinct?: ScrapingLogScalarFieldEnum | ScrapingLogScalarFieldEnum[]
+  }
+
+  /**
+   * ScrapingLog findFirstOrThrow
+   */
+  export type ScrapingLogFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ScrapingLog
+     */
+    select?: ScrapingLogSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ScrapingLogInclude<ExtArgs> | null
+    /**
+     * Filter, which ScrapingLog to fetch.
+     */
+    where?: ScrapingLogWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of ScrapingLogs to fetch.
+     */
+    orderBy?: ScrapingLogOrderByWithRelationInput | ScrapingLogOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for ScrapingLogs.
+     */
+    cursor?: ScrapingLogWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` ScrapingLogs from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` ScrapingLogs.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of ScrapingLogs.
+     */
+    distinct?: ScrapingLogScalarFieldEnum | ScrapingLogScalarFieldEnum[]
+  }
+
+  /**
+   * ScrapingLog findMany
+   */
+  export type ScrapingLogFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ScrapingLog
+     */
+    select?: ScrapingLogSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ScrapingLogInclude<ExtArgs> | null
+    /**
+     * Filter, which ScrapingLogs to fetch.
+     */
+    where?: ScrapingLogWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of ScrapingLogs to fetch.
+     */
+    orderBy?: ScrapingLogOrderByWithRelationInput | ScrapingLogOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing ScrapingLogs.
+     */
+    cursor?: ScrapingLogWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` ScrapingLogs from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` ScrapingLogs.
+     */
+    skip?: number
+    distinct?: ScrapingLogScalarFieldEnum | ScrapingLogScalarFieldEnum[]
+  }
+
+  /**
+   * ScrapingLog create
+   */
+  export type ScrapingLogCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ScrapingLog
+     */
+    select?: ScrapingLogSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ScrapingLogInclude<ExtArgs> | null
+    /**
+     * The data needed to create a ScrapingLog.
+     */
+    data: XOR<ScrapingLogCreateInput, ScrapingLogUncheckedCreateInput>
+  }
+
+  /**
+   * ScrapingLog createMany
+   */
+  export type ScrapingLogCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many ScrapingLogs.
+     */
+    data: ScrapingLogCreateManyInput | ScrapingLogCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * ScrapingLog createManyAndReturn
+   */
+  export type ScrapingLogCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ScrapingLog
+     */
+    select?: ScrapingLogSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * The data used to create many ScrapingLogs.
+     */
+    data: ScrapingLogCreateManyInput | ScrapingLogCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ScrapingLogIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * ScrapingLog update
+   */
+  export type ScrapingLogUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ScrapingLog
+     */
+    select?: ScrapingLogSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ScrapingLogInclude<ExtArgs> | null
+    /**
+     * The data needed to update a ScrapingLog.
+     */
+    data: XOR<ScrapingLogUpdateInput, ScrapingLogUncheckedUpdateInput>
+    /**
+     * Choose, which ScrapingLog to update.
+     */
+    where: ScrapingLogWhereUniqueInput
+  }
+
+  /**
+   * ScrapingLog updateMany
+   */
+  export type ScrapingLogUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update ScrapingLogs.
+     */
+    data: XOR<ScrapingLogUpdateManyMutationInput, ScrapingLogUncheckedUpdateManyInput>
+    /**
+     * Filter which ScrapingLogs to update
+     */
+    where?: ScrapingLogWhereInput
+  }
+
+  /**
+   * ScrapingLog upsert
+   */
+  export type ScrapingLogUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ScrapingLog
+     */
+    select?: ScrapingLogSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ScrapingLogInclude<ExtArgs> | null
+    /**
+     * The filter to search for the ScrapingLog to update in case it exists.
+     */
+    where: ScrapingLogWhereUniqueInput
+    /**
+     * In case the ScrapingLog found by the `where` argument doesn't exist, create a new ScrapingLog with this data.
+     */
+    create: XOR<ScrapingLogCreateInput, ScrapingLogUncheckedCreateInput>
+    /**
+     * In case the ScrapingLog was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<ScrapingLogUpdateInput, ScrapingLogUncheckedUpdateInput>
+  }
+
+  /**
+   * ScrapingLog delete
+   */
+  export type ScrapingLogDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ScrapingLog
+     */
+    select?: ScrapingLogSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ScrapingLogInclude<ExtArgs> | null
+    /**
+     * Filter which ScrapingLog to delete.
+     */
+    where: ScrapingLogWhereUniqueInput
+  }
+
+  /**
+   * ScrapingLog deleteMany
+   */
+  export type ScrapingLogDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which ScrapingLogs to delete
+     */
+    where?: ScrapingLogWhereInput
+  }
+
+  /**
+   * ScrapingLog without action
+   */
+  export type ScrapingLogDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ScrapingLog
+     */
+    select?: ScrapingLogSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ScrapingLogInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model Session
+   */
+
+  export type AggregateSession = {
+    _count: SessionCountAggregateOutputType | null
+    _min: SessionMinAggregateOutputType | null
+    _max: SessionMaxAggregateOutputType | null
+  }
+
+  export type SessionMinAggregateOutputType = {
+    id: string | null
+    sessionToken: string | null
+    userId: string | null
+    expiresAt: Date | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type SessionMaxAggregateOutputType = {
+    id: string | null
+    sessionToken: string | null
+    userId: string | null
+    expiresAt: Date | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type SessionCountAggregateOutputType = {
+    id: number
+    sessionToken: number
+    userId: number
+    expiresAt: number
+    createdAt: number
+    updatedAt: number
+    data: number
+    _all: number
+  }
+
+
+  export type SessionMinAggregateInputType = {
+    id?: true
+    sessionToken?: true
+    userId?: true
+    expiresAt?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type SessionMaxAggregateInputType = {
+    id?: true
+    sessionToken?: true
+    userId?: true
+    expiresAt?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type SessionCountAggregateInputType = {
+    id?: true
+    sessionToken?: true
+    userId?: true
+    expiresAt?: true
+    createdAt?: true
+    updatedAt?: true
+    data?: true
+    _all?: true
+  }
+
+  export type SessionAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which Session to aggregate.
+     */
+    where?: SessionWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Sessions to fetch.
+     */
+    orderBy?: SessionOrderByWithRelationInput | SessionOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: SessionWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Sessions from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Sessions.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned Sessions
+    **/
+    _count?: true | SessionCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: SessionMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: SessionMaxAggregateInputType
+  }
+
+  export type GetSessionAggregateType<T extends SessionAggregateArgs> = {
+        [P in keyof T & keyof AggregateSession]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateSession[P]>
+      : GetScalarType<T[P], AggregateSession[P]>
+  }
+
+
+
+
+  export type SessionGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: SessionWhereInput
+    orderBy?: SessionOrderByWithAggregationInput | SessionOrderByWithAggregationInput[]
+    by: SessionScalarFieldEnum[] | SessionScalarFieldEnum
+    having?: SessionScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: SessionCountAggregateInputType | true
+    _min?: SessionMinAggregateInputType
+    _max?: SessionMaxAggregateInputType
+  }
+
+  export type SessionGroupByOutputType = {
+    id: string
+    sessionToken: string
+    userId: string
+    expiresAt: Date
+    createdAt: Date
+    updatedAt: Date
+    data: JsonValue
+    _count: SessionCountAggregateOutputType | null
+    _min: SessionMinAggregateOutputType | null
+    _max: SessionMaxAggregateOutputType | null
+  }
+
+  type GetSessionGroupByPayload<T extends SessionGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<SessionGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof SessionGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], SessionGroupByOutputType[P]>
+            : GetScalarType<T[P], SessionGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type SessionSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    sessionToken?: boolean
+    userId?: boolean
+    expiresAt?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    data?: boolean
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["session"]>
+
+  export type SessionSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    sessionToken?: boolean
+    userId?: boolean
+    expiresAt?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    data?: boolean
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["session"]>
+
+  export type SessionSelectScalar = {
+    id?: boolean
+    sessionToken?: boolean
+    userId?: boolean
+    expiresAt?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    data?: boolean
+  }
+
+  export type SessionInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }
+  export type SessionIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }
+
+  export type $SessionPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "Session"
+    objects: {
+      user: Prisma.$UserPayload<ExtArgs>
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      sessionToken: string
+      userId: string
+      expiresAt: Date
+      createdAt: Date
+      updatedAt: Date
+      data: Prisma.JsonValue
+    }, ExtArgs["result"]["session"]>
+    composites: {}
+  }
+
+  type SessionGetPayload<S extends boolean | null | undefined | SessionDefaultArgs> = $Result.GetResult<Prisma.$SessionPayload, S>
+
+  type SessionCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = 
+    Omit<SessionFindManyArgs, 'select' | 'include' | 'distinct'> & {
+      select?: SessionCountAggregateInputType | true
+    }
+
+  export interface SessionDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['Session'], meta: { name: 'Session' } }
+    /**
+     * Find zero or one Session that matches the filter.
+     * @param {SessionFindUniqueArgs} args - Arguments to find a Session
+     * @example
+     * // Get one Session
+     * const session = await prisma.session.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends SessionFindUniqueArgs>(args: SelectSubset<T, SessionFindUniqueArgs<ExtArgs>>): Prisma__SessionClient<$Result.GetResult<Prisma.$SessionPayload<ExtArgs>, T, "findUnique"> | null, null, ExtArgs>
+
+    /**
+     * Find one Session that matches the filter or throw an error with `error.code='P2025'` 
+     * if no matches were found.
+     * @param {SessionFindUniqueOrThrowArgs} args - Arguments to find a Session
+     * @example
+     * // Get one Session
+     * const session = await prisma.session.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends SessionFindUniqueOrThrowArgs>(args: SelectSubset<T, SessionFindUniqueOrThrowArgs<ExtArgs>>): Prisma__SessionClient<$Result.GetResult<Prisma.$SessionPayload<ExtArgs>, T, "findUniqueOrThrow">, never, ExtArgs>
+
+    /**
+     * Find the first Session that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {SessionFindFirstArgs} args - Arguments to find a Session
+     * @example
+     * // Get one Session
+     * const session = await prisma.session.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends SessionFindFirstArgs>(args?: SelectSubset<T, SessionFindFirstArgs<ExtArgs>>): Prisma__SessionClient<$Result.GetResult<Prisma.$SessionPayload<ExtArgs>, T, "findFirst"> | null, null, ExtArgs>
+
+    /**
+     * Find the first Session that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {SessionFindFirstOrThrowArgs} args - Arguments to find a Session
+     * @example
+     * // Get one Session
+     * const session = await prisma.session.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends SessionFindFirstOrThrowArgs>(args?: SelectSubset<T, SessionFindFirstOrThrowArgs<ExtArgs>>): Prisma__SessionClient<$Result.GetResult<Prisma.$SessionPayload<ExtArgs>, T, "findFirstOrThrow">, never, ExtArgs>
+
+    /**
+     * Find zero or more Sessions that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {SessionFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all Sessions
+     * const sessions = await prisma.session.findMany()
+     * 
+     * // Get first 10 Sessions
+     * const sessions = await prisma.session.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const sessionWithIdOnly = await prisma.session.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends SessionFindManyArgs>(args?: SelectSubset<T, SessionFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$SessionPayload<ExtArgs>, T, "findMany">>
+
+    /**
+     * Create a Session.
+     * @param {SessionCreateArgs} args - Arguments to create a Session.
+     * @example
+     * // Create one Session
+     * const Session = await prisma.session.create({
+     *   data: {
+     *     // ... data to create a Session
+     *   }
+     * })
+     * 
+     */
+    create<T extends SessionCreateArgs>(args: SelectSubset<T, SessionCreateArgs<ExtArgs>>): Prisma__SessionClient<$Result.GetResult<Prisma.$SessionPayload<ExtArgs>, T, "create">, never, ExtArgs>
+
+    /**
+     * Create many Sessions.
+     * @param {SessionCreateManyArgs} args - Arguments to create many Sessions.
+     * @example
+     * // Create many Sessions
+     * const session = await prisma.session.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends SessionCreateManyArgs>(args?: SelectSubset<T, SessionCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many Sessions and returns the data saved in the database.
+     * @param {SessionCreateManyAndReturnArgs} args - Arguments to create many Sessions.
+     * @example
+     * // Create many Sessions
+     * const session = await prisma.session.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many Sessions and only return the `id`
+     * const sessionWithIdOnly = await prisma.session.createManyAndReturn({ 
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends SessionCreateManyAndReturnArgs>(args?: SelectSubset<T, SessionCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$SessionPayload<ExtArgs>, T, "createManyAndReturn">>
+
+    /**
+     * Delete a Session.
+     * @param {SessionDeleteArgs} args - Arguments to delete one Session.
+     * @example
+     * // Delete one Session
+     * const Session = await prisma.session.delete({
+     *   where: {
+     *     // ... filter to delete one Session
+     *   }
+     * })
+     * 
+     */
+    delete<T extends SessionDeleteArgs>(args: SelectSubset<T, SessionDeleteArgs<ExtArgs>>): Prisma__SessionClient<$Result.GetResult<Prisma.$SessionPayload<ExtArgs>, T, "delete">, never, ExtArgs>
+
+    /**
+     * Update one Session.
+     * @param {SessionUpdateArgs} args - Arguments to update one Session.
+     * @example
+     * // Update one Session
+     * const session = await prisma.session.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends SessionUpdateArgs>(args: SelectSubset<T, SessionUpdateArgs<ExtArgs>>): Prisma__SessionClient<$Result.GetResult<Prisma.$SessionPayload<ExtArgs>, T, "update">, never, ExtArgs>
+
+    /**
+     * Delete zero or more Sessions.
+     * @param {SessionDeleteManyArgs} args - Arguments to filter Sessions to delete.
+     * @example
+     * // Delete a few Sessions
+     * const { count } = await prisma.session.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends SessionDeleteManyArgs>(args?: SelectSubset<T, SessionDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more Sessions.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {SessionUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many Sessions
+     * const session = await prisma.session.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends SessionUpdateManyArgs>(args: SelectSubset<T, SessionUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create or update one Session.
+     * @param {SessionUpsertArgs} args - Arguments to update or create a Session.
+     * @example
+     * // Update or create a Session
+     * const session = await prisma.session.upsert({
+     *   create: {
+     *     // ... data to create a Session
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the Session we want to update
+     *   }
+     * })
+     */
+    upsert<T extends SessionUpsertArgs>(args: SelectSubset<T, SessionUpsertArgs<ExtArgs>>): Prisma__SessionClient<$Result.GetResult<Prisma.$SessionPayload<ExtArgs>, T, "upsert">, never, ExtArgs>
+
+
+    /**
+     * Count the number of Sessions.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {SessionCountArgs} args - Arguments to filter Sessions to count.
+     * @example
+     * // Count the number of Sessions
+     * const count = await prisma.session.count({
+     *   where: {
+     *     // ... the filter for the Sessions we want to count
+     *   }
+     * })
+    **/
+    count<T extends SessionCountArgs>(
+      args?: Subset<T, SessionCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], SessionCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a Session.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {SessionAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends SessionAggregateArgs>(args: Subset<T, SessionAggregateArgs>): Prisma.PrismaPromise<GetSessionAggregateType<T>>
+
+    /**
+     * Group by Session.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {SessionGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends SessionGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: SessionGroupByArgs['orderBy'] }
+        : { orderBy?: SessionGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, SessionGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetSessionGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the Session model
+   */
+  readonly fields: SessionFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for Session.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__SessionClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    user<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow"> | Null, Null, ExtArgs>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the Session model
+   */ 
+  interface SessionFieldRefs {
+    readonly id: FieldRef<"Session", 'String'>
+    readonly sessionToken: FieldRef<"Session", 'String'>
+    readonly userId: FieldRef<"Session", 'String'>
+    readonly expiresAt: FieldRef<"Session", 'DateTime'>
+    readonly createdAt: FieldRef<"Session", 'DateTime'>
+    readonly updatedAt: FieldRef<"Session", 'DateTime'>
+    readonly data: FieldRef<"Session", 'Json'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * Session findUnique
+   */
+  export type SessionFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Session
+     */
+    select?: SessionSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SessionInclude<ExtArgs> | null
+    /**
+     * Filter, which Session to fetch.
+     */
+    where: SessionWhereUniqueInput
+  }
+
+  /**
+   * Session findUniqueOrThrow
+   */
+  export type SessionFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Session
+     */
+    select?: SessionSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SessionInclude<ExtArgs> | null
+    /**
+     * Filter, which Session to fetch.
+     */
+    where: SessionWhereUniqueInput
+  }
+
+  /**
+   * Session findFirst
+   */
+  export type SessionFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Session
+     */
+    select?: SessionSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SessionInclude<ExtArgs> | null
+    /**
+     * Filter, which Session to fetch.
+     */
+    where?: SessionWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Sessions to fetch.
+     */
+    orderBy?: SessionOrderByWithRelationInput | SessionOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for Sessions.
+     */
+    cursor?: SessionWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Sessions from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Sessions.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of Sessions.
+     */
+    distinct?: SessionScalarFieldEnum | SessionScalarFieldEnum[]
+  }
+
+  /**
+   * Session findFirstOrThrow
+   */
+  export type SessionFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Session
+     */
+    select?: SessionSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SessionInclude<ExtArgs> | null
+    /**
+     * Filter, which Session to fetch.
+     */
+    where?: SessionWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Sessions to fetch.
+     */
+    orderBy?: SessionOrderByWithRelationInput | SessionOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for Sessions.
+     */
+    cursor?: SessionWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Sessions from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Sessions.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of Sessions.
+     */
+    distinct?: SessionScalarFieldEnum | SessionScalarFieldEnum[]
+  }
+
+  /**
+   * Session findMany
+   */
+  export type SessionFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Session
+     */
+    select?: SessionSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SessionInclude<ExtArgs> | null
+    /**
+     * Filter, which Sessions to fetch.
+     */
+    where?: SessionWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Sessions to fetch.
+     */
+    orderBy?: SessionOrderByWithRelationInput | SessionOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing Sessions.
+     */
+    cursor?: SessionWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Sessions from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Sessions.
+     */
+    skip?: number
+    distinct?: SessionScalarFieldEnum | SessionScalarFieldEnum[]
+  }
+
+  /**
+   * Session create
+   */
+  export type SessionCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Session
+     */
+    select?: SessionSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SessionInclude<ExtArgs> | null
+    /**
+     * The data needed to create a Session.
+     */
+    data: XOR<SessionCreateInput, SessionUncheckedCreateInput>
+  }
+
+  /**
+   * Session createMany
+   */
+  export type SessionCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many Sessions.
+     */
+    data: SessionCreateManyInput | SessionCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * Session createManyAndReturn
+   */
+  export type SessionCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Session
+     */
+    select?: SessionSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * The data used to create many Sessions.
+     */
+    data: SessionCreateManyInput | SessionCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SessionIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * Session update
+   */
+  export type SessionUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Session
+     */
+    select?: SessionSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SessionInclude<ExtArgs> | null
+    /**
+     * The data needed to update a Session.
+     */
+    data: XOR<SessionUpdateInput, SessionUncheckedUpdateInput>
+    /**
+     * Choose, which Session to update.
+     */
+    where: SessionWhereUniqueInput
+  }
+
+  /**
+   * Session updateMany
+   */
+  export type SessionUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update Sessions.
+     */
+    data: XOR<SessionUpdateManyMutationInput, SessionUncheckedUpdateManyInput>
+    /**
+     * Filter which Sessions to update
+     */
+    where?: SessionWhereInput
+  }
+
+  /**
+   * Session upsert
+   */
+  export type SessionUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Session
+     */
+    select?: SessionSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SessionInclude<ExtArgs> | null
+    /**
+     * The filter to search for the Session to update in case it exists.
+     */
+    where: SessionWhereUniqueInput
+    /**
+     * In case the Session found by the `where` argument doesn't exist, create a new Session with this data.
+     */
+    create: XOR<SessionCreateInput, SessionUncheckedCreateInput>
+    /**
+     * In case the Session was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<SessionUpdateInput, SessionUncheckedUpdateInput>
+  }
+
+  /**
+   * Session delete
+   */
+  export type SessionDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Session
+     */
+    select?: SessionSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SessionInclude<ExtArgs> | null
+    /**
+     * Filter which Session to delete.
+     */
+    where: SessionWhereUniqueInput
+  }
+
+  /**
+   * Session deleteMany
+   */
+  export type SessionDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which Sessions to delete
+     */
+    where?: SessionWhereInput
+  }
+
+  /**
+   * Session without action
+   */
+  export type SessionDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Session
+     */
+    select?: SessionSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SessionInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model NotificationPreference
+   */
+
+  export type AggregateNotificationPreference = {
+    _count: NotificationPreferenceCountAggregateOutputType | null
+    _min: NotificationPreferenceMinAggregateOutputType | null
+    _max: NotificationPreferenceMaxAggregateOutputType | null
+  }
+
+  export type NotificationPreferenceMinAggregateOutputType = {
+    id: string | null
+    userId: string | null
+    type: string | null
+    enabled: boolean | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type NotificationPreferenceMaxAggregateOutputType = {
+    id: string | null
+    userId: string | null
+    type: string | null
+    enabled: boolean | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type NotificationPreferenceCountAggregateOutputType = {
+    id: number
+    userId: number
+    type: number
+    enabled: number
+    channels: number
+    createdAt: number
+    updatedAt: number
+    _all: number
+  }
+
+
+  export type NotificationPreferenceMinAggregateInputType = {
+    id?: true
+    userId?: true
+    type?: true
+    enabled?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type NotificationPreferenceMaxAggregateInputType = {
+    id?: true
+    userId?: true
+    type?: true
+    enabled?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type NotificationPreferenceCountAggregateInputType = {
+    id?: true
+    userId?: true
+    type?: true
+    enabled?: true
+    channels?: true
+    createdAt?: true
+    updatedAt?: true
+    _all?: true
+  }
+
+  export type NotificationPreferenceAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which NotificationPreference to aggregate.
+     */
+    where?: NotificationPreferenceWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of NotificationPreferences to fetch.
+     */
+    orderBy?: NotificationPreferenceOrderByWithRelationInput | NotificationPreferenceOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: NotificationPreferenceWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` NotificationPreferences from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` NotificationPreferences.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned NotificationPreferences
+    **/
+    _count?: true | NotificationPreferenceCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: NotificationPreferenceMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: NotificationPreferenceMaxAggregateInputType
+  }
+
+  export type GetNotificationPreferenceAggregateType<T extends NotificationPreferenceAggregateArgs> = {
+        [P in keyof T & keyof AggregateNotificationPreference]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateNotificationPreference[P]>
+      : GetScalarType<T[P], AggregateNotificationPreference[P]>
+  }
+
+
+
+
+  export type NotificationPreferenceGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: NotificationPreferenceWhereInput
+    orderBy?: NotificationPreferenceOrderByWithAggregationInput | NotificationPreferenceOrderByWithAggregationInput[]
+    by: NotificationPreferenceScalarFieldEnum[] | NotificationPreferenceScalarFieldEnum
+    having?: NotificationPreferenceScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: NotificationPreferenceCountAggregateInputType | true
+    _min?: NotificationPreferenceMinAggregateInputType
+    _max?: NotificationPreferenceMaxAggregateInputType
+  }
+
+  export type NotificationPreferenceGroupByOutputType = {
+    id: string
+    userId: string
+    type: string
+    enabled: boolean
+    channels: string[]
+    createdAt: Date
+    updatedAt: Date
+    _count: NotificationPreferenceCountAggregateOutputType | null
+    _min: NotificationPreferenceMinAggregateOutputType | null
+    _max: NotificationPreferenceMaxAggregateOutputType | null
+  }
+
+  type GetNotificationPreferenceGroupByPayload<T extends NotificationPreferenceGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<NotificationPreferenceGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof NotificationPreferenceGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], NotificationPreferenceGroupByOutputType[P]>
+            : GetScalarType<T[P], NotificationPreferenceGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type NotificationPreferenceSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    userId?: boolean
+    type?: boolean
+    enabled?: boolean
+    channels?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["notificationPreference"]>
+
+  export type NotificationPreferenceSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    userId?: boolean
+    type?: boolean
+    enabled?: boolean
+    channels?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["notificationPreference"]>
+
+  export type NotificationPreferenceSelectScalar = {
+    id?: boolean
+    userId?: boolean
+    type?: boolean
+    enabled?: boolean
+    channels?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }
+
+  export type NotificationPreferenceInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }
+  export type NotificationPreferenceIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }
+
+  export type $NotificationPreferencePayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "NotificationPreference"
+    objects: {
+      user: Prisma.$UserPayload<ExtArgs>
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      userId: string
+      type: string
+      enabled: boolean
+      channels: string[]
+      createdAt: Date
+      updatedAt: Date
+    }, ExtArgs["result"]["notificationPreference"]>
+    composites: {}
+  }
+
+  type NotificationPreferenceGetPayload<S extends boolean | null | undefined | NotificationPreferenceDefaultArgs> = $Result.GetResult<Prisma.$NotificationPreferencePayload, S>
+
+  type NotificationPreferenceCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = 
+    Omit<NotificationPreferenceFindManyArgs, 'select' | 'include' | 'distinct'> & {
+      select?: NotificationPreferenceCountAggregateInputType | true
+    }
+
+  export interface NotificationPreferenceDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['NotificationPreference'], meta: { name: 'NotificationPreference' } }
+    /**
+     * Find zero or one NotificationPreference that matches the filter.
+     * @param {NotificationPreferenceFindUniqueArgs} args - Arguments to find a NotificationPreference
+     * @example
+     * // Get one NotificationPreference
+     * const notificationPreference = await prisma.notificationPreference.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends NotificationPreferenceFindUniqueArgs>(args: SelectSubset<T, NotificationPreferenceFindUniqueArgs<ExtArgs>>): Prisma__NotificationPreferenceClient<$Result.GetResult<Prisma.$NotificationPreferencePayload<ExtArgs>, T, "findUnique"> | null, null, ExtArgs>
+
+    /**
+     * Find one NotificationPreference that matches the filter or throw an error with `error.code='P2025'` 
+     * if no matches were found.
+     * @param {NotificationPreferenceFindUniqueOrThrowArgs} args - Arguments to find a NotificationPreference
+     * @example
+     * // Get one NotificationPreference
+     * const notificationPreference = await prisma.notificationPreference.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends NotificationPreferenceFindUniqueOrThrowArgs>(args: SelectSubset<T, NotificationPreferenceFindUniqueOrThrowArgs<ExtArgs>>): Prisma__NotificationPreferenceClient<$Result.GetResult<Prisma.$NotificationPreferencePayload<ExtArgs>, T, "findUniqueOrThrow">, never, ExtArgs>
+
+    /**
+     * Find the first NotificationPreference that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {NotificationPreferenceFindFirstArgs} args - Arguments to find a NotificationPreference
+     * @example
+     * // Get one NotificationPreference
+     * const notificationPreference = await prisma.notificationPreference.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends NotificationPreferenceFindFirstArgs>(args?: SelectSubset<T, NotificationPreferenceFindFirstArgs<ExtArgs>>): Prisma__NotificationPreferenceClient<$Result.GetResult<Prisma.$NotificationPreferencePayload<ExtArgs>, T, "findFirst"> | null, null, ExtArgs>
+
+    /**
+     * Find the first NotificationPreference that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {NotificationPreferenceFindFirstOrThrowArgs} args - Arguments to find a NotificationPreference
+     * @example
+     * // Get one NotificationPreference
+     * const notificationPreference = await prisma.notificationPreference.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends NotificationPreferenceFindFirstOrThrowArgs>(args?: SelectSubset<T, NotificationPreferenceFindFirstOrThrowArgs<ExtArgs>>): Prisma__NotificationPreferenceClient<$Result.GetResult<Prisma.$NotificationPreferencePayload<ExtArgs>, T, "findFirstOrThrow">, never, ExtArgs>
+
+    /**
+     * Find zero or more NotificationPreferences that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {NotificationPreferenceFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all NotificationPreferences
+     * const notificationPreferences = await prisma.notificationPreference.findMany()
+     * 
+     * // Get first 10 NotificationPreferences
+     * const notificationPreferences = await prisma.notificationPreference.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const notificationPreferenceWithIdOnly = await prisma.notificationPreference.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends NotificationPreferenceFindManyArgs>(args?: SelectSubset<T, NotificationPreferenceFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$NotificationPreferencePayload<ExtArgs>, T, "findMany">>
+
+    /**
+     * Create a NotificationPreference.
+     * @param {NotificationPreferenceCreateArgs} args - Arguments to create a NotificationPreference.
+     * @example
+     * // Create one NotificationPreference
+     * const NotificationPreference = await prisma.notificationPreference.create({
+     *   data: {
+     *     // ... data to create a NotificationPreference
+     *   }
+     * })
+     * 
+     */
+    create<T extends NotificationPreferenceCreateArgs>(args: SelectSubset<T, NotificationPreferenceCreateArgs<ExtArgs>>): Prisma__NotificationPreferenceClient<$Result.GetResult<Prisma.$NotificationPreferencePayload<ExtArgs>, T, "create">, never, ExtArgs>
+
+    /**
+     * Create many NotificationPreferences.
+     * @param {NotificationPreferenceCreateManyArgs} args - Arguments to create many NotificationPreferences.
+     * @example
+     * // Create many NotificationPreferences
+     * const notificationPreference = await prisma.notificationPreference.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends NotificationPreferenceCreateManyArgs>(args?: SelectSubset<T, NotificationPreferenceCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many NotificationPreferences and returns the data saved in the database.
+     * @param {NotificationPreferenceCreateManyAndReturnArgs} args - Arguments to create many NotificationPreferences.
+     * @example
+     * // Create many NotificationPreferences
+     * const notificationPreference = await prisma.notificationPreference.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many NotificationPreferences and only return the `id`
+     * const notificationPreferenceWithIdOnly = await prisma.notificationPreference.createManyAndReturn({ 
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends NotificationPreferenceCreateManyAndReturnArgs>(args?: SelectSubset<T, NotificationPreferenceCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$NotificationPreferencePayload<ExtArgs>, T, "createManyAndReturn">>
+
+    /**
+     * Delete a NotificationPreference.
+     * @param {NotificationPreferenceDeleteArgs} args - Arguments to delete one NotificationPreference.
+     * @example
+     * // Delete one NotificationPreference
+     * const NotificationPreference = await prisma.notificationPreference.delete({
+     *   where: {
+     *     // ... filter to delete one NotificationPreference
+     *   }
+     * })
+     * 
+     */
+    delete<T extends NotificationPreferenceDeleteArgs>(args: SelectSubset<T, NotificationPreferenceDeleteArgs<ExtArgs>>): Prisma__NotificationPreferenceClient<$Result.GetResult<Prisma.$NotificationPreferencePayload<ExtArgs>, T, "delete">, never, ExtArgs>
+
+    /**
+     * Update one NotificationPreference.
+     * @param {NotificationPreferenceUpdateArgs} args - Arguments to update one NotificationPreference.
+     * @example
+     * // Update one NotificationPreference
+     * const notificationPreference = await prisma.notificationPreference.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends NotificationPreferenceUpdateArgs>(args: SelectSubset<T, NotificationPreferenceUpdateArgs<ExtArgs>>): Prisma__NotificationPreferenceClient<$Result.GetResult<Prisma.$NotificationPreferencePayload<ExtArgs>, T, "update">, never, ExtArgs>
+
+    /**
+     * Delete zero or more NotificationPreferences.
+     * @param {NotificationPreferenceDeleteManyArgs} args - Arguments to filter NotificationPreferences to delete.
+     * @example
+     * // Delete a few NotificationPreferences
+     * const { count } = await prisma.notificationPreference.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends NotificationPreferenceDeleteManyArgs>(args?: SelectSubset<T, NotificationPreferenceDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more NotificationPreferences.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {NotificationPreferenceUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many NotificationPreferences
+     * const notificationPreference = await prisma.notificationPreference.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends NotificationPreferenceUpdateManyArgs>(args: SelectSubset<T, NotificationPreferenceUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create or update one NotificationPreference.
+     * @param {NotificationPreferenceUpsertArgs} args - Arguments to update or create a NotificationPreference.
+     * @example
+     * // Update or create a NotificationPreference
+     * const notificationPreference = await prisma.notificationPreference.upsert({
+     *   create: {
+     *     // ... data to create a NotificationPreference
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the NotificationPreference we want to update
+     *   }
+     * })
+     */
+    upsert<T extends NotificationPreferenceUpsertArgs>(args: SelectSubset<T, NotificationPreferenceUpsertArgs<ExtArgs>>): Prisma__NotificationPreferenceClient<$Result.GetResult<Prisma.$NotificationPreferencePayload<ExtArgs>, T, "upsert">, never, ExtArgs>
+
+
+    /**
+     * Count the number of NotificationPreferences.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {NotificationPreferenceCountArgs} args - Arguments to filter NotificationPreferences to count.
+     * @example
+     * // Count the number of NotificationPreferences
+     * const count = await prisma.notificationPreference.count({
+     *   where: {
+     *     // ... the filter for the NotificationPreferences we want to count
+     *   }
+     * })
+    **/
+    count<T extends NotificationPreferenceCountArgs>(
+      args?: Subset<T, NotificationPreferenceCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], NotificationPreferenceCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a NotificationPreference.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {NotificationPreferenceAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends NotificationPreferenceAggregateArgs>(args: Subset<T, NotificationPreferenceAggregateArgs>): Prisma.PrismaPromise<GetNotificationPreferenceAggregateType<T>>
+
+    /**
+     * Group by NotificationPreference.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {NotificationPreferenceGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends NotificationPreferenceGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: NotificationPreferenceGroupByArgs['orderBy'] }
+        : { orderBy?: NotificationPreferenceGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, NotificationPreferenceGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetNotificationPreferenceGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the NotificationPreference model
+   */
+  readonly fields: NotificationPreferenceFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for NotificationPreference.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__NotificationPreferenceClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    user<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow"> | Null, Null, ExtArgs>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the NotificationPreference model
+   */ 
+  interface NotificationPreferenceFieldRefs {
+    readonly id: FieldRef<"NotificationPreference", 'String'>
+    readonly userId: FieldRef<"NotificationPreference", 'String'>
+    readonly type: FieldRef<"NotificationPreference", 'String'>
+    readonly enabled: FieldRef<"NotificationPreference", 'Boolean'>
+    readonly channels: FieldRef<"NotificationPreference", 'String[]'>
+    readonly createdAt: FieldRef<"NotificationPreference", 'DateTime'>
+    readonly updatedAt: FieldRef<"NotificationPreference", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * NotificationPreference findUnique
+   */
+  export type NotificationPreferenceFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the NotificationPreference
+     */
+    select?: NotificationPreferenceSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: NotificationPreferenceInclude<ExtArgs> | null
+    /**
+     * Filter, which NotificationPreference to fetch.
+     */
+    where: NotificationPreferenceWhereUniqueInput
+  }
+
+  /**
+   * NotificationPreference findUniqueOrThrow
+   */
+  export type NotificationPreferenceFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the NotificationPreference
+     */
+    select?: NotificationPreferenceSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: NotificationPreferenceInclude<ExtArgs> | null
+    /**
+     * Filter, which NotificationPreference to fetch.
+     */
+    where: NotificationPreferenceWhereUniqueInput
+  }
+
+  /**
+   * NotificationPreference findFirst
+   */
+  export type NotificationPreferenceFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the NotificationPreference
+     */
+    select?: NotificationPreferenceSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: NotificationPreferenceInclude<ExtArgs> | null
+    /**
+     * Filter, which NotificationPreference to fetch.
+     */
+    where?: NotificationPreferenceWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of NotificationPreferences to fetch.
+     */
+    orderBy?: NotificationPreferenceOrderByWithRelationInput | NotificationPreferenceOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for NotificationPreferences.
+     */
+    cursor?: NotificationPreferenceWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` NotificationPreferences from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` NotificationPreferences.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of NotificationPreferences.
+     */
+    distinct?: NotificationPreferenceScalarFieldEnum | NotificationPreferenceScalarFieldEnum[]
+  }
+
+  /**
+   * NotificationPreference findFirstOrThrow
+   */
+  export type NotificationPreferenceFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the NotificationPreference
+     */
+    select?: NotificationPreferenceSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: NotificationPreferenceInclude<ExtArgs> | null
+    /**
+     * Filter, which NotificationPreference to fetch.
+     */
+    where?: NotificationPreferenceWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of NotificationPreferences to fetch.
+     */
+    orderBy?: NotificationPreferenceOrderByWithRelationInput | NotificationPreferenceOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for NotificationPreferences.
+     */
+    cursor?: NotificationPreferenceWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` NotificationPreferences from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` NotificationPreferences.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of NotificationPreferences.
+     */
+    distinct?: NotificationPreferenceScalarFieldEnum | NotificationPreferenceScalarFieldEnum[]
+  }
+
+  /**
+   * NotificationPreference findMany
+   */
+  export type NotificationPreferenceFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the NotificationPreference
+     */
+    select?: NotificationPreferenceSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: NotificationPreferenceInclude<ExtArgs> | null
+    /**
+     * Filter, which NotificationPreferences to fetch.
+     */
+    where?: NotificationPreferenceWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of NotificationPreferences to fetch.
+     */
+    orderBy?: NotificationPreferenceOrderByWithRelationInput | NotificationPreferenceOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing NotificationPreferences.
+     */
+    cursor?: NotificationPreferenceWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` NotificationPreferences from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` NotificationPreferences.
+     */
+    skip?: number
+    distinct?: NotificationPreferenceScalarFieldEnum | NotificationPreferenceScalarFieldEnum[]
+  }
+
+  /**
+   * NotificationPreference create
+   */
+  export type NotificationPreferenceCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the NotificationPreference
+     */
+    select?: NotificationPreferenceSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: NotificationPreferenceInclude<ExtArgs> | null
+    /**
+     * The data needed to create a NotificationPreference.
+     */
+    data: XOR<NotificationPreferenceCreateInput, NotificationPreferenceUncheckedCreateInput>
+  }
+
+  /**
+   * NotificationPreference createMany
+   */
+  export type NotificationPreferenceCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many NotificationPreferences.
+     */
+    data: NotificationPreferenceCreateManyInput | NotificationPreferenceCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * NotificationPreference createManyAndReturn
+   */
+  export type NotificationPreferenceCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the NotificationPreference
+     */
+    select?: NotificationPreferenceSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * The data used to create many NotificationPreferences.
+     */
+    data: NotificationPreferenceCreateManyInput | NotificationPreferenceCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: NotificationPreferenceIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * NotificationPreference update
+   */
+  export type NotificationPreferenceUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the NotificationPreference
+     */
+    select?: NotificationPreferenceSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: NotificationPreferenceInclude<ExtArgs> | null
+    /**
+     * The data needed to update a NotificationPreference.
+     */
+    data: XOR<NotificationPreferenceUpdateInput, NotificationPreferenceUncheckedUpdateInput>
+    /**
+     * Choose, which NotificationPreference to update.
+     */
+    where: NotificationPreferenceWhereUniqueInput
+  }
+
+  /**
+   * NotificationPreference updateMany
+   */
+  export type NotificationPreferenceUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update NotificationPreferences.
+     */
+    data: XOR<NotificationPreferenceUpdateManyMutationInput, NotificationPreferenceUncheckedUpdateManyInput>
+    /**
+     * Filter which NotificationPreferences to update
+     */
+    where?: NotificationPreferenceWhereInput
+  }
+
+  /**
+   * NotificationPreference upsert
+   */
+  export type NotificationPreferenceUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the NotificationPreference
+     */
+    select?: NotificationPreferenceSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: NotificationPreferenceInclude<ExtArgs> | null
+    /**
+     * The filter to search for the NotificationPreference to update in case it exists.
+     */
+    where: NotificationPreferenceWhereUniqueInput
+    /**
+     * In case the NotificationPreference found by the `where` argument doesn't exist, create a new NotificationPreference with this data.
+     */
+    create: XOR<NotificationPreferenceCreateInput, NotificationPreferenceUncheckedCreateInput>
+    /**
+     * In case the NotificationPreference was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<NotificationPreferenceUpdateInput, NotificationPreferenceUncheckedUpdateInput>
+  }
+
+  /**
+   * NotificationPreference delete
+   */
+  export type NotificationPreferenceDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the NotificationPreference
+     */
+    select?: NotificationPreferenceSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: NotificationPreferenceInclude<ExtArgs> | null
+    /**
+     * Filter which NotificationPreference to delete.
+     */
+    where: NotificationPreferenceWhereUniqueInput
+  }
+
+  /**
+   * NotificationPreference deleteMany
+   */
+  export type NotificationPreferenceDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which NotificationPreferences to delete
+     */
+    where?: NotificationPreferenceWhereInput
+  }
+
+  /**
+   * NotificationPreference without action
+   */
+  export type NotificationPreferenceDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the NotificationPreference
+     */
+    select?: NotificationPreferenceSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: NotificationPreferenceInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model NotificationLog
+   */
+
+  export type AggregateNotificationLog = {
+    _count: NotificationLogCountAggregateOutputType | null
+    _min: NotificationLogMinAggregateOutputType | null
+    _max: NotificationLogMaxAggregateOutputType | null
+  }
+
+  export type NotificationLogMinAggregateOutputType = {
+    id: string | null
+    type: string | null
+    tenantId: string | null
+    userId: string | null
+    priority: string | null
+    sentAt: Date | null
+    createdAt: Date | null
+  }
+
+  export type NotificationLogMaxAggregateOutputType = {
+    id: string | null
+    type: string | null
+    tenantId: string | null
+    userId: string | null
+    priority: string | null
+    sentAt: Date | null
+    createdAt: Date | null
+  }
+
+  export type NotificationLogCountAggregateOutputType = {
+    id: number
+    type: number
+    tenantId: number
+    userId: number
+    priority: number
+    channels: number
+    recipients: number
+    metadata: number
+    sentAt: number
+    createdAt: number
+    _all: number
+  }
+
+
+  export type NotificationLogMinAggregateInputType = {
+    id?: true
+    type?: true
+    tenantId?: true
+    userId?: true
+    priority?: true
+    sentAt?: true
+    createdAt?: true
+  }
+
+  export type NotificationLogMaxAggregateInputType = {
+    id?: true
+    type?: true
+    tenantId?: true
+    userId?: true
+    priority?: true
+    sentAt?: true
+    createdAt?: true
+  }
+
+  export type NotificationLogCountAggregateInputType = {
+    id?: true
+    type?: true
+    tenantId?: true
+    userId?: true
+    priority?: true
+    channels?: true
+    recipients?: true
+    metadata?: true
+    sentAt?: true
+    createdAt?: true
+    _all?: true
+  }
+
+  export type NotificationLogAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which NotificationLog to aggregate.
+     */
+    where?: NotificationLogWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of NotificationLogs to fetch.
+     */
+    orderBy?: NotificationLogOrderByWithRelationInput | NotificationLogOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: NotificationLogWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` NotificationLogs from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` NotificationLogs.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned NotificationLogs
+    **/
+    _count?: true | NotificationLogCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: NotificationLogMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: NotificationLogMaxAggregateInputType
+  }
+
+  export type GetNotificationLogAggregateType<T extends NotificationLogAggregateArgs> = {
+        [P in keyof T & keyof AggregateNotificationLog]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateNotificationLog[P]>
+      : GetScalarType<T[P], AggregateNotificationLog[P]>
+  }
+
+
+
+
+  export type NotificationLogGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: NotificationLogWhereInput
+    orderBy?: NotificationLogOrderByWithAggregationInput | NotificationLogOrderByWithAggregationInput[]
+    by: NotificationLogScalarFieldEnum[] | NotificationLogScalarFieldEnum
+    having?: NotificationLogScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: NotificationLogCountAggregateInputType | true
+    _min?: NotificationLogMinAggregateInputType
+    _max?: NotificationLogMaxAggregateInputType
+  }
+
+  export type NotificationLogGroupByOutputType = {
+    id: string
+    type: string
+    tenantId: string
+    userId: string | null
+    priority: string
+    channels: string[]
+    recipients: string[]
+    metadata: JsonValue
+    sentAt: Date | null
+    createdAt: Date
+    _count: NotificationLogCountAggregateOutputType | null
+    _min: NotificationLogMinAggregateOutputType | null
+    _max: NotificationLogMaxAggregateOutputType | null
+  }
+
+  type GetNotificationLogGroupByPayload<T extends NotificationLogGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<NotificationLogGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof NotificationLogGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], NotificationLogGroupByOutputType[P]>
+            : GetScalarType<T[P], NotificationLogGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type NotificationLogSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    type?: boolean
+    tenantId?: boolean
+    userId?: boolean
+    priority?: boolean
+    channels?: boolean
+    recipients?: boolean
+    metadata?: boolean
+    sentAt?: boolean
+    createdAt?: boolean
+    tenant?: boolean | TenantDefaultArgs<ExtArgs>
+    user?: boolean | NotificationLog$userArgs<ExtArgs>
+  }, ExtArgs["result"]["notificationLog"]>
+
+  export type NotificationLogSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    type?: boolean
+    tenantId?: boolean
+    userId?: boolean
+    priority?: boolean
+    channels?: boolean
+    recipients?: boolean
+    metadata?: boolean
+    sentAt?: boolean
+    createdAt?: boolean
+    tenant?: boolean | TenantDefaultArgs<ExtArgs>
+    user?: boolean | NotificationLog$userArgs<ExtArgs>
+  }, ExtArgs["result"]["notificationLog"]>
+
+  export type NotificationLogSelectScalar = {
+    id?: boolean
+    type?: boolean
+    tenantId?: boolean
+    userId?: boolean
+    priority?: boolean
+    channels?: boolean
+    recipients?: boolean
+    metadata?: boolean
+    sentAt?: boolean
+    createdAt?: boolean
+  }
+
+  export type NotificationLogInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    tenant?: boolean | TenantDefaultArgs<ExtArgs>
+    user?: boolean | NotificationLog$userArgs<ExtArgs>
+  }
+  export type NotificationLogIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    tenant?: boolean | TenantDefaultArgs<ExtArgs>
+    user?: boolean | NotificationLog$userArgs<ExtArgs>
+  }
+
+  export type $NotificationLogPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "NotificationLog"
+    objects: {
+      tenant: Prisma.$TenantPayload<ExtArgs>
+      user: Prisma.$UserPayload<ExtArgs> | null
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      type: string
+      tenantId: string
+      userId: string | null
+      priority: string
+      channels: string[]
+      recipients: string[]
+      metadata: Prisma.JsonValue
+      sentAt: Date | null
+      createdAt: Date
+    }, ExtArgs["result"]["notificationLog"]>
+    composites: {}
+  }
+
+  type NotificationLogGetPayload<S extends boolean | null | undefined | NotificationLogDefaultArgs> = $Result.GetResult<Prisma.$NotificationLogPayload, S>
+
+  type NotificationLogCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = 
+    Omit<NotificationLogFindManyArgs, 'select' | 'include' | 'distinct'> & {
+      select?: NotificationLogCountAggregateInputType | true
+    }
+
+  export interface NotificationLogDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['NotificationLog'], meta: { name: 'NotificationLog' } }
+    /**
+     * Find zero or one NotificationLog that matches the filter.
+     * @param {NotificationLogFindUniqueArgs} args - Arguments to find a NotificationLog
+     * @example
+     * // Get one NotificationLog
+     * const notificationLog = await prisma.notificationLog.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends NotificationLogFindUniqueArgs>(args: SelectSubset<T, NotificationLogFindUniqueArgs<ExtArgs>>): Prisma__NotificationLogClient<$Result.GetResult<Prisma.$NotificationLogPayload<ExtArgs>, T, "findUnique"> | null, null, ExtArgs>
+
+    /**
+     * Find one NotificationLog that matches the filter or throw an error with `error.code='P2025'` 
+     * if no matches were found.
+     * @param {NotificationLogFindUniqueOrThrowArgs} args - Arguments to find a NotificationLog
+     * @example
+     * // Get one NotificationLog
+     * const notificationLog = await prisma.notificationLog.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends NotificationLogFindUniqueOrThrowArgs>(args: SelectSubset<T, NotificationLogFindUniqueOrThrowArgs<ExtArgs>>): Prisma__NotificationLogClient<$Result.GetResult<Prisma.$NotificationLogPayload<ExtArgs>, T, "findUniqueOrThrow">, never, ExtArgs>
+
+    /**
+     * Find the first NotificationLog that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {NotificationLogFindFirstArgs} args - Arguments to find a NotificationLog
+     * @example
+     * // Get one NotificationLog
+     * const notificationLog = await prisma.notificationLog.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends NotificationLogFindFirstArgs>(args?: SelectSubset<T, NotificationLogFindFirstArgs<ExtArgs>>): Prisma__NotificationLogClient<$Result.GetResult<Prisma.$NotificationLogPayload<ExtArgs>, T, "findFirst"> | null, null, ExtArgs>
+
+    /**
+     * Find the first NotificationLog that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {NotificationLogFindFirstOrThrowArgs} args - Arguments to find a NotificationLog
+     * @example
+     * // Get one NotificationLog
+     * const notificationLog = await prisma.notificationLog.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends NotificationLogFindFirstOrThrowArgs>(args?: SelectSubset<T, NotificationLogFindFirstOrThrowArgs<ExtArgs>>): Prisma__NotificationLogClient<$Result.GetResult<Prisma.$NotificationLogPayload<ExtArgs>, T, "findFirstOrThrow">, never, ExtArgs>
+
+    /**
+     * Find zero or more NotificationLogs that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {NotificationLogFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all NotificationLogs
+     * const notificationLogs = await prisma.notificationLog.findMany()
+     * 
+     * // Get first 10 NotificationLogs
+     * const notificationLogs = await prisma.notificationLog.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const notificationLogWithIdOnly = await prisma.notificationLog.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends NotificationLogFindManyArgs>(args?: SelectSubset<T, NotificationLogFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$NotificationLogPayload<ExtArgs>, T, "findMany">>
+
+    /**
+     * Create a NotificationLog.
+     * @param {NotificationLogCreateArgs} args - Arguments to create a NotificationLog.
+     * @example
+     * // Create one NotificationLog
+     * const NotificationLog = await prisma.notificationLog.create({
+     *   data: {
+     *     // ... data to create a NotificationLog
+     *   }
+     * })
+     * 
+     */
+    create<T extends NotificationLogCreateArgs>(args: SelectSubset<T, NotificationLogCreateArgs<ExtArgs>>): Prisma__NotificationLogClient<$Result.GetResult<Prisma.$NotificationLogPayload<ExtArgs>, T, "create">, never, ExtArgs>
+
+    /**
+     * Create many NotificationLogs.
+     * @param {NotificationLogCreateManyArgs} args - Arguments to create many NotificationLogs.
+     * @example
+     * // Create many NotificationLogs
+     * const notificationLog = await prisma.notificationLog.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends NotificationLogCreateManyArgs>(args?: SelectSubset<T, NotificationLogCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many NotificationLogs and returns the data saved in the database.
+     * @param {NotificationLogCreateManyAndReturnArgs} args - Arguments to create many NotificationLogs.
+     * @example
+     * // Create many NotificationLogs
+     * const notificationLog = await prisma.notificationLog.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many NotificationLogs and only return the `id`
+     * const notificationLogWithIdOnly = await prisma.notificationLog.createManyAndReturn({ 
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends NotificationLogCreateManyAndReturnArgs>(args?: SelectSubset<T, NotificationLogCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$NotificationLogPayload<ExtArgs>, T, "createManyAndReturn">>
+
+    /**
+     * Delete a NotificationLog.
+     * @param {NotificationLogDeleteArgs} args - Arguments to delete one NotificationLog.
+     * @example
+     * // Delete one NotificationLog
+     * const NotificationLog = await prisma.notificationLog.delete({
+     *   where: {
+     *     // ... filter to delete one NotificationLog
+     *   }
+     * })
+     * 
+     */
+    delete<T extends NotificationLogDeleteArgs>(args: SelectSubset<T, NotificationLogDeleteArgs<ExtArgs>>): Prisma__NotificationLogClient<$Result.GetResult<Prisma.$NotificationLogPayload<ExtArgs>, T, "delete">, never, ExtArgs>
+
+    /**
+     * Update one NotificationLog.
+     * @param {NotificationLogUpdateArgs} args - Arguments to update one NotificationLog.
+     * @example
+     * // Update one NotificationLog
+     * const notificationLog = await prisma.notificationLog.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends NotificationLogUpdateArgs>(args: SelectSubset<T, NotificationLogUpdateArgs<ExtArgs>>): Prisma__NotificationLogClient<$Result.GetResult<Prisma.$NotificationLogPayload<ExtArgs>, T, "update">, never, ExtArgs>
+
+    /**
+     * Delete zero or more NotificationLogs.
+     * @param {NotificationLogDeleteManyArgs} args - Arguments to filter NotificationLogs to delete.
+     * @example
+     * // Delete a few NotificationLogs
+     * const { count } = await prisma.notificationLog.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends NotificationLogDeleteManyArgs>(args?: SelectSubset<T, NotificationLogDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more NotificationLogs.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {NotificationLogUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many NotificationLogs
+     * const notificationLog = await prisma.notificationLog.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends NotificationLogUpdateManyArgs>(args: SelectSubset<T, NotificationLogUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create or update one NotificationLog.
+     * @param {NotificationLogUpsertArgs} args - Arguments to update or create a NotificationLog.
+     * @example
+     * // Update or create a NotificationLog
+     * const notificationLog = await prisma.notificationLog.upsert({
+     *   create: {
+     *     // ... data to create a NotificationLog
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the NotificationLog we want to update
+     *   }
+     * })
+     */
+    upsert<T extends NotificationLogUpsertArgs>(args: SelectSubset<T, NotificationLogUpsertArgs<ExtArgs>>): Prisma__NotificationLogClient<$Result.GetResult<Prisma.$NotificationLogPayload<ExtArgs>, T, "upsert">, never, ExtArgs>
+
+
+    /**
+     * Count the number of NotificationLogs.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {NotificationLogCountArgs} args - Arguments to filter NotificationLogs to count.
+     * @example
+     * // Count the number of NotificationLogs
+     * const count = await prisma.notificationLog.count({
+     *   where: {
+     *     // ... the filter for the NotificationLogs we want to count
+     *   }
+     * })
+    **/
+    count<T extends NotificationLogCountArgs>(
+      args?: Subset<T, NotificationLogCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], NotificationLogCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a NotificationLog.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {NotificationLogAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends NotificationLogAggregateArgs>(args: Subset<T, NotificationLogAggregateArgs>): Prisma.PrismaPromise<GetNotificationLogAggregateType<T>>
+
+    /**
+     * Group by NotificationLog.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {NotificationLogGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends NotificationLogGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: NotificationLogGroupByArgs['orderBy'] }
+        : { orderBy?: NotificationLogGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, NotificationLogGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetNotificationLogGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the NotificationLog model
+   */
+  readonly fields: NotificationLogFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for NotificationLog.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__NotificationLogClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    tenant<T extends TenantDefaultArgs<ExtArgs> = {}>(args?: Subset<T, TenantDefaultArgs<ExtArgs>>): Prisma__TenantClient<$Result.GetResult<Prisma.$TenantPayload<ExtArgs>, T, "findUniqueOrThrow"> | Null, Null, ExtArgs>
+    user<T extends NotificationLog$userArgs<ExtArgs> = {}>(args?: Subset<T, NotificationLog$userArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow"> | null, null, ExtArgs>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the NotificationLog model
+   */ 
+  interface NotificationLogFieldRefs {
+    readonly id: FieldRef<"NotificationLog", 'String'>
+    readonly type: FieldRef<"NotificationLog", 'String'>
+    readonly tenantId: FieldRef<"NotificationLog", 'String'>
+    readonly userId: FieldRef<"NotificationLog", 'String'>
+    readonly priority: FieldRef<"NotificationLog", 'String'>
+    readonly channels: FieldRef<"NotificationLog", 'String[]'>
+    readonly recipients: FieldRef<"NotificationLog", 'String[]'>
+    readonly metadata: FieldRef<"NotificationLog", 'Json'>
+    readonly sentAt: FieldRef<"NotificationLog", 'DateTime'>
+    readonly createdAt: FieldRef<"NotificationLog", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * NotificationLog findUnique
+   */
+  export type NotificationLogFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the NotificationLog
+     */
+    select?: NotificationLogSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: NotificationLogInclude<ExtArgs> | null
+    /**
+     * Filter, which NotificationLog to fetch.
+     */
+    where: NotificationLogWhereUniqueInput
+  }
+
+  /**
+   * NotificationLog findUniqueOrThrow
+   */
+  export type NotificationLogFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the NotificationLog
+     */
+    select?: NotificationLogSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: NotificationLogInclude<ExtArgs> | null
+    /**
+     * Filter, which NotificationLog to fetch.
+     */
+    where: NotificationLogWhereUniqueInput
+  }
+
+  /**
+   * NotificationLog findFirst
+   */
+  export type NotificationLogFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the NotificationLog
+     */
+    select?: NotificationLogSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: NotificationLogInclude<ExtArgs> | null
+    /**
+     * Filter, which NotificationLog to fetch.
+     */
+    where?: NotificationLogWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of NotificationLogs to fetch.
+     */
+    orderBy?: NotificationLogOrderByWithRelationInput | NotificationLogOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for NotificationLogs.
+     */
+    cursor?: NotificationLogWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` NotificationLogs from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` NotificationLogs.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of NotificationLogs.
+     */
+    distinct?: NotificationLogScalarFieldEnum | NotificationLogScalarFieldEnum[]
+  }
+
+  /**
+   * NotificationLog findFirstOrThrow
+   */
+  export type NotificationLogFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the NotificationLog
+     */
+    select?: NotificationLogSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: NotificationLogInclude<ExtArgs> | null
+    /**
+     * Filter, which NotificationLog to fetch.
+     */
+    where?: NotificationLogWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of NotificationLogs to fetch.
+     */
+    orderBy?: NotificationLogOrderByWithRelationInput | NotificationLogOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for NotificationLogs.
+     */
+    cursor?: NotificationLogWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` NotificationLogs from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` NotificationLogs.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of NotificationLogs.
+     */
+    distinct?: NotificationLogScalarFieldEnum | NotificationLogScalarFieldEnum[]
+  }
+
+  /**
+   * NotificationLog findMany
+   */
+  export type NotificationLogFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the NotificationLog
+     */
+    select?: NotificationLogSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: NotificationLogInclude<ExtArgs> | null
+    /**
+     * Filter, which NotificationLogs to fetch.
+     */
+    where?: NotificationLogWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of NotificationLogs to fetch.
+     */
+    orderBy?: NotificationLogOrderByWithRelationInput | NotificationLogOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing NotificationLogs.
+     */
+    cursor?: NotificationLogWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` NotificationLogs from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` NotificationLogs.
+     */
+    skip?: number
+    distinct?: NotificationLogScalarFieldEnum | NotificationLogScalarFieldEnum[]
+  }
+
+  /**
+   * NotificationLog create
+   */
+  export type NotificationLogCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the NotificationLog
+     */
+    select?: NotificationLogSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: NotificationLogInclude<ExtArgs> | null
+    /**
+     * The data needed to create a NotificationLog.
+     */
+    data: XOR<NotificationLogCreateInput, NotificationLogUncheckedCreateInput>
+  }
+
+  /**
+   * NotificationLog createMany
+   */
+  export type NotificationLogCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many NotificationLogs.
+     */
+    data: NotificationLogCreateManyInput | NotificationLogCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * NotificationLog createManyAndReturn
+   */
+  export type NotificationLogCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the NotificationLog
+     */
+    select?: NotificationLogSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * The data used to create many NotificationLogs.
+     */
+    data: NotificationLogCreateManyInput | NotificationLogCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: NotificationLogIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * NotificationLog update
+   */
+  export type NotificationLogUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the NotificationLog
+     */
+    select?: NotificationLogSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: NotificationLogInclude<ExtArgs> | null
+    /**
+     * The data needed to update a NotificationLog.
+     */
+    data: XOR<NotificationLogUpdateInput, NotificationLogUncheckedUpdateInput>
+    /**
+     * Choose, which NotificationLog to update.
+     */
+    where: NotificationLogWhereUniqueInput
+  }
+
+  /**
+   * NotificationLog updateMany
+   */
+  export type NotificationLogUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update NotificationLogs.
+     */
+    data: XOR<NotificationLogUpdateManyMutationInput, NotificationLogUncheckedUpdateManyInput>
+    /**
+     * Filter which NotificationLogs to update
+     */
+    where?: NotificationLogWhereInput
+  }
+
+  /**
+   * NotificationLog upsert
+   */
+  export type NotificationLogUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the NotificationLog
+     */
+    select?: NotificationLogSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: NotificationLogInclude<ExtArgs> | null
+    /**
+     * The filter to search for the NotificationLog to update in case it exists.
+     */
+    where: NotificationLogWhereUniqueInput
+    /**
+     * In case the NotificationLog found by the `where` argument doesn't exist, create a new NotificationLog with this data.
+     */
+    create: XOR<NotificationLogCreateInput, NotificationLogUncheckedCreateInput>
+    /**
+     * In case the NotificationLog was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<NotificationLogUpdateInput, NotificationLogUncheckedUpdateInput>
+  }
+
+  /**
+   * NotificationLog delete
+   */
+  export type NotificationLogDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the NotificationLog
+     */
+    select?: NotificationLogSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: NotificationLogInclude<ExtArgs> | null
+    /**
+     * Filter which NotificationLog to delete.
+     */
+    where: NotificationLogWhereUniqueInput
+  }
+
+  /**
+   * NotificationLog deleteMany
+   */
+  export type NotificationLogDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which NotificationLogs to delete
+     */
+    where?: NotificationLogWhereInput
+  }
+
+  /**
+   * NotificationLog.user
+   */
+  export type NotificationLog$userArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the User
+     */
+    select?: UserSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UserInclude<ExtArgs> | null
+    where?: UserWhereInput
+  }
+
+  /**
+   * NotificationLog without action
+   */
+  export type NotificationLogDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the NotificationLog
+     */
+    select?: NotificationLogSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: NotificationLogInclude<ExtArgs> | null
+  }
+
+
+  /**
    * Enums
    */
 
@@ -18167,6 +22912,8 @@ export namespace Prisma {
     name: 'name',
     subdomain: 'subdomain',
     settings: 'settings',
+    webhookUrl: 'webhookUrl',
+    metadata: 'metadata',
     isActive: 'isActive',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt',
@@ -18180,8 +22927,10 @@ export namespace Prisma {
     id: 'id',
     tenantId: 'tenantId',
     email: 'email',
+    passwordHash: 'passwordHash',
     firstName: 'firstName',
     lastName: 'lastName',
+    phone: 'phone',
     role: 'role',
     isActive: 'isActive',
     lastLoginAt: 'lastLoginAt',
@@ -18212,7 +22961,14 @@ export namespace Prisma {
     createdBy: 'createdBy',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt',
-    deletedAt: 'deletedAt'
+    deletedAt: 'deletedAt',
+    scrapedAt: 'scrapedAt',
+    sourcePortal: 'sourcePortal',
+    originalTitle: 'originalTitle',
+    originalStatus: 'originalStatus',
+    originalValue: 'originalValue',
+    exchangeRates: 'exchangeRates',
+    sourceUrl: 'sourceUrl'
   };
 
   export type TenderScalarFieldEnum = (typeof TenderScalarFieldEnum)[keyof typeof TenderScalarFieldEnum]
@@ -18369,7 +23125,9 @@ export namespace Prisma {
     metadata: 'metadata',
     ipAddress: 'ipAddress',
     userAgent: 'userAgent',
-    timestamp: 'timestamp'
+    timestamp: 'timestamp',
+    archived: 'archived',
+    archivedAt: 'archivedAt'
   };
 
   export type AuditLogScalarFieldEnum = (typeof AuditLogScalarFieldEnum)[keyof typeof AuditLogScalarFieldEnum]
@@ -18420,6 +23178,70 @@ export namespace Prisma {
   };
 
   export type ApiKeyScalarFieldEnum = (typeof ApiKeyScalarFieldEnum)[keyof typeof ApiKeyScalarFieldEnum]
+
+
+  export const ScrapingLogScalarFieldEnum: {
+    id: 'id',
+    tenantId: 'tenantId',
+    sourcePortal: 'sourcePortal',
+    status: 'status',
+    startedAt: 'startedAt',
+    completedAt: 'completedAt',
+    pagesProcessed: 'pagesProcessed',
+    totalPages: 'totalPages',
+    tendersFound: 'tendersFound',
+    tendersImported: 'tendersImported',
+    tendersUpdated: 'tendersUpdated',
+    tendersSkipped: 'tendersSkipped',
+    errorMessage: 'errorMessage',
+    errorDetails: 'errorDetails',
+    metadata: 'metadata',
+    triggeredBy: 'triggeredBy'
+  };
+
+  export type ScrapingLogScalarFieldEnum = (typeof ScrapingLogScalarFieldEnum)[keyof typeof ScrapingLogScalarFieldEnum]
+
+
+  export const SessionScalarFieldEnum: {
+    id: 'id',
+    sessionToken: 'sessionToken',
+    userId: 'userId',
+    expiresAt: 'expiresAt',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt',
+    data: 'data'
+  };
+
+  export type SessionScalarFieldEnum = (typeof SessionScalarFieldEnum)[keyof typeof SessionScalarFieldEnum]
+
+
+  export const NotificationPreferenceScalarFieldEnum: {
+    id: 'id',
+    userId: 'userId',
+    type: 'type',
+    enabled: 'enabled',
+    channels: 'channels',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt'
+  };
+
+  export type NotificationPreferenceScalarFieldEnum = (typeof NotificationPreferenceScalarFieldEnum)[keyof typeof NotificationPreferenceScalarFieldEnum]
+
+
+  export const NotificationLogScalarFieldEnum: {
+    id: 'id',
+    type: 'type',
+    tenantId: 'tenantId',
+    userId: 'userId',
+    priority: 'priority',
+    channels: 'channels',
+    recipients: 'recipients',
+    metadata: 'metadata',
+    sentAt: 'sentAt',
+    createdAt: 'createdAt'
+  };
+
+  export type NotificationLogScalarFieldEnum = (typeof NotificationLogScalarFieldEnum)[keyof typeof NotificationLogScalarFieldEnum]
 
 
   export const SortOrder: {
@@ -18658,6 +23480,20 @@ export namespace Prisma {
 
 
   /**
+   * Reference to a field of type 'ScrapingStatus'
+   */
+  export type EnumScrapingStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ScrapingStatus'>
+    
+
+
+  /**
+   * Reference to a field of type 'ScrapingStatus[]'
+   */
+  export type ListEnumScrapingStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ScrapingStatus[]'>
+    
+
+
+  /**
    * Reference to a field of type 'Float'
    */
   export type FloatFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Float'>
@@ -18682,6 +23518,8 @@ export namespace Prisma {
     name?: StringFilter<"Tenant"> | string
     subdomain?: StringFilter<"Tenant"> | string
     settings?: JsonFilter<"Tenant">
+    webhookUrl?: StringNullableFilter<"Tenant"> | string | null
+    metadata?: JsonFilter<"Tenant">
     isActive?: BoolFilter<"Tenant"> | boolean
     createdAt?: DateTimeFilter<"Tenant"> | Date | string
     updatedAt?: DateTimeFilter<"Tenant"> | Date | string
@@ -18690,6 +23528,8 @@ export namespace Prisma {
     tenders?: TenderListRelationFilter
     audits?: AuditLogListRelationFilter
     apiKeys?: ApiKeyListRelationFilter
+    scrapingLogs?: ScrapingLogListRelationFilter
+    notificationLogs?: NotificationLogListRelationFilter
   }
 
   export type TenantOrderByWithRelationInput = {
@@ -18697,6 +23537,8 @@ export namespace Prisma {
     name?: SortOrder
     subdomain?: SortOrder
     settings?: SortOrder
+    webhookUrl?: SortOrderInput | SortOrder
+    metadata?: SortOrder
     isActive?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -18705,6 +23547,8 @@ export namespace Prisma {
     tenders?: TenderOrderByRelationAggregateInput
     audits?: AuditLogOrderByRelationAggregateInput
     apiKeys?: ApiKeyOrderByRelationAggregateInput
+    scrapingLogs?: ScrapingLogOrderByRelationAggregateInput
+    notificationLogs?: NotificationLogOrderByRelationAggregateInput
   }
 
   export type TenantWhereUniqueInput = Prisma.AtLeast<{
@@ -18715,6 +23559,8 @@ export namespace Prisma {
     NOT?: TenantWhereInput | TenantWhereInput[]
     name?: StringFilter<"Tenant"> | string
     settings?: JsonFilter<"Tenant">
+    webhookUrl?: StringNullableFilter<"Tenant"> | string | null
+    metadata?: JsonFilter<"Tenant">
     isActive?: BoolFilter<"Tenant"> | boolean
     createdAt?: DateTimeFilter<"Tenant"> | Date | string
     updatedAt?: DateTimeFilter<"Tenant"> | Date | string
@@ -18723,6 +23569,8 @@ export namespace Prisma {
     tenders?: TenderListRelationFilter
     audits?: AuditLogListRelationFilter
     apiKeys?: ApiKeyListRelationFilter
+    scrapingLogs?: ScrapingLogListRelationFilter
+    notificationLogs?: NotificationLogListRelationFilter
   }, "id" | "subdomain">
 
   export type TenantOrderByWithAggregationInput = {
@@ -18730,6 +23578,8 @@ export namespace Prisma {
     name?: SortOrder
     subdomain?: SortOrder
     settings?: SortOrder
+    webhookUrl?: SortOrderInput | SortOrder
+    metadata?: SortOrder
     isActive?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -18747,6 +23597,8 @@ export namespace Prisma {
     name?: StringWithAggregatesFilter<"Tenant"> | string
     subdomain?: StringWithAggregatesFilter<"Tenant"> | string
     settings?: JsonWithAggregatesFilter<"Tenant">
+    webhookUrl?: StringNullableWithAggregatesFilter<"Tenant"> | string | null
+    metadata?: JsonWithAggregatesFilter<"Tenant">
     isActive?: BoolWithAggregatesFilter<"Tenant"> | boolean
     createdAt?: DateTimeWithAggregatesFilter<"Tenant"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"Tenant"> | Date | string
@@ -18760,8 +23612,10 @@ export namespace Prisma {
     id?: StringFilter<"User"> | string
     tenantId?: StringFilter<"User"> | string
     email?: StringFilter<"User"> | string
+    passwordHash?: StringNullableFilter<"User"> | string | null
     firstName?: StringFilter<"User"> | string
     lastName?: StringFilter<"User"> | string
+    phone?: StringNullableFilter<"User"> | string | null
     role?: EnumUserRoleFilter<"User"> | $Enums.UserRole
     isActive?: BoolFilter<"User"> | boolean
     lastLoginAt?: DateTimeNullableFilter<"User"> | Date | string | null
@@ -18778,14 +23632,20 @@ export namespace Prisma {
     comments?: CommentListRelationFilter
     notifications?: NotificationListRelationFilter
     audits?: AuditLogListRelationFilter
+    triggeredScrapings?: ScrapingLogListRelationFilter
+    sessions?: SessionListRelationFilter
+    notificationPreferences?: NotificationPreferenceListRelationFilter
+    notificationLogs?: NotificationLogListRelationFilter
   }
 
   export type UserOrderByWithRelationInput = {
     id?: SortOrder
     tenantId?: SortOrder
     email?: SortOrder
+    passwordHash?: SortOrderInput | SortOrder
     firstName?: SortOrder
     lastName?: SortOrder
+    phone?: SortOrderInput | SortOrder
     role?: SortOrder
     isActive?: SortOrder
     lastLoginAt?: SortOrderInput | SortOrder
@@ -18802,6 +23662,10 @@ export namespace Prisma {
     comments?: CommentOrderByRelationAggregateInput
     notifications?: NotificationOrderByRelationAggregateInput
     audits?: AuditLogOrderByRelationAggregateInput
+    triggeredScrapings?: ScrapingLogOrderByRelationAggregateInput
+    sessions?: SessionOrderByRelationAggregateInput
+    notificationPreferences?: NotificationPreferenceOrderByRelationAggregateInput
+    notificationLogs?: NotificationLogOrderByRelationAggregateInput
   }
 
   export type UserWhereUniqueInput = Prisma.AtLeast<{
@@ -18812,8 +23676,10 @@ export namespace Prisma {
     NOT?: UserWhereInput | UserWhereInput[]
     tenantId?: StringFilter<"User"> | string
     email?: StringFilter<"User"> | string
+    passwordHash?: StringNullableFilter<"User"> | string | null
     firstName?: StringFilter<"User"> | string
     lastName?: StringFilter<"User"> | string
+    phone?: StringNullableFilter<"User"> | string | null
     role?: EnumUserRoleFilter<"User"> | $Enums.UserRole
     isActive?: BoolFilter<"User"> | boolean
     lastLoginAt?: DateTimeNullableFilter<"User"> | Date | string | null
@@ -18830,14 +23696,20 @@ export namespace Prisma {
     comments?: CommentListRelationFilter
     notifications?: NotificationListRelationFilter
     audits?: AuditLogListRelationFilter
+    triggeredScrapings?: ScrapingLogListRelationFilter
+    sessions?: SessionListRelationFilter
+    notificationPreferences?: NotificationPreferenceListRelationFilter
+    notificationLogs?: NotificationLogListRelationFilter
   }, "id" | "tenantId_email">
 
   export type UserOrderByWithAggregationInput = {
     id?: SortOrder
     tenantId?: SortOrder
     email?: SortOrder
+    passwordHash?: SortOrderInput | SortOrder
     firstName?: SortOrder
     lastName?: SortOrder
+    phone?: SortOrderInput | SortOrder
     role?: SortOrder
     isActive?: SortOrder
     lastLoginAt?: SortOrderInput | SortOrder
@@ -18857,8 +23729,10 @@ export namespace Prisma {
     id?: StringWithAggregatesFilter<"User"> | string
     tenantId?: StringWithAggregatesFilter<"User"> | string
     email?: StringWithAggregatesFilter<"User"> | string
+    passwordHash?: StringNullableWithAggregatesFilter<"User"> | string | null
     firstName?: StringWithAggregatesFilter<"User"> | string
     lastName?: StringWithAggregatesFilter<"User"> | string
+    phone?: StringNullableWithAggregatesFilter<"User"> | string | null
     role?: EnumUserRoleWithAggregatesFilter<"User"> | $Enums.UserRole
     isActive?: BoolWithAggregatesFilter<"User"> | boolean
     lastLoginAt?: DateTimeNullableWithAggregatesFilter<"User"> | Date | string | null
@@ -18890,6 +23764,13 @@ export namespace Prisma {
     createdAt?: DateTimeFilter<"Tender"> | Date | string
     updatedAt?: DateTimeFilter<"Tender"> | Date | string
     deletedAt?: DateTimeNullableFilter<"Tender"> | Date | string | null
+    scrapedAt?: DateTimeNullableFilter<"Tender"> | Date | string | null
+    sourcePortal?: StringNullableFilter<"Tender"> | string | null
+    originalTitle?: StringNullableFilter<"Tender"> | string | null
+    originalStatus?: StringNullableFilter<"Tender"> | string | null
+    originalValue?: StringNullableFilter<"Tender"> | string | null
+    exchangeRates?: JsonNullableFilter<"Tender">
+    sourceUrl?: StringNullableFilter<"Tender"> | string | null
     tenant?: XOR<TenantRelationFilter, TenantWhereInput>
     creator?: XOR<UserRelationFilter, UserWhereInput>
     assignments?: TenderAssignmentListRelationFilter
@@ -18921,6 +23802,13 @@ export namespace Prisma {
     createdAt?: SortOrder
     updatedAt?: SortOrder
     deletedAt?: SortOrderInput | SortOrder
+    scrapedAt?: SortOrderInput | SortOrder
+    sourcePortal?: SortOrderInput | SortOrder
+    originalTitle?: SortOrderInput | SortOrder
+    originalStatus?: SortOrderInput | SortOrder
+    originalValue?: SortOrderInput | SortOrder
+    exchangeRates?: SortOrderInput | SortOrder
+    sourceUrl?: SortOrderInput | SortOrder
     tenant?: TenantOrderByWithRelationInput
     creator?: UserOrderByWithRelationInput
     assignments?: TenderAssignmentOrderByRelationAggregateInput
@@ -18955,6 +23843,13 @@ export namespace Prisma {
     createdAt?: DateTimeFilter<"Tender"> | Date | string
     updatedAt?: DateTimeFilter<"Tender"> | Date | string
     deletedAt?: DateTimeNullableFilter<"Tender"> | Date | string | null
+    scrapedAt?: DateTimeNullableFilter<"Tender"> | Date | string | null
+    sourcePortal?: StringNullableFilter<"Tender"> | string | null
+    originalTitle?: StringNullableFilter<"Tender"> | string | null
+    originalStatus?: StringNullableFilter<"Tender"> | string | null
+    originalValue?: StringNullableFilter<"Tender"> | string | null
+    exchangeRates?: JsonNullableFilter<"Tender">
+    sourceUrl?: StringNullableFilter<"Tender"> | string | null
     tenant?: XOR<TenantRelationFilter, TenantWhereInput>
     creator?: XOR<UserRelationFilter, UserWhereInput>
     assignments?: TenderAssignmentListRelationFilter
@@ -18986,6 +23881,13 @@ export namespace Prisma {
     createdAt?: SortOrder
     updatedAt?: SortOrder
     deletedAt?: SortOrderInput | SortOrder
+    scrapedAt?: SortOrderInput | SortOrder
+    sourcePortal?: SortOrderInput | SortOrder
+    originalTitle?: SortOrderInput | SortOrder
+    originalStatus?: SortOrderInput | SortOrder
+    originalValue?: SortOrderInput | SortOrder
+    exchangeRates?: SortOrderInput | SortOrder
+    sourceUrl?: SortOrderInput | SortOrder
     _count?: TenderCountOrderByAggregateInput
     _avg?: TenderAvgOrderByAggregateInput
     _max?: TenderMaxOrderByAggregateInput
@@ -19015,6 +23917,13 @@ export namespace Prisma {
     createdAt?: DateTimeWithAggregatesFilter<"Tender"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"Tender"> | Date | string
     deletedAt?: DateTimeNullableWithAggregatesFilter<"Tender"> | Date | string | null
+    scrapedAt?: DateTimeNullableWithAggregatesFilter<"Tender"> | Date | string | null
+    sourcePortal?: StringNullableWithAggregatesFilter<"Tender"> | string | null
+    originalTitle?: StringNullableWithAggregatesFilter<"Tender"> | string | null
+    originalStatus?: StringNullableWithAggregatesFilter<"Tender"> | string | null
+    originalValue?: StringNullableWithAggregatesFilter<"Tender"> | string | null
+    exchangeRates?: JsonNullableWithAggregatesFilter<"Tender">
+    sourceUrl?: StringNullableWithAggregatesFilter<"Tender"> | string | null
   }
 
   export type TenderAssignmentWhereInput = {
@@ -19086,7 +23995,7 @@ export namespace Prisma {
     OR?: DocumentWhereInput[]
     NOT?: DocumentWhereInput | DocumentWhereInput[]
     id?: StringFilter<"Document"> | string
-    tenderId?: StringFilter<"Document"> | string
+    tenderId?: StringNullableFilter<"Document"> | string | null
     uploadedBy?: StringFilter<"Document"> | string
     filename?: StringFilter<"Document"> | string
     originalName?: StringFilter<"Document"> | string
@@ -19099,13 +24008,13 @@ export namespace Prisma {
     isDeleted?: BoolFilter<"Document"> | boolean
     uploadedAt?: DateTimeFilter<"Document"> | Date | string
     updatedAt?: DateTimeFilter<"Document"> | Date | string
-    tender?: XOR<TenderRelationFilter, TenderWhereInput>
+    tender?: XOR<TenderNullableRelationFilter, TenderWhereInput> | null
     uploader?: XOR<UserRelationFilter, UserWhereInput>
   }
 
   export type DocumentOrderByWithRelationInput = {
     id?: SortOrder
-    tenderId?: SortOrder
+    tenderId?: SortOrderInput | SortOrder
     uploadedBy?: SortOrder
     filename?: SortOrder
     originalName?: SortOrder
@@ -19128,7 +24037,7 @@ export namespace Prisma {
     AND?: DocumentWhereInput | DocumentWhereInput[]
     OR?: DocumentWhereInput[]
     NOT?: DocumentWhereInput | DocumentWhereInput[]
-    tenderId?: StringFilter<"Document"> | string
+    tenderId?: StringNullableFilter<"Document"> | string | null
     uploadedBy?: StringFilter<"Document"> | string
     filename?: StringFilter<"Document"> | string
     originalName?: StringFilter<"Document"> | string
@@ -19140,13 +24049,13 @@ export namespace Prisma {
     isDeleted?: BoolFilter<"Document"> | boolean
     uploadedAt?: DateTimeFilter<"Document"> | Date | string
     updatedAt?: DateTimeFilter<"Document"> | Date | string
-    tender?: XOR<TenderRelationFilter, TenderWhereInput>
+    tender?: XOR<TenderNullableRelationFilter, TenderWhereInput> | null
     uploader?: XOR<UserRelationFilter, UserWhereInput>
   }, "id" | "s3Key">
 
   export type DocumentOrderByWithAggregationInput = {
     id?: SortOrder
-    tenderId?: SortOrder
+    tenderId?: SortOrderInput | SortOrder
     uploadedBy?: SortOrder
     filename?: SortOrder
     originalName?: SortOrder
@@ -19171,7 +24080,7 @@ export namespace Prisma {
     OR?: DocumentScalarWhereWithAggregatesInput[]
     NOT?: DocumentScalarWhereWithAggregatesInput | DocumentScalarWhereWithAggregatesInput[]
     id?: StringWithAggregatesFilter<"Document"> | string
-    tenderId?: StringWithAggregatesFilter<"Document"> | string
+    tenderId?: StringNullableWithAggregatesFilter<"Document"> | string | null
     uploadedBy?: StringWithAggregatesFilter<"Document"> | string
     filename?: StringWithAggregatesFilter<"Document"> | string
     originalName?: StringWithAggregatesFilter<"Document"> | string
@@ -19755,6 +24664,8 @@ export namespace Prisma {
     ipAddress?: StringNullableFilter<"AuditLog"> | string | null
     userAgent?: StringNullableFilter<"AuditLog"> | string | null
     timestamp?: DateTimeFilter<"AuditLog"> | Date | string
+    archived?: BoolFilter<"AuditLog"> | boolean
+    archivedAt?: DateTimeNullableFilter<"AuditLog"> | Date | string | null
     tenant?: XOR<TenantRelationFilter, TenantWhereInput>
     user?: XOR<UserNullableRelationFilter, UserWhereInput> | null
   }
@@ -19772,6 +24683,8 @@ export namespace Prisma {
     ipAddress?: SortOrderInput | SortOrder
     userAgent?: SortOrderInput | SortOrder
     timestamp?: SortOrder
+    archived?: SortOrder
+    archivedAt?: SortOrderInput | SortOrder
     tenant?: TenantOrderByWithRelationInput
     user?: UserOrderByWithRelationInput
   }
@@ -19792,6 +24705,8 @@ export namespace Prisma {
     ipAddress?: StringNullableFilter<"AuditLog"> | string | null
     userAgent?: StringNullableFilter<"AuditLog"> | string | null
     timestamp?: DateTimeFilter<"AuditLog"> | Date | string
+    archived?: BoolFilter<"AuditLog"> | boolean
+    archivedAt?: DateTimeNullableFilter<"AuditLog"> | Date | string | null
     tenant?: XOR<TenantRelationFilter, TenantWhereInput>
     user?: XOR<UserNullableRelationFilter, UserWhereInput> | null
   }, "id">
@@ -19809,6 +24724,8 @@ export namespace Prisma {
     ipAddress?: SortOrderInput | SortOrder
     userAgent?: SortOrderInput | SortOrder
     timestamp?: SortOrder
+    archived?: SortOrder
+    archivedAt?: SortOrderInput | SortOrder
     _count?: AuditLogCountOrderByAggregateInput
     _max?: AuditLogMaxOrderByAggregateInput
     _min?: AuditLogMinOrderByAggregateInput
@@ -19830,6 +24747,8 @@ export namespace Prisma {
     ipAddress?: StringNullableWithAggregatesFilter<"AuditLog"> | string | null
     userAgent?: StringNullableWithAggregatesFilter<"AuditLog"> | string | null
     timestamp?: DateTimeWithAggregatesFilter<"AuditLog"> | Date | string
+    archived?: BoolWithAggregatesFilter<"AuditLog"> | boolean
+    archivedAt?: DateTimeNullableWithAggregatesFilter<"AuditLog"> | Date | string | null
   }
 
   export type SystemConfigWhereInput = {
@@ -20063,11 +24982,342 @@ export namespace Prisma {
     updatedAt?: DateTimeWithAggregatesFilter<"ApiKey"> | Date | string
   }
 
+  export type ScrapingLogWhereInput = {
+    AND?: ScrapingLogWhereInput | ScrapingLogWhereInput[]
+    OR?: ScrapingLogWhereInput[]
+    NOT?: ScrapingLogWhereInput | ScrapingLogWhereInput[]
+    id?: StringFilter<"ScrapingLog"> | string
+    tenantId?: StringFilter<"ScrapingLog"> | string
+    sourcePortal?: StringFilter<"ScrapingLog"> | string
+    status?: EnumScrapingStatusFilter<"ScrapingLog"> | $Enums.ScrapingStatus
+    startedAt?: DateTimeFilter<"ScrapingLog"> | Date | string
+    completedAt?: DateTimeNullableFilter<"ScrapingLog"> | Date | string | null
+    pagesProcessed?: IntFilter<"ScrapingLog"> | number
+    totalPages?: IntNullableFilter<"ScrapingLog"> | number | null
+    tendersFound?: IntFilter<"ScrapingLog"> | number
+    tendersImported?: IntFilter<"ScrapingLog"> | number
+    tendersUpdated?: IntFilter<"ScrapingLog"> | number
+    tendersSkipped?: IntFilter<"ScrapingLog"> | number
+    errorMessage?: StringNullableFilter<"ScrapingLog"> | string | null
+    errorDetails?: JsonNullableFilter<"ScrapingLog">
+    metadata?: JsonFilter<"ScrapingLog">
+    triggeredBy?: StringFilter<"ScrapingLog"> | string
+    tenant?: XOR<TenantRelationFilter, TenantWhereInput>
+    triggeredByUser?: XOR<UserRelationFilter, UserWhereInput>
+  }
+
+  export type ScrapingLogOrderByWithRelationInput = {
+    id?: SortOrder
+    tenantId?: SortOrder
+    sourcePortal?: SortOrder
+    status?: SortOrder
+    startedAt?: SortOrder
+    completedAt?: SortOrderInput | SortOrder
+    pagesProcessed?: SortOrder
+    totalPages?: SortOrderInput | SortOrder
+    tendersFound?: SortOrder
+    tendersImported?: SortOrder
+    tendersUpdated?: SortOrder
+    tendersSkipped?: SortOrder
+    errorMessage?: SortOrderInput | SortOrder
+    errorDetails?: SortOrderInput | SortOrder
+    metadata?: SortOrder
+    triggeredBy?: SortOrder
+    tenant?: TenantOrderByWithRelationInput
+    triggeredByUser?: UserOrderByWithRelationInput
+  }
+
+  export type ScrapingLogWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    AND?: ScrapingLogWhereInput | ScrapingLogWhereInput[]
+    OR?: ScrapingLogWhereInput[]
+    NOT?: ScrapingLogWhereInput | ScrapingLogWhereInput[]
+    tenantId?: StringFilter<"ScrapingLog"> | string
+    sourcePortal?: StringFilter<"ScrapingLog"> | string
+    status?: EnumScrapingStatusFilter<"ScrapingLog"> | $Enums.ScrapingStatus
+    startedAt?: DateTimeFilter<"ScrapingLog"> | Date | string
+    completedAt?: DateTimeNullableFilter<"ScrapingLog"> | Date | string | null
+    pagesProcessed?: IntFilter<"ScrapingLog"> | number
+    totalPages?: IntNullableFilter<"ScrapingLog"> | number | null
+    tendersFound?: IntFilter<"ScrapingLog"> | number
+    tendersImported?: IntFilter<"ScrapingLog"> | number
+    tendersUpdated?: IntFilter<"ScrapingLog"> | number
+    tendersSkipped?: IntFilter<"ScrapingLog"> | number
+    errorMessage?: StringNullableFilter<"ScrapingLog"> | string | null
+    errorDetails?: JsonNullableFilter<"ScrapingLog">
+    metadata?: JsonFilter<"ScrapingLog">
+    triggeredBy?: StringFilter<"ScrapingLog"> | string
+    tenant?: XOR<TenantRelationFilter, TenantWhereInput>
+    triggeredByUser?: XOR<UserRelationFilter, UserWhereInput>
+  }, "id">
+
+  export type ScrapingLogOrderByWithAggregationInput = {
+    id?: SortOrder
+    tenantId?: SortOrder
+    sourcePortal?: SortOrder
+    status?: SortOrder
+    startedAt?: SortOrder
+    completedAt?: SortOrderInput | SortOrder
+    pagesProcessed?: SortOrder
+    totalPages?: SortOrderInput | SortOrder
+    tendersFound?: SortOrder
+    tendersImported?: SortOrder
+    tendersUpdated?: SortOrder
+    tendersSkipped?: SortOrder
+    errorMessage?: SortOrderInput | SortOrder
+    errorDetails?: SortOrderInput | SortOrder
+    metadata?: SortOrder
+    triggeredBy?: SortOrder
+    _count?: ScrapingLogCountOrderByAggregateInput
+    _avg?: ScrapingLogAvgOrderByAggregateInput
+    _max?: ScrapingLogMaxOrderByAggregateInput
+    _min?: ScrapingLogMinOrderByAggregateInput
+    _sum?: ScrapingLogSumOrderByAggregateInput
+  }
+
+  export type ScrapingLogScalarWhereWithAggregatesInput = {
+    AND?: ScrapingLogScalarWhereWithAggregatesInput | ScrapingLogScalarWhereWithAggregatesInput[]
+    OR?: ScrapingLogScalarWhereWithAggregatesInput[]
+    NOT?: ScrapingLogScalarWhereWithAggregatesInput | ScrapingLogScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"ScrapingLog"> | string
+    tenantId?: StringWithAggregatesFilter<"ScrapingLog"> | string
+    sourcePortal?: StringWithAggregatesFilter<"ScrapingLog"> | string
+    status?: EnumScrapingStatusWithAggregatesFilter<"ScrapingLog"> | $Enums.ScrapingStatus
+    startedAt?: DateTimeWithAggregatesFilter<"ScrapingLog"> | Date | string
+    completedAt?: DateTimeNullableWithAggregatesFilter<"ScrapingLog"> | Date | string | null
+    pagesProcessed?: IntWithAggregatesFilter<"ScrapingLog"> | number
+    totalPages?: IntNullableWithAggregatesFilter<"ScrapingLog"> | number | null
+    tendersFound?: IntWithAggregatesFilter<"ScrapingLog"> | number
+    tendersImported?: IntWithAggregatesFilter<"ScrapingLog"> | number
+    tendersUpdated?: IntWithAggregatesFilter<"ScrapingLog"> | number
+    tendersSkipped?: IntWithAggregatesFilter<"ScrapingLog"> | number
+    errorMessage?: StringNullableWithAggregatesFilter<"ScrapingLog"> | string | null
+    errorDetails?: JsonNullableWithAggregatesFilter<"ScrapingLog">
+    metadata?: JsonWithAggregatesFilter<"ScrapingLog">
+    triggeredBy?: StringWithAggregatesFilter<"ScrapingLog"> | string
+  }
+
+  export type SessionWhereInput = {
+    AND?: SessionWhereInput | SessionWhereInput[]
+    OR?: SessionWhereInput[]
+    NOT?: SessionWhereInput | SessionWhereInput[]
+    id?: StringFilter<"Session"> | string
+    sessionToken?: StringFilter<"Session"> | string
+    userId?: StringFilter<"Session"> | string
+    expiresAt?: DateTimeFilter<"Session"> | Date | string
+    createdAt?: DateTimeFilter<"Session"> | Date | string
+    updatedAt?: DateTimeFilter<"Session"> | Date | string
+    data?: JsonFilter<"Session">
+    user?: XOR<UserRelationFilter, UserWhereInput>
+  }
+
+  export type SessionOrderByWithRelationInput = {
+    id?: SortOrder
+    sessionToken?: SortOrder
+    userId?: SortOrder
+    expiresAt?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    data?: SortOrder
+    user?: UserOrderByWithRelationInput
+  }
+
+  export type SessionWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    sessionToken?: string
+    AND?: SessionWhereInput | SessionWhereInput[]
+    OR?: SessionWhereInput[]
+    NOT?: SessionWhereInput | SessionWhereInput[]
+    userId?: StringFilter<"Session"> | string
+    expiresAt?: DateTimeFilter<"Session"> | Date | string
+    createdAt?: DateTimeFilter<"Session"> | Date | string
+    updatedAt?: DateTimeFilter<"Session"> | Date | string
+    data?: JsonFilter<"Session">
+    user?: XOR<UserRelationFilter, UserWhereInput>
+  }, "id" | "sessionToken">
+
+  export type SessionOrderByWithAggregationInput = {
+    id?: SortOrder
+    sessionToken?: SortOrder
+    userId?: SortOrder
+    expiresAt?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    data?: SortOrder
+    _count?: SessionCountOrderByAggregateInput
+    _max?: SessionMaxOrderByAggregateInput
+    _min?: SessionMinOrderByAggregateInput
+  }
+
+  export type SessionScalarWhereWithAggregatesInput = {
+    AND?: SessionScalarWhereWithAggregatesInput | SessionScalarWhereWithAggregatesInput[]
+    OR?: SessionScalarWhereWithAggregatesInput[]
+    NOT?: SessionScalarWhereWithAggregatesInput | SessionScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"Session"> | string
+    sessionToken?: StringWithAggregatesFilter<"Session"> | string
+    userId?: StringWithAggregatesFilter<"Session"> | string
+    expiresAt?: DateTimeWithAggregatesFilter<"Session"> | Date | string
+    createdAt?: DateTimeWithAggregatesFilter<"Session"> | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter<"Session"> | Date | string
+    data?: JsonWithAggregatesFilter<"Session">
+  }
+
+  export type NotificationPreferenceWhereInput = {
+    AND?: NotificationPreferenceWhereInput | NotificationPreferenceWhereInput[]
+    OR?: NotificationPreferenceWhereInput[]
+    NOT?: NotificationPreferenceWhereInput | NotificationPreferenceWhereInput[]
+    id?: StringFilter<"NotificationPreference"> | string
+    userId?: StringFilter<"NotificationPreference"> | string
+    type?: StringFilter<"NotificationPreference"> | string
+    enabled?: BoolFilter<"NotificationPreference"> | boolean
+    channels?: StringNullableListFilter<"NotificationPreference">
+    createdAt?: DateTimeFilter<"NotificationPreference"> | Date | string
+    updatedAt?: DateTimeFilter<"NotificationPreference"> | Date | string
+    user?: XOR<UserRelationFilter, UserWhereInput>
+  }
+
+  export type NotificationPreferenceOrderByWithRelationInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    type?: SortOrder
+    enabled?: SortOrder
+    channels?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    user?: UserOrderByWithRelationInput
+  }
+
+  export type NotificationPreferenceWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    userId_type?: NotificationPreferenceUserIdTypeCompoundUniqueInput
+    AND?: NotificationPreferenceWhereInput | NotificationPreferenceWhereInput[]
+    OR?: NotificationPreferenceWhereInput[]
+    NOT?: NotificationPreferenceWhereInput | NotificationPreferenceWhereInput[]
+    userId?: StringFilter<"NotificationPreference"> | string
+    type?: StringFilter<"NotificationPreference"> | string
+    enabled?: BoolFilter<"NotificationPreference"> | boolean
+    channels?: StringNullableListFilter<"NotificationPreference">
+    createdAt?: DateTimeFilter<"NotificationPreference"> | Date | string
+    updatedAt?: DateTimeFilter<"NotificationPreference"> | Date | string
+    user?: XOR<UserRelationFilter, UserWhereInput>
+  }, "id" | "userId_type">
+
+  export type NotificationPreferenceOrderByWithAggregationInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    type?: SortOrder
+    enabled?: SortOrder
+    channels?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    _count?: NotificationPreferenceCountOrderByAggregateInput
+    _max?: NotificationPreferenceMaxOrderByAggregateInput
+    _min?: NotificationPreferenceMinOrderByAggregateInput
+  }
+
+  export type NotificationPreferenceScalarWhereWithAggregatesInput = {
+    AND?: NotificationPreferenceScalarWhereWithAggregatesInput | NotificationPreferenceScalarWhereWithAggregatesInput[]
+    OR?: NotificationPreferenceScalarWhereWithAggregatesInput[]
+    NOT?: NotificationPreferenceScalarWhereWithAggregatesInput | NotificationPreferenceScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"NotificationPreference"> | string
+    userId?: StringWithAggregatesFilter<"NotificationPreference"> | string
+    type?: StringWithAggregatesFilter<"NotificationPreference"> | string
+    enabled?: BoolWithAggregatesFilter<"NotificationPreference"> | boolean
+    channels?: StringNullableListFilter<"NotificationPreference">
+    createdAt?: DateTimeWithAggregatesFilter<"NotificationPreference"> | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter<"NotificationPreference"> | Date | string
+  }
+
+  export type NotificationLogWhereInput = {
+    AND?: NotificationLogWhereInput | NotificationLogWhereInput[]
+    OR?: NotificationLogWhereInput[]
+    NOT?: NotificationLogWhereInput | NotificationLogWhereInput[]
+    id?: StringFilter<"NotificationLog"> | string
+    type?: StringFilter<"NotificationLog"> | string
+    tenantId?: StringFilter<"NotificationLog"> | string
+    userId?: StringNullableFilter<"NotificationLog"> | string | null
+    priority?: StringFilter<"NotificationLog"> | string
+    channels?: StringNullableListFilter<"NotificationLog">
+    recipients?: StringNullableListFilter<"NotificationLog">
+    metadata?: JsonFilter<"NotificationLog">
+    sentAt?: DateTimeNullableFilter<"NotificationLog"> | Date | string | null
+    createdAt?: DateTimeFilter<"NotificationLog"> | Date | string
+    tenant?: XOR<TenantRelationFilter, TenantWhereInput>
+    user?: XOR<UserNullableRelationFilter, UserWhereInput> | null
+  }
+
+  export type NotificationLogOrderByWithRelationInput = {
+    id?: SortOrder
+    type?: SortOrder
+    tenantId?: SortOrder
+    userId?: SortOrderInput | SortOrder
+    priority?: SortOrder
+    channels?: SortOrder
+    recipients?: SortOrder
+    metadata?: SortOrder
+    sentAt?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    tenant?: TenantOrderByWithRelationInput
+    user?: UserOrderByWithRelationInput
+  }
+
+  export type NotificationLogWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    AND?: NotificationLogWhereInput | NotificationLogWhereInput[]
+    OR?: NotificationLogWhereInput[]
+    NOT?: NotificationLogWhereInput | NotificationLogWhereInput[]
+    type?: StringFilter<"NotificationLog"> | string
+    tenantId?: StringFilter<"NotificationLog"> | string
+    userId?: StringNullableFilter<"NotificationLog"> | string | null
+    priority?: StringFilter<"NotificationLog"> | string
+    channels?: StringNullableListFilter<"NotificationLog">
+    recipients?: StringNullableListFilter<"NotificationLog">
+    metadata?: JsonFilter<"NotificationLog">
+    sentAt?: DateTimeNullableFilter<"NotificationLog"> | Date | string | null
+    createdAt?: DateTimeFilter<"NotificationLog"> | Date | string
+    tenant?: XOR<TenantRelationFilter, TenantWhereInput>
+    user?: XOR<UserNullableRelationFilter, UserWhereInput> | null
+  }, "id">
+
+  export type NotificationLogOrderByWithAggregationInput = {
+    id?: SortOrder
+    type?: SortOrder
+    tenantId?: SortOrder
+    userId?: SortOrderInput | SortOrder
+    priority?: SortOrder
+    channels?: SortOrder
+    recipients?: SortOrder
+    metadata?: SortOrder
+    sentAt?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    _count?: NotificationLogCountOrderByAggregateInput
+    _max?: NotificationLogMaxOrderByAggregateInput
+    _min?: NotificationLogMinOrderByAggregateInput
+  }
+
+  export type NotificationLogScalarWhereWithAggregatesInput = {
+    AND?: NotificationLogScalarWhereWithAggregatesInput | NotificationLogScalarWhereWithAggregatesInput[]
+    OR?: NotificationLogScalarWhereWithAggregatesInput[]
+    NOT?: NotificationLogScalarWhereWithAggregatesInput | NotificationLogScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"NotificationLog"> | string
+    type?: StringWithAggregatesFilter<"NotificationLog"> | string
+    tenantId?: StringWithAggregatesFilter<"NotificationLog"> | string
+    userId?: StringNullableWithAggregatesFilter<"NotificationLog"> | string | null
+    priority?: StringWithAggregatesFilter<"NotificationLog"> | string
+    channels?: StringNullableListFilter<"NotificationLog">
+    recipients?: StringNullableListFilter<"NotificationLog">
+    metadata?: JsonWithAggregatesFilter<"NotificationLog">
+    sentAt?: DateTimeNullableWithAggregatesFilter<"NotificationLog"> | Date | string | null
+    createdAt?: DateTimeWithAggregatesFilter<"NotificationLog"> | Date | string
+  }
+
   export type TenantCreateInput = {
     id?: string
     name: string
     subdomain: string
     settings?: JsonNullValueInput | InputJsonValue
+    webhookUrl?: string | null
+    metadata?: JsonNullValueInput | InputJsonValue
     isActive?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -20076,6 +25326,8 @@ export namespace Prisma {
     tenders?: TenderCreateNestedManyWithoutTenantInput
     audits?: AuditLogCreateNestedManyWithoutTenantInput
     apiKeys?: ApiKeyCreateNestedManyWithoutTenantInput
+    scrapingLogs?: ScrapingLogCreateNestedManyWithoutTenantInput
+    notificationLogs?: NotificationLogCreateNestedManyWithoutTenantInput
   }
 
   export type TenantUncheckedCreateInput = {
@@ -20083,6 +25335,8 @@ export namespace Prisma {
     name: string
     subdomain: string
     settings?: JsonNullValueInput | InputJsonValue
+    webhookUrl?: string | null
+    metadata?: JsonNullValueInput | InputJsonValue
     isActive?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -20091,6 +25345,8 @@ export namespace Prisma {
     tenders?: TenderUncheckedCreateNestedManyWithoutTenantInput
     audits?: AuditLogUncheckedCreateNestedManyWithoutTenantInput
     apiKeys?: ApiKeyUncheckedCreateNestedManyWithoutTenantInput
+    scrapingLogs?: ScrapingLogUncheckedCreateNestedManyWithoutTenantInput
+    notificationLogs?: NotificationLogUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type TenantUpdateInput = {
@@ -20098,6 +25354,8 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     subdomain?: StringFieldUpdateOperationsInput | string
     settings?: JsonNullValueInput | InputJsonValue
+    webhookUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    metadata?: JsonNullValueInput | InputJsonValue
     isActive?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -20106,6 +25364,8 @@ export namespace Prisma {
     tenders?: TenderUpdateManyWithoutTenantNestedInput
     audits?: AuditLogUpdateManyWithoutTenantNestedInput
     apiKeys?: ApiKeyUpdateManyWithoutTenantNestedInput
+    scrapingLogs?: ScrapingLogUpdateManyWithoutTenantNestedInput
+    notificationLogs?: NotificationLogUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantUncheckedUpdateInput = {
@@ -20113,6 +25373,8 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     subdomain?: StringFieldUpdateOperationsInput | string
     settings?: JsonNullValueInput | InputJsonValue
+    webhookUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    metadata?: JsonNullValueInput | InputJsonValue
     isActive?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -20121,6 +25383,8 @@ export namespace Prisma {
     tenders?: TenderUncheckedUpdateManyWithoutTenantNestedInput
     audits?: AuditLogUncheckedUpdateManyWithoutTenantNestedInput
     apiKeys?: ApiKeyUncheckedUpdateManyWithoutTenantNestedInput
+    scrapingLogs?: ScrapingLogUncheckedUpdateManyWithoutTenantNestedInput
+    notificationLogs?: NotificationLogUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantCreateManyInput = {
@@ -20128,6 +25392,8 @@ export namespace Prisma {
     name: string
     subdomain: string
     settings?: JsonNullValueInput | InputJsonValue
+    webhookUrl?: string | null
+    metadata?: JsonNullValueInput | InputJsonValue
     isActive?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -20139,6 +25405,8 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     subdomain?: StringFieldUpdateOperationsInput | string
     settings?: JsonNullValueInput | InputJsonValue
+    webhookUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    metadata?: JsonNullValueInput | InputJsonValue
     isActive?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -20150,6 +25418,8 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     subdomain?: StringFieldUpdateOperationsInput | string
     settings?: JsonNullValueInput | InputJsonValue
+    webhookUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    metadata?: JsonNullValueInput | InputJsonValue
     isActive?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -20159,8 +25429,10 @@ export namespace Prisma {
   export type UserCreateInput = {
     id?: string
     email: string
+    passwordHash?: string | null
     firstName: string
     lastName: string
+    phone?: string | null
     role?: $Enums.UserRole
     isActive?: boolean
     lastLoginAt?: Date | string | null
@@ -20177,14 +25449,20 @@ export namespace Prisma {
     comments?: CommentCreateNestedManyWithoutAuthorInput
     notifications?: NotificationCreateNestedManyWithoutUserInput
     audits?: AuditLogCreateNestedManyWithoutUserInput
+    triggeredScrapings?: ScrapingLogCreateNestedManyWithoutTriggeredByUserInput
+    sessions?: SessionCreateNestedManyWithoutUserInput
+    notificationPreferences?: NotificationPreferenceCreateNestedManyWithoutUserInput
+    notificationLogs?: NotificationLogCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateInput = {
     id?: string
     tenantId: string
     email: string
+    passwordHash?: string | null
     firstName: string
     lastName: string
+    phone?: string | null
     role?: $Enums.UserRole
     isActive?: boolean
     lastLoginAt?: Date | string | null
@@ -20200,13 +25478,19 @@ export namespace Prisma {
     comments?: CommentUncheckedCreateNestedManyWithoutAuthorInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
     audits?: AuditLogUncheckedCreateNestedManyWithoutUserInput
+    triggeredScrapings?: ScrapingLogUncheckedCreateNestedManyWithoutTriggeredByUserInput
+    sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
+    notificationPreferences?: NotificationPreferenceUncheckedCreateNestedManyWithoutUserInput
+    notificationLogs?: NotificationLogUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
+    passwordHash?: NullableStringFieldUpdateOperationsInput | string | null
     firstName?: StringFieldUpdateOperationsInput | string
     lastName?: StringFieldUpdateOperationsInput | string
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
     role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
     isActive?: BoolFieldUpdateOperationsInput | boolean
     lastLoginAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -20223,14 +25507,20 @@ export namespace Prisma {
     comments?: CommentUpdateManyWithoutAuthorNestedInput
     notifications?: NotificationUpdateManyWithoutUserNestedInput
     audits?: AuditLogUpdateManyWithoutUserNestedInput
+    triggeredScrapings?: ScrapingLogUpdateManyWithoutTriggeredByUserNestedInput
+    sessions?: SessionUpdateManyWithoutUserNestedInput
+    notificationPreferences?: NotificationPreferenceUpdateManyWithoutUserNestedInput
+    notificationLogs?: NotificationLogUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
     tenantId?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
+    passwordHash?: NullableStringFieldUpdateOperationsInput | string | null
     firstName?: StringFieldUpdateOperationsInput | string
     lastName?: StringFieldUpdateOperationsInput | string
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
     role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
     isActive?: BoolFieldUpdateOperationsInput | boolean
     lastLoginAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -20246,14 +25536,20 @@ export namespace Prisma {
     comments?: CommentUncheckedUpdateManyWithoutAuthorNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
     audits?: AuditLogUncheckedUpdateManyWithoutUserNestedInput
+    triggeredScrapings?: ScrapingLogUncheckedUpdateManyWithoutTriggeredByUserNestedInput
+    sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
+    notificationPreferences?: NotificationPreferenceUncheckedUpdateManyWithoutUserNestedInput
+    notificationLogs?: NotificationLogUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserCreateManyInput = {
     id?: string
     tenantId: string
     email: string
+    passwordHash?: string | null
     firstName: string
     lastName: string
+    phone?: string | null
     role?: $Enums.UserRole
     isActive?: boolean
     lastLoginAt?: Date | string | null
@@ -20266,8 +25562,10 @@ export namespace Prisma {
   export type UserUpdateManyMutationInput = {
     id?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
+    passwordHash?: NullableStringFieldUpdateOperationsInput | string | null
     firstName?: StringFieldUpdateOperationsInput | string
     lastName?: StringFieldUpdateOperationsInput | string
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
     role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
     isActive?: BoolFieldUpdateOperationsInput | boolean
     lastLoginAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -20281,8 +25579,10 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     tenantId?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
+    passwordHash?: NullableStringFieldUpdateOperationsInput | string | null
     firstName?: StringFieldUpdateOperationsInput | string
     lastName?: StringFieldUpdateOperationsInput | string
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
     role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
     isActive?: BoolFieldUpdateOperationsInput | boolean
     lastLoginAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -20309,6 +25609,13 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     deletedAt?: Date | string | null
+    scrapedAt?: Date | string | null
+    sourcePortal?: string | null
+    originalTitle?: string | null
+    originalStatus?: string | null
+    originalValue?: string | null
+    exchangeRates?: NullableJsonNullValueInput | InputJsonValue
+    sourceUrl?: string | null
     tenant: TenantCreateNestedOneWithoutTendersInput
     creator: UserCreateNestedOneWithoutCreatedTendersInput
     assignments?: TenderAssignmentCreateNestedManyWithoutTenderInput
@@ -20340,6 +25647,13 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     deletedAt?: Date | string | null
+    scrapedAt?: Date | string | null
+    sourcePortal?: string | null
+    originalTitle?: string | null
+    originalStatus?: string | null
+    originalValue?: string | null
+    exchangeRates?: NullableJsonNullValueInput | InputJsonValue
+    sourceUrl?: string | null
     assignments?: TenderAssignmentUncheckedCreateNestedManyWithoutTenderInput
     documents?: DocumentUncheckedCreateNestedManyWithoutTenderInput
     bids?: BidUncheckedCreateNestedManyWithoutTenderInput
@@ -20367,6 +25681,13 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    scrapedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    sourcePortal?: NullableStringFieldUpdateOperationsInput | string | null
+    originalTitle?: NullableStringFieldUpdateOperationsInput | string | null
+    originalStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    originalValue?: NullableStringFieldUpdateOperationsInput | string | null
+    exchangeRates?: NullableJsonNullValueInput | InputJsonValue
+    sourceUrl?: NullableStringFieldUpdateOperationsInput | string | null
     tenant?: TenantUpdateOneRequiredWithoutTendersNestedInput
     creator?: UserUpdateOneRequiredWithoutCreatedTendersNestedInput
     assignments?: TenderAssignmentUpdateManyWithoutTenderNestedInput
@@ -20398,6 +25719,13 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    scrapedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    sourcePortal?: NullableStringFieldUpdateOperationsInput | string | null
+    originalTitle?: NullableStringFieldUpdateOperationsInput | string | null
+    originalStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    originalValue?: NullableStringFieldUpdateOperationsInput | string | null
+    exchangeRates?: NullableJsonNullValueInput | InputJsonValue
+    sourceUrl?: NullableStringFieldUpdateOperationsInput | string | null
     assignments?: TenderAssignmentUncheckedUpdateManyWithoutTenderNestedInput
     documents?: DocumentUncheckedUpdateManyWithoutTenderNestedInput
     bids?: BidUncheckedUpdateManyWithoutTenderNestedInput
@@ -20427,6 +25755,13 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     deletedAt?: Date | string | null
+    scrapedAt?: Date | string | null
+    sourcePortal?: string | null
+    originalTitle?: string | null
+    originalStatus?: string | null
+    originalValue?: string | null
+    exchangeRates?: NullableJsonNullValueInput | InputJsonValue
+    sourceUrl?: string | null
   }
 
   export type TenderUpdateManyMutationInput = {
@@ -20446,6 +25781,13 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    scrapedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    sourcePortal?: NullableStringFieldUpdateOperationsInput | string | null
+    originalTitle?: NullableStringFieldUpdateOperationsInput | string | null
+    originalStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    originalValue?: NullableStringFieldUpdateOperationsInput | string | null
+    exchangeRates?: NullableJsonNullValueInput | InputJsonValue
+    sourceUrl?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type TenderUncheckedUpdateManyInput = {
@@ -20467,6 +25809,13 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    scrapedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    sourcePortal?: NullableStringFieldUpdateOperationsInput | string | null
+    originalTitle?: NullableStringFieldUpdateOperationsInput | string | null
+    originalStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    originalValue?: NullableStringFieldUpdateOperationsInput | string | null
+    exchangeRates?: NullableJsonNullValueInput | InputJsonValue
+    sourceUrl?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type TenderAssignmentCreateInput = {
@@ -20543,13 +25892,13 @@ export namespace Prisma {
     isDeleted?: boolean
     uploadedAt?: Date | string
     updatedAt?: Date | string
-    tender: TenderCreateNestedOneWithoutDocumentsInput
+    tender?: TenderCreateNestedOneWithoutDocumentsInput
     uploader: UserCreateNestedOneWithoutDocumentsInput
   }
 
   export type DocumentUncheckedCreateInput = {
     id?: string
-    tenderId: string
+    tenderId?: string | null
     uploadedBy: string
     filename: string
     originalName: string
@@ -20577,13 +25926,13 @@ export namespace Prisma {
     isDeleted?: BoolFieldUpdateOperationsInput | boolean
     uploadedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    tender?: TenderUpdateOneRequiredWithoutDocumentsNestedInput
+    tender?: TenderUpdateOneWithoutDocumentsNestedInput
     uploader?: UserUpdateOneRequiredWithoutDocumentsNestedInput
   }
 
   export type DocumentUncheckedUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
-    tenderId?: StringFieldUpdateOperationsInput | string
+    tenderId?: NullableStringFieldUpdateOperationsInput | string | null
     uploadedBy?: StringFieldUpdateOperationsInput | string
     filename?: StringFieldUpdateOperationsInput | string
     originalName?: StringFieldUpdateOperationsInput | string
@@ -20600,7 +25949,7 @@ export namespace Prisma {
 
   export type DocumentCreateManyInput = {
     id?: string
-    tenderId: string
+    tenderId?: string | null
     uploadedBy: string
     filename: string
     originalName: string
@@ -20632,7 +25981,7 @@ export namespace Prisma {
 
   export type DocumentUncheckedUpdateManyInput = {
     id?: StringFieldUpdateOperationsInput | string
-    tenderId?: StringFieldUpdateOperationsInput | string
+    tenderId?: NullableStringFieldUpdateOperationsInput | string | null
     uploadedBy?: StringFieldUpdateOperationsInput | string
     filename?: StringFieldUpdateOperationsInput | string
     originalName?: StringFieldUpdateOperationsInput | string
@@ -21271,6 +26620,8 @@ export namespace Prisma {
     ipAddress?: string | null
     userAgent?: string | null
     timestamp?: Date | string
+    archived?: boolean
+    archivedAt?: Date | string | null
     tenant: TenantCreateNestedOneWithoutAuditsInput
     user?: UserCreateNestedOneWithoutAuditsInput
   }
@@ -21288,6 +26639,8 @@ export namespace Prisma {
     ipAddress?: string | null
     userAgent?: string | null
     timestamp?: Date | string
+    archived?: boolean
+    archivedAt?: Date | string | null
   }
 
   export type AuditLogUpdateInput = {
@@ -21301,6 +26654,8 @@ export namespace Prisma {
     ipAddress?: NullableStringFieldUpdateOperationsInput | string | null
     userAgent?: NullableStringFieldUpdateOperationsInput | string | null
     timestamp?: DateTimeFieldUpdateOperationsInput | Date | string
+    archived?: BoolFieldUpdateOperationsInput | boolean
+    archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     tenant?: TenantUpdateOneRequiredWithoutAuditsNestedInput
     user?: UserUpdateOneWithoutAuditsNestedInput
   }
@@ -21318,6 +26673,8 @@ export namespace Prisma {
     ipAddress?: NullableStringFieldUpdateOperationsInput | string | null
     userAgent?: NullableStringFieldUpdateOperationsInput | string | null
     timestamp?: DateTimeFieldUpdateOperationsInput | Date | string
+    archived?: BoolFieldUpdateOperationsInput | boolean
+    archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }
 
   export type AuditLogCreateManyInput = {
@@ -21333,6 +26690,8 @@ export namespace Prisma {
     ipAddress?: string | null
     userAgent?: string | null
     timestamp?: Date | string
+    archived?: boolean
+    archivedAt?: Date | string | null
   }
 
   export type AuditLogUpdateManyMutationInput = {
@@ -21346,6 +26705,8 @@ export namespace Prisma {
     ipAddress?: NullableStringFieldUpdateOperationsInput | string | null
     userAgent?: NullableStringFieldUpdateOperationsInput | string | null
     timestamp?: DateTimeFieldUpdateOperationsInput | Date | string
+    archived?: BoolFieldUpdateOperationsInput | boolean
+    archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }
 
   export type AuditLogUncheckedUpdateManyInput = {
@@ -21361,6 +26722,8 @@ export namespace Prisma {
     ipAddress?: NullableStringFieldUpdateOperationsInput | string | null
     userAgent?: NullableStringFieldUpdateOperationsInput | string | null
     timestamp?: DateTimeFieldUpdateOperationsInput | Date | string
+    archived?: BoolFieldUpdateOperationsInput | boolean
+    archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }
 
   export type SystemConfigCreateInput = {
@@ -21628,6 +26991,364 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
+  export type ScrapingLogCreateInput = {
+    id?: string
+    sourcePortal: string
+    status?: $Enums.ScrapingStatus
+    startedAt?: Date | string
+    completedAt?: Date | string | null
+    pagesProcessed?: number
+    totalPages?: number | null
+    tendersFound?: number
+    tendersImported?: number
+    tendersUpdated?: number
+    tendersSkipped?: number
+    errorMessage?: string | null
+    errorDetails?: NullableJsonNullValueInput | InputJsonValue
+    metadata?: JsonNullValueInput | InputJsonValue
+    tenant: TenantCreateNestedOneWithoutScrapingLogsInput
+    triggeredByUser: UserCreateNestedOneWithoutTriggeredScrapingsInput
+  }
+
+  export type ScrapingLogUncheckedCreateInput = {
+    id?: string
+    tenantId: string
+    sourcePortal: string
+    status?: $Enums.ScrapingStatus
+    startedAt?: Date | string
+    completedAt?: Date | string | null
+    pagesProcessed?: number
+    totalPages?: number | null
+    tendersFound?: number
+    tendersImported?: number
+    tendersUpdated?: number
+    tendersSkipped?: number
+    errorMessage?: string | null
+    errorDetails?: NullableJsonNullValueInput | InputJsonValue
+    metadata?: JsonNullValueInput | InputJsonValue
+    triggeredBy: string
+  }
+
+  export type ScrapingLogUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    sourcePortal?: StringFieldUpdateOperationsInput | string
+    status?: EnumScrapingStatusFieldUpdateOperationsInput | $Enums.ScrapingStatus
+    startedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    pagesProcessed?: IntFieldUpdateOperationsInput | number
+    totalPages?: NullableIntFieldUpdateOperationsInput | number | null
+    tendersFound?: IntFieldUpdateOperationsInput | number
+    tendersImported?: IntFieldUpdateOperationsInput | number
+    tendersUpdated?: IntFieldUpdateOperationsInput | number
+    tendersSkipped?: IntFieldUpdateOperationsInput | number
+    errorMessage?: NullableStringFieldUpdateOperationsInput | string | null
+    errorDetails?: NullableJsonNullValueInput | InputJsonValue
+    metadata?: JsonNullValueInput | InputJsonValue
+    tenant?: TenantUpdateOneRequiredWithoutScrapingLogsNestedInput
+    triggeredByUser?: UserUpdateOneRequiredWithoutTriggeredScrapingsNestedInput
+  }
+
+  export type ScrapingLogUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    tenantId?: StringFieldUpdateOperationsInput | string
+    sourcePortal?: StringFieldUpdateOperationsInput | string
+    status?: EnumScrapingStatusFieldUpdateOperationsInput | $Enums.ScrapingStatus
+    startedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    pagesProcessed?: IntFieldUpdateOperationsInput | number
+    totalPages?: NullableIntFieldUpdateOperationsInput | number | null
+    tendersFound?: IntFieldUpdateOperationsInput | number
+    tendersImported?: IntFieldUpdateOperationsInput | number
+    tendersUpdated?: IntFieldUpdateOperationsInput | number
+    tendersSkipped?: IntFieldUpdateOperationsInput | number
+    errorMessage?: NullableStringFieldUpdateOperationsInput | string | null
+    errorDetails?: NullableJsonNullValueInput | InputJsonValue
+    metadata?: JsonNullValueInput | InputJsonValue
+    triggeredBy?: StringFieldUpdateOperationsInput | string
+  }
+
+  export type ScrapingLogCreateManyInput = {
+    id?: string
+    tenantId: string
+    sourcePortal: string
+    status?: $Enums.ScrapingStatus
+    startedAt?: Date | string
+    completedAt?: Date | string | null
+    pagesProcessed?: number
+    totalPages?: number | null
+    tendersFound?: number
+    tendersImported?: number
+    tendersUpdated?: number
+    tendersSkipped?: number
+    errorMessage?: string | null
+    errorDetails?: NullableJsonNullValueInput | InputJsonValue
+    metadata?: JsonNullValueInput | InputJsonValue
+    triggeredBy: string
+  }
+
+  export type ScrapingLogUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    sourcePortal?: StringFieldUpdateOperationsInput | string
+    status?: EnumScrapingStatusFieldUpdateOperationsInput | $Enums.ScrapingStatus
+    startedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    pagesProcessed?: IntFieldUpdateOperationsInput | number
+    totalPages?: NullableIntFieldUpdateOperationsInput | number | null
+    tendersFound?: IntFieldUpdateOperationsInput | number
+    tendersImported?: IntFieldUpdateOperationsInput | number
+    tendersUpdated?: IntFieldUpdateOperationsInput | number
+    tendersSkipped?: IntFieldUpdateOperationsInput | number
+    errorMessage?: NullableStringFieldUpdateOperationsInput | string | null
+    errorDetails?: NullableJsonNullValueInput | InputJsonValue
+    metadata?: JsonNullValueInput | InputJsonValue
+  }
+
+  export type ScrapingLogUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    tenantId?: StringFieldUpdateOperationsInput | string
+    sourcePortal?: StringFieldUpdateOperationsInput | string
+    status?: EnumScrapingStatusFieldUpdateOperationsInput | $Enums.ScrapingStatus
+    startedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    pagesProcessed?: IntFieldUpdateOperationsInput | number
+    totalPages?: NullableIntFieldUpdateOperationsInput | number | null
+    tendersFound?: IntFieldUpdateOperationsInput | number
+    tendersImported?: IntFieldUpdateOperationsInput | number
+    tendersUpdated?: IntFieldUpdateOperationsInput | number
+    tendersSkipped?: IntFieldUpdateOperationsInput | number
+    errorMessage?: NullableStringFieldUpdateOperationsInput | string | null
+    errorDetails?: NullableJsonNullValueInput | InputJsonValue
+    metadata?: JsonNullValueInput | InputJsonValue
+    triggeredBy?: StringFieldUpdateOperationsInput | string
+  }
+
+  export type SessionCreateInput = {
+    id?: string
+    sessionToken: string
+    expiresAt: Date | string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    data?: JsonNullValueInput | InputJsonValue
+    user: UserCreateNestedOneWithoutSessionsInput
+  }
+
+  export type SessionUncheckedCreateInput = {
+    id?: string
+    sessionToken: string
+    userId: string
+    expiresAt: Date | string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    data?: JsonNullValueInput | InputJsonValue
+  }
+
+  export type SessionUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    sessionToken?: StringFieldUpdateOperationsInput | string
+    expiresAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    data?: JsonNullValueInput | InputJsonValue
+    user?: UserUpdateOneRequiredWithoutSessionsNestedInput
+  }
+
+  export type SessionUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    sessionToken?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    expiresAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    data?: JsonNullValueInput | InputJsonValue
+  }
+
+  export type SessionCreateManyInput = {
+    id?: string
+    sessionToken: string
+    userId: string
+    expiresAt: Date | string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    data?: JsonNullValueInput | InputJsonValue
+  }
+
+  export type SessionUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    sessionToken?: StringFieldUpdateOperationsInput | string
+    expiresAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    data?: JsonNullValueInput | InputJsonValue
+  }
+
+  export type SessionUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    sessionToken?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    expiresAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    data?: JsonNullValueInput | InputJsonValue
+  }
+
+  export type NotificationPreferenceCreateInput = {
+    id?: string
+    type: string
+    enabled?: boolean
+    channels?: NotificationPreferenceCreatechannelsInput | string[]
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    user: UserCreateNestedOneWithoutNotificationPreferencesInput
+  }
+
+  export type NotificationPreferenceUncheckedCreateInput = {
+    id?: string
+    userId: string
+    type: string
+    enabled?: boolean
+    channels?: NotificationPreferenceCreatechannelsInput | string[]
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type NotificationPreferenceUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    type?: StringFieldUpdateOperationsInput | string
+    enabled?: BoolFieldUpdateOperationsInput | boolean
+    channels?: NotificationPreferenceUpdatechannelsInput | string[]
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    user?: UserUpdateOneRequiredWithoutNotificationPreferencesNestedInput
+  }
+
+  export type NotificationPreferenceUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    type?: StringFieldUpdateOperationsInput | string
+    enabled?: BoolFieldUpdateOperationsInput | boolean
+    channels?: NotificationPreferenceUpdatechannelsInput | string[]
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type NotificationPreferenceCreateManyInput = {
+    id?: string
+    userId: string
+    type: string
+    enabled?: boolean
+    channels?: NotificationPreferenceCreatechannelsInput | string[]
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type NotificationPreferenceUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    type?: StringFieldUpdateOperationsInput | string
+    enabled?: BoolFieldUpdateOperationsInput | boolean
+    channels?: NotificationPreferenceUpdatechannelsInput | string[]
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type NotificationPreferenceUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    type?: StringFieldUpdateOperationsInput | string
+    enabled?: BoolFieldUpdateOperationsInput | boolean
+    channels?: NotificationPreferenceUpdatechannelsInput | string[]
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type NotificationLogCreateInput = {
+    id?: string
+    type: string
+    priority?: string
+    channels?: NotificationLogCreatechannelsInput | string[]
+    recipients?: NotificationLogCreaterecipientsInput | string[]
+    metadata?: JsonNullValueInput | InputJsonValue
+    sentAt?: Date | string | null
+    createdAt?: Date | string
+    tenant: TenantCreateNestedOneWithoutNotificationLogsInput
+    user?: UserCreateNestedOneWithoutNotificationLogsInput
+  }
+
+  export type NotificationLogUncheckedCreateInput = {
+    id?: string
+    type: string
+    tenantId: string
+    userId?: string | null
+    priority?: string
+    channels?: NotificationLogCreatechannelsInput | string[]
+    recipients?: NotificationLogCreaterecipientsInput | string[]
+    metadata?: JsonNullValueInput | InputJsonValue
+    sentAt?: Date | string | null
+    createdAt?: Date | string
+  }
+
+  export type NotificationLogUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    type?: StringFieldUpdateOperationsInput | string
+    priority?: StringFieldUpdateOperationsInput | string
+    channels?: NotificationLogUpdatechannelsInput | string[]
+    recipients?: NotificationLogUpdaterecipientsInput | string[]
+    metadata?: JsonNullValueInput | InputJsonValue
+    sentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    tenant?: TenantUpdateOneRequiredWithoutNotificationLogsNestedInput
+    user?: UserUpdateOneWithoutNotificationLogsNestedInput
+  }
+
+  export type NotificationLogUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    type?: StringFieldUpdateOperationsInput | string
+    tenantId?: StringFieldUpdateOperationsInput | string
+    userId?: NullableStringFieldUpdateOperationsInput | string | null
+    priority?: StringFieldUpdateOperationsInput | string
+    channels?: NotificationLogUpdatechannelsInput | string[]
+    recipients?: NotificationLogUpdaterecipientsInput | string[]
+    metadata?: JsonNullValueInput | InputJsonValue
+    sentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type NotificationLogCreateManyInput = {
+    id?: string
+    type: string
+    tenantId: string
+    userId?: string | null
+    priority?: string
+    channels?: NotificationLogCreatechannelsInput | string[]
+    recipients?: NotificationLogCreaterecipientsInput | string[]
+    metadata?: JsonNullValueInput | InputJsonValue
+    sentAt?: Date | string | null
+    createdAt?: Date | string
+  }
+
+  export type NotificationLogUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    type?: StringFieldUpdateOperationsInput | string
+    priority?: StringFieldUpdateOperationsInput | string
+    channels?: NotificationLogUpdatechannelsInput | string[]
+    recipients?: NotificationLogUpdaterecipientsInput | string[]
+    metadata?: JsonNullValueInput | InputJsonValue
+    sentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type NotificationLogUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    type?: StringFieldUpdateOperationsInput | string
+    tenantId?: StringFieldUpdateOperationsInput | string
+    userId?: NullableStringFieldUpdateOperationsInput | string | null
+    priority?: StringFieldUpdateOperationsInput | string
+    channels?: NotificationLogUpdatechannelsInput | string[]
+    recipients?: NotificationLogUpdaterecipientsInput | string[]
+    metadata?: JsonNullValueInput | InputJsonValue
+    sentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
   export type StringFilter<$PrismaModel = never> = {
     equals?: string | StringFieldRefInput<$PrismaModel>
     in?: string[] | ListStringFieldRefInput<$PrismaModel>
@@ -21663,6 +27384,21 @@ export namespace Prisma {
     gt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
     gte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
     not?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
+  }
+
+  export type StringNullableFilter<$PrismaModel = never> = {
+    equals?: string | StringFieldRefInput<$PrismaModel> | null
+    in?: string[] | ListStringFieldRefInput<$PrismaModel> | null
+    notIn?: string[] | ListStringFieldRefInput<$PrismaModel> | null
+    lt?: string | StringFieldRefInput<$PrismaModel>
+    lte?: string | StringFieldRefInput<$PrismaModel>
+    gt?: string | StringFieldRefInput<$PrismaModel>
+    gte?: string | StringFieldRefInput<$PrismaModel>
+    contains?: string | StringFieldRefInput<$PrismaModel>
+    startsWith?: string | StringFieldRefInput<$PrismaModel>
+    endsWith?: string | StringFieldRefInput<$PrismaModel>
+    mode?: QueryMode
+    not?: NestedStringNullableFilter<$PrismaModel> | string | null
   }
 
   export type BoolFilter<$PrismaModel = never> = {
@@ -21716,6 +27452,18 @@ export namespace Prisma {
     none?: ApiKeyWhereInput
   }
 
+  export type ScrapingLogListRelationFilter = {
+    every?: ScrapingLogWhereInput
+    some?: ScrapingLogWhereInput
+    none?: ScrapingLogWhereInput
+  }
+
+  export type NotificationLogListRelationFilter = {
+    every?: NotificationLogWhereInput
+    some?: NotificationLogWhereInput
+    none?: NotificationLogWhereInput
+  }
+
   export type SortOrderInput = {
     sort: SortOrder
     nulls?: NullsOrder
@@ -21737,11 +27485,21 @@ export namespace Prisma {
     _count?: SortOrder
   }
 
+  export type ScrapingLogOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type NotificationLogOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
   export type TenantCountOrderByAggregateInput = {
     id?: SortOrder
     name?: SortOrder
     subdomain?: SortOrder
     settings?: SortOrder
+    webhookUrl?: SortOrder
+    metadata?: SortOrder
     isActive?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -21752,6 +27510,7 @@ export namespace Prisma {
     id?: SortOrder
     name?: SortOrder
     subdomain?: SortOrder
+    webhookUrl?: SortOrder
     isActive?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -21762,6 +27521,7 @@ export namespace Prisma {
     id?: SortOrder
     name?: SortOrder
     subdomain?: SortOrder
+    webhookUrl?: SortOrder
     isActive?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -21809,6 +27569,24 @@ export namespace Prisma {
     _count?: NestedIntFilter<$PrismaModel>
     _min?: NestedJsonFilter<$PrismaModel>
     _max?: NestedJsonFilter<$PrismaModel>
+  }
+
+  export type StringNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: string | StringFieldRefInput<$PrismaModel> | null
+    in?: string[] | ListStringFieldRefInput<$PrismaModel> | null
+    notIn?: string[] | ListStringFieldRefInput<$PrismaModel> | null
+    lt?: string | StringFieldRefInput<$PrismaModel>
+    lte?: string | StringFieldRefInput<$PrismaModel>
+    gt?: string | StringFieldRefInput<$PrismaModel>
+    gte?: string | StringFieldRefInput<$PrismaModel>
+    contains?: string | StringFieldRefInput<$PrismaModel>
+    startsWith?: string | StringFieldRefInput<$PrismaModel>
+    endsWith?: string | StringFieldRefInput<$PrismaModel>
+    mode?: QueryMode
+    not?: NestedStringNullableWithAggregatesFilter<$PrismaModel> | string | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedStringNullableFilter<$PrismaModel>
+    _max?: NestedStringNullableFilter<$PrismaModel>
   }
 
   export type BoolWithAggregatesFilter<$PrismaModel = never> = {
@@ -21895,6 +27673,18 @@ export namespace Prisma {
     none?: NotificationWhereInput
   }
 
+  export type SessionListRelationFilter = {
+    every?: SessionWhereInput
+    some?: SessionWhereInput
+    none?: SessionWhereInput
+  }
+
+  export type NotificationPreferenceListRelationFilter = {
+    every?: NotificationPreferenceWhereInput
+    some?: NotificationPreferenceWhereInput
+    none?: NotificationPreferenceWhereInput
+  }
+
   export type TenderAssignmentOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
@@ -21919,6 +27709,14 @@ export namespace Prisma {
     _count?: SortOrder
   }
 
+  export type SessionOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type NotificationPreferenceOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
   export type UserTenantIdEmailCompoundUniqueInput = {
     tenantId: string
     email: string
@@ -21928,8 +27726,10 @@ export namespace Prisma {
     id?: SortOrder
     tenantId?: SortOrder
     email?: SortOrder
+    passwordHash?: SortOrder
     firstName?: SortOrder
     lastName?: SortOrder
+    phone?: SortOrder
     role?: SortOrder
     isActive?: SortOrder
     lastLoginAt?: SortOrder
@@ -21943,8 +27743,10 @@ export namespace Prisma {
     id?: SortOrder
     tenantId?: SortOrder
     email?: SortOrder
+    passwordHash?: SortOrder
     firstName?: SortOrder
     lastName?: SortOrder
+    phone?: SortOrder
     role?: SortOrder
     isActive?: SortOrder
     lastLoginAt?: SortOrder
@@ -21957,8 +27759,10 @@ export namespace Prisma {
     id?: SortOrder
     tenantId?: SortOrder
     email?: SortOrder
+    passwordHash?: SortOrder
     firstName?: SortOrder
     lastName?: SortOrder
+    phone?: SortOrder
     role?: SortOrder
     isActive?: SortOrder
     lastLoginAt?: SortOrder
@@ -21975,21 +27779,6 @@ export namespace Prisma {
     _count?: NestedIntFilter<$PrismaModel>
     _min?: NestedEnumUserRoleFilter<$PrismaModel>
     _max?: NestedEnumUserRoleFilter<$PrismaModel>
-  }
-
-  export type StringNullableFilter<$PrismaModel = never> = {
-    equals?: string | StringFieldRefInput<$PrismaModel> | null
-    in?: string[] | ListStringFieldRefInput<$PrismaModel> | null
-    notIn?: string[] | ListStringFieldRefInput<$PrismaModel> | null
-    lt?: string | StringFieldRefInput<$PrismaModel>
-    lte?: string | StringFieldRefInput<$PrismaModel>
-    gt?: string | StringFieldRefInput<$PrismaModel>
-    gte?: string | StringFieldRefInput<$PrismaModel>
-    contains?: string | StringFieldRefInput<$PrismaModel>
-    startsWith?: string | StringFieldRefInput<$PrismaModel>
-    endsWith?: string | StringFieldRefInput<$PrismaModel>
-    mode?: QueryMode
-    not?: NestedStringNullableFilter<$PrismaModel> | string | null
   }
 
   export type EnumTenderStatusFilter<$PrismaModel = never> = {
@@ -22015,6 +27804,28 @@ export namespace Prisma {
     gt?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
     gte?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
     not?: NestedDecimalNullableFilter<$PrismaModel> | Decimal | DecimalJsLike | number | string | null
+  }
+  export type JsonNullableFilter<$PrismaModel = never> = 
+    | PatchUndefined<
+        Either<Required<JsonNullableFilterBase<$PrismaModel>>, Exclude<keyof Required<JsonNullableFilterBase<$PrismaModel>>, 'path'>>,
+        Required<JsonNullableFilterBase<$PrismaModel>>
+      >
+    | OptionalFlat<Omit<Required<JsonNullableFilterBase<$PrismaModel>>, 'path'>>
+
+  export type JsonNullableFilterBase<$PrismaModel = never> = {
+    equals?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
+    path?: string[]
+    string_contains?: string | StringFieldRefInput<$PrismaModel>
+    string_starts_with?: string | StringFieldRefInput<$PrismaModel>
+    string_ends_with?: string | StringFieldRefInput<$PrismaModel>
+    array_contains?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    array_starts_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    array_ends_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    lt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    lte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    gt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    gte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    not?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
   }
 
   export type UserRelationFilter = {
@@ -22061,6 +27872,13 @@ export namespace Prisma {
     createdAt?: SortOrder
     updatedAt?: SortOrder
     deletedAt?: SortOrder
+    scrapedAt?: SortOrder
+    sourcePortal?: SortOrder
+    originalTitle?: SortOrder
+    originalStatus?: SortOrder
+    originalValue?: SortOrder
+    exchangeRates?: SortOrder
+    sourceUrl?: SortOrder
   }
 
   export type TenderAvgOrderByAggregateInput = {
@@ -22084,6 +27902,12 @@ export namespace Prisma {
     createdAt?: SortOrder
     updatedAt?: SortOrder
     deletedAt?: SortOrder
+    scrapedAt?: SortOrder
+    sourcePortal?: SortOrder
+    originalTitle?: SortOrder
+    originalStatus?: SortOrder
+    originalValue?: SortOrder
+    sourceUrl?: SortOrder
   }
 
   export type TenderMinOrderByAggregateInput = {
@@ -22103,28 +27927,16 @@ export namespace Prisma {
     createdAt?: SortOrder
     updatedAt?: SortOrder
     deletedAt?: SortOrder
+    scrapedAt?: SortOrder
+    sourcePortal?: SortOrder
+    originalTitle?: SortOrder
+    originalStatus?: SortOrder
+    originalValue?: SortOrder
+    sourceUrl?: SortOrder
   }
 
   export type TenderSumOrderByAggregateInput = {
     estimatedValue?: SortOrder
-  }
-
-  export type StringNullableWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: string | StringFieldRefInput<$PrismaModel> | null
-    in?: string[] | ListStringFieldRefInput<$PrismaModel> | null
-    notIn?: string[] | ListStringFieldRefInput<$PrismaModel> | null
-    lt?: string | StringFieldRefInput<$PrismaModel>
-    lte?: string | StringFieldRefInput<$PrismaModel>
-    gt?: string | StringFieldRefInput<$PrismaModel>
-    gte?: string | StringFieldRefInput<$PrismaModel>
-    contains?: string | StringFieldRefInput<$PrismaModel>
-    startsWith?: string | StringFieldRefInput<$PrismaModel>
-    endsWith?: string | StringFieldRefInput<$PrismaModel>
-    mode?: QueryMode
-    not?: NestedStringNullableWithAggregatesFilter<$PrismaModel> | string | null
-    _count?: NestedIntNullableFilter<$PrismaModel>
-    _min?: NestedStringNullableFilter<$PrismaModel>
-    _max?: NestedStringNullableFilter<$PrismaModel>
   }
 
   export type EnumTenderStatusWithAggregatesFilter<$PrismaModel = never> = {
@@ -22161,6 +27973,31 @@ export namespace Prisma {
     _sum?: NestedDecimalNullableFilter<$PrismaModel>
     _min?: NestedDecimalNullableFilter<$PrismaModel>
     _max?: NestedDecimalNullableFilter<$PrismaModel>
+  }
+  export type JsonNullableWithAggregatesFilter<$PrismaModel = never> = 
+    | PatchUndefined<
+        Either<Required<JsonNullableWithAggregatesFilterBase<$PrismaModel>>, Exclude<keyof Required<JsonNullableWithAggregatesFilterBase<$PrismaModel>>, 'path'>>,
+        Required<JsonNullableWithAggregatesFilterBase<$PrismaModel>>
+      >
+    | OptionalFlat<Omit<Required<JsonNullableWithAggregatesFilterBase<$PrismaModel>>, 'path'>>
+
+  export type JsonNullableWithAggregatesFilterBase<$PrismaModel = never> = {
+    equals?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
+    path?: string[]
+    string_contains?: string | StringFieldRefInput<$PrismaModel>
+    string_starts_with?: string | StringFieldRefInput<$PrismaModel>
+    string_ends_with?: string | StringFieldRefInput<$PrismaModel>
+    array_contains?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    array_starts_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    array_ends_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    lt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    lte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    gt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    gte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    not?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedJsonNullableFilter<$PrismaModel>
+    _max?: NestedJsonNullableFilter<$PrismaModel>
   }
 
   export type EnumTenderRoleFilter<$PrismaModel = never> = {
@@ -22233,6 +28070,11 @@ export namespace Prisma {
     in?: $Enums.DocumentType[] | ListEnumDocumentTypeFieldRefInput<$PrismaModel>
     notIn?: $Enums.DocumentType[] | ListEnumDocumentTypeFieldRefInput<$PrismaModel>
     not?: NestedEnumDocumentTypeFilter<$PrismaModel> | $Enums.DocumentType
+  }
+
+  export type TenderNullableRelationFilter = {
+    is?: TenderWhereInput | null
+    isNot?: TenderWhereInput | null
   }
 
   export type DocumentCountOrderByAggregateInput = {
@@ -22384,28 +28226,6 @@ export namespace Prisma {
     notIn?: $Enums.SubmissionMethod[] | ListEnumSubmissionMethodFieldRefInput<$PrismaModel>
     not?: NestedEnumSubmissionMethodFilter<$PrismaModel> | $Enums.SubmissionMethod
   }
-  export type JsonNullableFilter<$PrismaModel = never> = 
-    | PatchUndefined<
-        Either<Required<JsonNullableFilterBase<$PrismaModel>>, Exclude<keyof Required<JsonNullableFilterBase<$PrismaModel>>, 'path'>>,
-        Required<JsonNullableFilterBase<$PrismaModel>>
-      >
-    | OptionalFlat<Omit<Required<JsonNullableFilterBase<$PrismaModel>>, 'path'>>
-
-  export type JsonNullableFilterBase<$PrismaModel = never> = {
-    equals?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
-    path?: string[]
-    string_contains?: string | StringFieldRefInput<$PrismaModel>
-    string_starts_with?: string | StringFieldRefInput<$PrismaModel>
-    string_ends_with?: string | StringFieldRefInput<$PrismaModel>
-    array_contains?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
-    array_starts_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
-    array_ends_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
-    lt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
-    lte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
-    gt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
-    gte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
-    not?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
-  }
 
   export type SubmissionCountOrderByAggregateInput = {
     id?: SortOrder
@@ -22479,31 +28299,6 @@ export namespace Prisma {
     _count?: NestedIntFilter<$PrismaModel>
     _min?: NestedEnumSubmissionMethodFilter<$PrismaModel>
     _max?: NestedEnumSubmissionMethodFilter<$PrismaModel>
-  }
-  export type JsonNullableWithAggregatesFilter<$PrismaModel = never> = 
-    | PatchUndefined<
-        Either<Required<JsonNullableWithAggregatesFilterBase<$PrismaModel>>, Exclude<keyof Required<JsonNullableWithAggregatesFilterBase<$PrismaModel>>, 'path'>>,
-        Required<JsonNullableWithAggregatesFilterBase<$PrismaModel>>
-      >
-    | OptionalFlat<Omit<Required<JsonNullableWithAggregatesFilterBase<$PrismaModel>>, 'path'>>
-
-  export type JsonNullableWithAggregatesFilterBase<$PrismaModel = never> = {
-    equals?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
-    path?: string[]
-    string_contains?: string | StringFieldRefInput<$PrismaModel>
-    string_starts_with?: string | StringFieldRefInput<$PrismaModel>
-    string_ends_with?: string | StringFieldRefInput<$PrismaModel>
-    array_contains?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
-    array_starts_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
-    array_ends_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
-    lt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
-    lte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
-    gt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
-    gte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
-    not?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
-    _count?: NestedIntNullableFilter<$PrismaModel>
-    _min?: NestedJsonNullableFilter<$PrismaModel>
-    _max?: NestedJsonNullableFilter<$PrismaModel>
   }
 
   export type TenderValidationCountOrderByAggregateInput = {
@@ -22637,11 +28432,6 @@ export namespace Prisma {
     not?: NestedEnumNotificationTypeFilter<$PrismaModel> | $Enums.NotificationType
   }
 
-  export type TenderNullableRelationFilter = {
-    is?: TenderWhereInput | null
-    isNot?: TenderWhereInput | null
-  }
-
   export type NotificationCountOrderByAggregateInput = {
     id?: SortOrder
     userId?: SortOrder
@@ -22709,6 +28499,8 @@ export namespace Prisma {
     ipAddress?: SortOrder
     userAgent?: SortOrder
     timestamp?: SortOrder
+    archived?: SortOrder
+    archivedAt?: SortOrder
   }
 
   export type AuditLogMaxOrderByAggregateInput = {
@@ -22721,6 +28513,8 @@ export namespace Prisma {
     ipAddress?: SortOrder
     userAgent?: SortOrder
     timestamp?: SortOrder
+    archived?: SortOrder
+    archivedAt?: SortOrder
   }
 
   export type AuditLogMinOrderByAggregateInput = {
@@ -22733,6 +28527,8 @@ export namespace Prisma {
     ipAddress?: SortOrder
     userAgent?: SortOrder
     timestamp?: SortOrder
+    archived?: SortOrder
+    archivedAt?: SortOrder
   }
 
   export type EnumAuditActionWithAggregatesFilter<$PrismaModel = never> = {
@@ -22870,6 +28666,223 @@ export namespace Prisma {
     updatedAt?: SortOrder
   }
 
+  export type EnumScrapingStatusFilter<$PrismaModel = never> = {
+    equals?: $Enums.ScrapingStatus | EnumScrapingStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.ScrapingStatus[] | ListEnumScrapingStatusFieldRefInput<$PrismaModel>
+    notIn?: $Enums.ScrapingStatus[] | ListEnumScrapingStatusFieldRefInput<$PrismaModel>
+    not?: NestedEnumScrapingStatusFilter<$PrismaModel> | $Enums.ScrapingStatus
+  }
+
+  export type IntNullableFilter<$PrismaModel = never> = {
+    equals?: number | IntFieldRefInput<$PrismaModel> | null
+    in?: number[] | ListIntFieldRefInput<$PrismaModel> | null
+    notIn?: number[] | ListIntFieldRefInput<$PrismaModel> | null
+    lt?: number | IntFieldRefInput<$PrismaModel>
+    lte?: number | IntFieldRefInput<$PrismaModel>
+    gt?: number | IntFieldRefInput<$PrismaModel>
+    gte?: number | IntFieldRefInput<$PrismaModel>
+    not?: NestedIntNullableFilter<$PrismaModel> | number | null
+  }
+
+  export type ScrapingLogCountOrderByAggregateInput = {
+    id?: SortOrder
+    tenantId?: SortOrder
+    sourcePortal?: SortOrder
+    status?: SortOrder
+    startedAt?: SortOrder
+    completedAt?: SortOrder
+    pagesProcessed?: SortOrder
+    totalPages?: SortOrder
+    tendersFound?: SortOrder
+    tendersImported?: SortOrder
+    tendersUpdated?: SortOrder
+    tendersSkipped?: SortOrder
+    errorMessage?: SortOrder
+    errorDetails?: SortOrder
+    metadata?: SortOrder
+    triggeredBy?: SortOrder
+  }
+
+  export type ScrapingLogAvgOrderByAggregateInput = {
+    pagesProcessed?: SortOrder
+    totalPages?: SortOrder
+    tendersFound?: SortOrder
+    tendersImported?: SortOrder
+    tendersUpdated?: SortOrder
+    tendersSkipped?: SortOrder
+  }
+
+  export type ScrapingLogMaxOrderByAggregateInput = {
+    id?: SortOrder
+    tenantId?: SortOrder
+    sourcePortal?: SortOrder
+    status?: SortOrder
+    startedAt?: SortOrder
+    completedAt?: SortOrder
+    pagesProcessed?: SortOrder
+    totalPages?: SortOrder
+    tendersFound?: SortOrder
+    tendersImported?: SortOrder
+    tendersUpdated?: SortOrder
+    tendersSkipped?: SortOrder
+    errorMessage?: SortOrder
+    triggeredBy?: SortOrder
+  }
+
+  export type ScrapingLogMinOrderByAggregateInput = {
+    id?: SortOrder
+    tenantId?: SortOrder
+    sourcePortal?: SortOrder
+    status?: SortOrder
+    startedAt?: SortOrder
+    completedAt?: SortOrder
+    pagesProcessed?: SortOrder
+    totalPages?: SortOrder
+    tendersFound?: SortOrder
+    tendersImported?: SortOrder
+    tendersUpdated?: SortOrder
+    tendersSkipped?: SortOrder
+    errorMessage?: SortOrder
+    triggeredBy?: SortOrder
+  }
+
+  export type ScrapingLogSumOrderByAggregateInput = {
+    pagesProcessed?: SortOrder
+    totalPages?: SortOrder
+    tendersFound?: SortOrder
+    tendersImported?: SortOrder
+    tendersUpdated?: SortOrder
+    tendersSkipped?: SortOrder
+  }
+
+  export type EnumScrapingStatusWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.ScrapingStatus | EnumScrapingStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.ScrapingStatus[] | ListEnumScrapingStatusFieldRefInput<$PrismaModel>
+    notIn?: $Enums.ScrapingStatus[] | ListEnumScrapingStatusFieldRefInput<$PrismaModel>
+    not?: NestedEnumScrapingStatusWithAggregatesFilter<$PrismaModel> | $Enums.ScrapingStatus
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumScrapingStatusFilter<$PrismaModel>
+    _max?: NestedEnumScrapingStatusFilter<$PrismaModel>
+  }
+
+  export type IntNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: number | IntFieldRefInput<$PrismaModel> | null
+    in?: number[] | ListIntFieldRefInput<$PrismaModel> | null
+    notIn?: number[] | ListIntFieldRefInput<$PrismaModel> | null
+    lt?: number | IntFieldRefInput<$PrismaModel>
+    lte?: number | IntFieldRefInput<$PrismaModel>
+    gt?: number | IntFieldRefInput<$PrismaModel>
+    gte?: number | IntFieldRefInput<$PrismaModel>
+    not?: NestedIntNullableWithAggregatesFilter<$PrismaModel> | number | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _avg?: NestedFloatNullableFilter<$PrismaModel>
+    _sum?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedIntNullableFilter<$PrismaModel>
+    _max?: NestedIntNullableFilter<$PrismaModel>
+  }
+
+  export type SessionCountOrderByAggregateInput = {
+    id?: SortOrder
+    sessionToken?: SortOrder
+    userId?: SortOrder
+    expiresAt?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    data?: SortOrder
+  }
+
+  export type SessionMaxOrderByAggregateInput = {
+    id?: SortOrder
+    sessionToken?: SortOrder
+    userId?: SortOrder
+    expiresAt?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type SessionMinOrderByAggregateInput = {
+    id?: SortOrder
+    sessionToken?: SortOrder
+    userId?: SortOrder
+    expiresAt?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type StringNullableListFilter<$PrismaModel = never> = {
+    equals?: string[] | ListStringFieldRefInput<$PrismaModel> | null
+    has?: string | StringFieldRefInput<$PrismaModel> | null
+    hasEvery?: string[] | ListStringFieldRefInput<$PrismaModel>
+    hasSome?: string[] | ListStringFieldRefInput<$PrismaModel>
+    isEmpty?: boolean
+  }
+
+  export type NotificationPreferenceUserIdTypeCompoundUniqueInput = {
+    userId: string
+    type: string
+  }
+
+  export type NotificationPreferenceCountOrderByAggregateInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    type?: SortOrder
+    enabled?: SortOrder
+    channels?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type NotificationPreferenceMaxOrderByAggregateInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    type?: SortOrder
+    enabled?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type NotificationPreferenceMinOrderByAggregateInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    type?: SortOrder
+    enabled?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type NotificationLogCountOrderByAggregateInput = {
+    id?: SortOrder
+    type?: SortOrder
+    tenantId?: SortOrder
+    userId?: SortOrder
+    priority?: SortOrder
+    channels?: SortOrder
+    recipients?: SortOrder
+    metadata?: SortOrder
+    sentAt?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type NotificationLogMaxOrderByAggregateInput = {
+    id?: SortOrder
+    type?: SortOrder
+    tenantId?: SortOrder
+    userId?: SortOrder
+    priority?: SortOrder
+    sentAt?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type NotificationLogMinOrderByAggregateInput = {
+    id?: SortOrder
+    type?: SortOrder
+    tenantId?: SortOrder
+    userId?: SortOrder
+    priority?: SortOrder
+    sentAt?: SortOrder
+    createdAt?: SortOrder
+  }
+
   export type UserCreateNestedManyWithoutTenantInput = {
     create?: XOR<UserCreateWithoutTenantInput, UserUncheckedCreateWithoutTenantInput> | UserCreateWithoutTenantInput[] | UserUncheckedCreateWithoutTenantInput[]
     connectOrCreate?: UserCreateOrConnectWithoutTenantInput | UserCreateOrConnectWithoutTenantInput[]
@@ -22896,6 +28909,20 @@ export namespace Prisma {
     connectOrCreate?: ApiKeyCreateOrConnectWithoutTenantInput | ApiKeyCreateOrConnectWithoutTenantInput[]
     createMany?: ApiKeyCreateManyTenantInputEnvelope
     connect?: ApiKeyWhereUniqueInput | ApiKeyWhereUniqueInput[]
+  }
+
+  export type ScrapingLogCreateNestedManyWithoutTenantInput = {
+    create?: XOR<ScrapingLogCreateWithoutTenantInput, ScrapingLogUncheckedCreateWithoutTenantInput> | ScrapingLogCreateWithoutTenantInput[] | ScrapingLogUncheckedCreateWithoutTenantInput[]
+    connectOrCreate?: ScrapingLogCreateOrConnectWithoutTenantInput | ScrapingLogCreateOrConnectWithoutTenantInput[]
+    createMany?: ScrapingLogCreateManyTenantInputEnvelope
+    connect?: ScrapingLogWhereUniqueInput | ScrapingLogWhereUniqueInput[]
+  }
+
+  export type NotificationLogCreateNestedManyWithoutTenantInput = {
+    create?: XOR<NotificationLogCreateWithoutTenantInput, NotificationLogUncheckedCreateWithoutTenantInput> | NotificationLogCreateWithoutTenantInput[] | NotificationLogUncheckedCreateWithoutTenantInput[]
+    connectOrCreate?: NotificationLogCreateOrConnectWithoutTenantInput | NotificationLogCreateOrConnectWithoutTenantInput[]
+    createMany?: NotificationLogCreateManyTenantInputEnvelope
+    connect?: NotificationLogWhereUniqueInput | NotificationLogWhereUniqueInput[]
   }
 
   export type UserUncheckedCreateNestedManyWithoutTenantInput = {
@@ -22926,8 +28953,26 @@ export namespace Prisma {
     connect?: ApiKeyWhereUniqueInput | ApiKeyWhereUniqueInput[]
   }
 
+  export type ScrapingLogUncheckedCreateNestedManyWithoutTenantInput = {
+    create?: XOR<ScrapingLogCreateWithoutTenantInput, ScrapingLogUncheckedCreateWithoutTenantInput> | ScrapingLogCreateWithoutTenantInput[] | ScrapingLogUncheckedCreateWithoutTenantInput[]
+    connectOrCreate?: ScrapingLogCreateOrConnectWithoutTenantInput | ScrapingLogCreateOrConnectWithoutTenantInput[]
+    createMany?: ScrapingLogCreateManyTenantInputEnvelope
+    connect?: ScrapingLogWhereUniqueInput | ScrapingLogWhereUniqueInput[]
+  }
+
+  export type NotificationLogUncheckedCreateNestedManyWithoutTenantInput = {
+    create?: XOR<NotificationLogCreateWithoutTenantInput, NotificationLogUncheckedCreateWithoutTenantInput> | NotificationLogCreateWithoutTenantInput[] | NotificationLogUncheckedCreateWithoutTenantInput[]
+    connectOrCreate?: NotificationLogCreateOrConnectWithoutTenantInput | NotificationLogCreateOrConnectWithoutTenantInput[]
+    createMany?: NotificationLogCreateManyTenantInputEnvelope
+    connect?: NotificationLogWhereUniqueInput | NotificationLogWhereUniqueInput[]
+  }
+
   export type StringFieldUpdateOperationsInput = {
     set?: string
+  }
+
+  export type NullableStringFieldUpdateOperationsInput = {
+    set?: string | null
   }
 
   export type BoolFieldUpdateOperationsInput = {
@@ -22998,6 +29043,34 @@ export namespace Prisma {
     deleteMany?: ApiKeyScalarWhereInput | ApiKeyScalarWhereInput[]
   }
 
+  export type ScrapingLogUpdateManyWithoutTenantNestedInput = {
+    create?: XOR<ScrapingLogCreateWithoutTenantInput, ScrapingLogUncheckedCreateWithoutTenantInput> | ScrapingLogCreateWithoutTenantInput[] | ScrapingLogUncheckedCreateWithoutTenantInput[]
+    connectOrCreate?: ScrapingLogCreateOrConnectWithoutTenantInput | ScrapingLogCreateOrConnectWithoutTenantInput[]
+    upsert?: ScrapingLogUpsertWithWhereUniqueWithoutTenantInput | ScrapingLogUpsertWithWhereUniqueWithoutTenantInput[]
+    createMany?: ScrapingLogCreateManyTenantInputEnvelope
+    set?: ScrapingLogWhereUniqueInput | ScrapingLogWhereUniqueInput[]
+    disconnect?: ScrapingLogWhereUniqueInput | ScrapingLogWhereUniqueInput[]
+    delete?: ScrapingLogWhereUniqueInput | ScrapingLogWhereUniqueInput[]
+    connect?: ScrapingLogWhereUniqueInput | ScrapingLogWhereUniqueInput[]
+    update?: ScrapingLogUpdateWithWhereUniqueWithoutTenantInput | ScrapingLogUpdateWithWhereUniqueWithoutTenantInput[]
+    updateMany?: ScrapingLogUpdateManyWithWhereWithoutTenantInput | ScrapingLogUpdateManyWithWhereWithoutTenantInput[]
+    deleteMany?: ScrapingLogScalarWhereInput | ScrapingLogScalarWhereInput[]
+  }
+
+  export type NotificationLogUpdateManyWithoutTenantNestedInput = {
+    create?: XOR<NotificationLogCreateWithoutTenantInput, NotificationLogUncheckedCreateWithoutTenantInput> | NotificationLogCreateWithoutTenantInput[] | NotificationLogUncheckedCreateWithoutTenantInput[]
+    connectOrCreate?: NotificationLogCreateOrConnectWithoutTenantInput | NotificationLogCreateOrConnectWithoutTenantInput[]
+    upsert?: NotificationLogUpsertWithWhereUniqueWithoutTenantInput | NotificationLogUpsertWithWhereUniqueWithoutTenantInput[]
+    createMany?: NotificationLogCreateManyTenantInputEnvelope
+    set?: NotificationLogWhereUniqueInput | NotificationLogWhereUniqueInput[]
+    disconnect?: NotificationLogWhereUniqueInput | NotificationLogWhereUniqueInput[]
+    delete?: NotificationLogWhereUniqueInput | NotificationLogWhereUniqueInput[]
+    connect?: NotificationLogWhereUniqueInput | NotificationLogWhereUniqueInput[]
+    update?: NotificationLogUpdateWithWhereUniqueWithoutTenantInput | NotificationLogUpdateWithWhereUniqueWithoutTenantInput[]
+    updateMany?: NotificationLogUpdateManyWithWhereWithoutTenantInput | NotificationLogUpdateManyWithWhereWithoutTenantInput[]
+    deleteMany?: NotificationLogScalarWhereInput | NotificationLogScalarWhereInput[]
+  }
+
   export type UserUncheckedUpdateManyWithoutTenantNestedInput = {
     create?: XOR<UserCreateWithoutTenantInput, UserUncheckedCreateWithoutTenantInput> | UserCreateWithoutTenantInput[] | UserUncheckedCreateWithoutTenantInput[]
     connectOrCreate?: UserCreateOrConnectWithoutTenantInput | UserCreateOrConnectWithoutTenantInput[]
@@ -23052,6 +29125,34 @@ export namespace Prisma {
     update?: ApiKeyUpdateWithWhereUniqueWithoutTenantInput | ApiKeyUpdateWithWhereUniqueWithoutTenantInput[]
     updateMany?: ApiKeyUpdateManyWithWhereWithoutTenantInput | ApiKeyUpdateManyWithWhereWithoutTenantInput[]
     deleteMany?: ApiKeyScalarWhereInput | ApiKeyScalarWhereInput[]
+  }
+
+  export type ScrapingLogUncheckedUpdateManyWithoutTenantNestedInput = {
+    create?: XOR<ScrapingLogCreateWithoutTenantInput, ScrapingLogUncheckedCreateWithoutTenantInput> | ScrapingLogCreateWithoutTenantInput[] | ScrapingLogUncheckedCreateWithoutTenantInput[]
+    connectOrCreate?: ScrapingLogCreateOrConnectWithoutTenantInput | ScrapingLogCreateOrConnectWithoutTenantInput[]
+    upsert?: ScrapingLogUpsertWithWhereUniqueWithoutTenantInput | ScrapingLogUpsertWithWhereUniqueWithoutTenantInput[]
+    createMany?: ScrapingLogCreateManyTenantInputEnvelope
+    set?: ScrapingLogWhereUniqueInput | ScrapingLogWhereUniqueInput[]
+    disconnect?: ScrapingLogWhereUniqueInput | ScrapingLogWhereUniqueInput[]
+    delete?: ScrapingLogWhereUniqueInput | ScrapingLogWhereUniqueInput[]
+    connect?: ScrapingLogWhereUniqueInput | ScrapingLogWhereUniqueInput[]
+    update?: ScrapingLogUpdateWithWhereUniqueWithoutTenantInput | ScrapingLogUpdateWithWhereUniqueWithoutTenantInput[]
+    updateMany?: ScrapingLogUpdateManyWithWhereWithoutTenantInput | ScrapingLogUpdateManyWithWhereWithoutTenantInput[]
+    deleteMany?: ScrapingLogScalarWhereInput | ScrapingLogScalarWhereInput[]
+  }
+
+  export type NotificationLogUncheckedUpdateManyWithoutTenantNestedInput = {
+    create?: XOR<NotificationLogCreateWithoutTenantInput, NotificationLogUncheckedCreateWithoutTenantInput> | NotificationLogCreateWithoutTenantInput[] | NotificationLogUncheckedCreateWithoutTenantInput[]
+    connectOrCreate?: NotificationLogCreateOrConnectWithoutTenantInput | NotificationLogCreateOrConnectWithoutTenantInput[]
+    upsert?: NotificationLogUpsertWithWhereUniqueWithoutTenantInput | NotificationLogUpsertWithWhereUniqueWithoutTenantInput[]
+    createMany?: NotificationLogCreateManyTenantInputEnvelope
+    set?: NotificationLogWhereUniqueInput | NotificationLogWhereUniqueInput[]
+    disconnect?: NotificationLogWhereUniqueInput | NotificationLogWhereUniqueInput[]
+    delete?: NotificationLogWhereUniqueInput | NotificationLogWhereUniqueInput[]
+    connect?: NotificationLogWhereUniqueInput | NotificationLogWhereUniqueInput[]
+    update?: NotificationLogUpdateWithWhereUniqueWithoutTenantInput | NotificationLogUpdateWithWhereUniqueWithoutTenantInput[]
+    updateMany?: NotificationLogUpdateManyWithWhereWithoutTenantInput | NotificationLogUpdateManyWithWhereWithoutTenantInput[]
+    deleteMany?: NotificationLogScalarWhereInput | NotificationLogScalarWhereInput[]
   }
 
   export type TenantCreateNestedOneWithoutUsersInput = {
@@ -23116,6 +29217,34 @@ export namespace Prisma {
     connect?: AuditLogWhereUniqueInput | AuditLogWhereUniqueInput[]
   }
 
+  export type ScrapingLogCreateNestedManyWithoutTriggeredByUserInput = {
+    create?: XOR<ScrapingLogCreateWithoutTriggeredByUserInput, ScrapingLogUncheckedCreateWithoutTriggeredByUserInput> | ScrapingLogCreateWithoutTriggeredByUserInput[] | ScrapingLogUncheckedCreateWithoutTriggeredByUserInput[]
+    connectOrCreate?: ScrapingLogCreateOrConnectWithoutTriggeredByUserInput | ScrapingLogCreateOrConnectWithoutTriggeredByUserInput[]
+    createMany?: ScrapingLogCreateManyTriggeredByUserInputEnvelope
+    connect?: ScrapingLogWhereUniqueInput | ScrapingLogWhereUniqueInput[]
+  }
+
+  export type SessionCreateNestedManyWithoutUserInput = {
+    create?: XOR<SessionCreateWithoutUserInput, SessionUncheckedCreateWithoutUserInput> | SessionCreateWithoutUserInput[] | SessionUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: SessionCreateOrConnectWithoutUserInput | SessionCreateOrConnectWithoutUserInput[]
+    createMany?: SessionCreateManyUserInputEnvelope
+    connect?: SessionWhereUniqueInput | SessionWhereUniqueInput[]
+  }
+
+  export type NotificationPreferenceCreateNestedManyWithoutUserInput = {
+    create?: XOR<NotificationPreferenceCreateWithoutUserInput, NotificationPreferenceUncheckedCreateWithoutUserInput> | NotificationPreferenceCreateWithoutUserInput[] | NotificationPreferenceUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: NotificationPreferenceCreateOrConnectWithoutUserInput | NotificationPreferenceCreateOrConnectWithoutUserInput[]
+    createMany?: NotificationPreferenceCreateManyUserInputEnvelope
+    connect?: NotificationPreferenceWhereUniqueInput | NotificationPreferenceWhereUniqueInput[]
+  }
+
+  export type NotificationLogCreateNestedManyWithoutUserInput = {
+    create?: XOR<NotificationLogCreateWithoutUserInput, NotificationLogUncheckedCreateWithoutUserInput> | NotificationLogCreateWithoutUserInput[] | NotificationLogUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: NotificationLogCreateOrConnectWithoutUserInput | NotificationLogCreateOrConnectWithoutUserInput[]
+    createMany?: NotificationLogCreateManyUserInputEnvelope
+    connect?: NotificationLogWhereUniqueInput | NotificationLogWhereUniqueInput[]
+  }
+
   export type TenderAssignmentUncheckedCreateNestedManyWithoutUserInput = {
     create?: XOR<TenderAssignmentCreateWithoutUserInput, TenderAssignmentUncheckedCreateWithoutUserInput> | TenderAssignmentCreateWithoutUserInput[] | TenderAssignmentUncheckedCreateWithoutUserInput[]
     connectOrCreate?: TenderAssignmentCreateOrConnectWithoutUserInput | TenderAssignmentCreateOrConnectWithoutUserInput[]
@@ -23170,6 +29299,34 @@ export namespace Prisma {
     connectOrCreate?: AuditLogCreateOrConnectWithoutUserInput | AuditLogCreateOrConnectWithoutUserInput[]
     createMany?: AuditLogCreateManyUserInputEnvelope
     connect?: AuditLogWhereUniqueInput | AuditLogWhereUniqueInput[]
+  }
+
+  export type ScrapingLogUncheckedCreateNestedManyWithoutTriggeredByUserInput = {
+    create?: XOR<ScrapingLogCreateWithoutTriggeredByUserInput, ScrapingLogUncheckedCreateWithoutTriggeredByUserInput> | ScrapingLogCreateWithoutTriggeredByUserInput[] | ScrapingLogUncheckedCreateWithoutTriggeredByUserInput[]
+    connectOrCreate?: ScrapingLogCreateOrConnectWithoutTriggeredByUserInput | ScrapingLogCreateOrConnectWithoutTriggeredByUserInput[]
+    createMany?: ScrapingLogCreateManyTriggeredByUserInputEnvelope
+    connect?: ScrapingLogWhereUniqueInput | ScrapingLogWhereUniqueInput[]
+  }
+
+  export type SessionUncheckedCreateNestedManyWithoutUserInput = {
+    create?: XOR<SessionCreateWithoutUserInput, SessionUncheckedCreateWithoutUserInput> | SessionCreateWithoutUserInput[] | SessionUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: SessionCreateOrConnectWithoutUserInput | SessionCreateOrConnectWithoutUserInput[]
+    createMany?: SessionCreateManyUserInputEnvelope
+    connect?: SessionWhereUniqueInput | SessionWhereUniqueInput[]
+  }
+
+  export type NotificationPreferenceUncheckedCreateNestedManyWithoutUserInput = {
+    create?: XOR<NotificationPreferenceCreateWithoutUserInput, NotificationPreferenceUncheckedCreateWithoutUserInput> | NotificationPreferenceCreateWithoutUserInput[] | NotificationPreferenceUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: NotificationPreferenceCreateOrConnectWithoutUserInput | NotificationPreferenceCreateOrConnectWithoutUserInput[]
+    createMany?: NotificationPreferenceCreateManyUserInputEnvelope
+    connect?: NotificationPreferenceWhereUniqueInput | NotificationPreferenceWhereUniqueInput[]
+  }
+
+  export type NotificationLogUncheckedCreateNestedManyWithoutUserInput = {
+    create?: XOR<NotificationLogCreateWithoutUserInput, NotificationLogUncheckedCreateWithoutUserInput> | NotificationLogCreateWithoutUserInput[] | NotificationLogUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: NotificationLogCreateOrConnectWithoutUserInput | NotificationLogCreateOrConnectWithoutUserInput[]
+    createMany?: NotificationLogCreateManyUserInputEnvelope
+    connect?: NotificationLogWhereUniqueInput | NotificationLogWhereUniqueInput[]
   }
 
   export type EnumUserRoleFieldUpdateOperationsInput = {
@@ -23296,6 +29453,62 @@ export namespace Prisma {
     deleteMany?: AuditLogScalarWhereInput | AuditLogScalarWhereInput[]
   }
 
+  export type ScrapingLogUpdateManyWithoutTriggeredByUserNestedInput = {
+    create?: XOR<ScrapingLogCreateWithoutTriggeredByUserInput, ScrapingLogUncheckedCreateWithoutTriggeredByUserInput> | ScrapingLogCreateWithoutTriggeredByUserInput[] | ScrapingLogUncheckedCreateWithoutTriggeredByUserInput[]
+    connectOrCreate?: ScrapingLogCreateOrConnectWithoutTriggeredByUserInput | ScrapingLogCreateOrConnectWithoutTriggeredByUserInput[]
+    upsert?: ScrapingLogUpsertWithWhereUniqueWithoutTriggeredByUserInput | ScrapingLogUpsertWithWhereUniqueWithoutTriggeredByUserInput[]
+    createMany?: ScrapingLogCreateManyTriggeredByUserInputEnvelope
+    set?: ScrapingLogWhereUniqueInput | ScrapingLogWhereUniqueInput[]
+    disconnect?: ScrapingLogWhereUniqueInput | ScrapingLogWhereUniqueInput[]
+    delete?: ScrapingLogWhereUniqueInput | ScrapingLogWhereUniqueInput[]
+    connect?: ScrapingLogWhereUniqueInput | ScrapingLogWhereUniqueInput[]
+    update?: ScrapingLogUpdateWithWhereUniqueWithoutTriggeredByUserInput | ScrapingLogUpdateWithWhereUniqueWithoutTriggeredByUserInput[]
+    updateMany?: ScrapingLogUpdateManyWithWhereWithoutTriggeredByUserInput | ScrapingLogUpdateManyWithWhereWithoutTriggeredByUserInput[]
+    deleteMany?: ScrapingLogScalarWhereInput | ScrapingLogScalarWhereInput[]
+  }
+
+  export type SessionUpdateManyWithoutUserNestedInput = {
+    create?: XOR<SessionCreateWithoutUserInput, SessionUncheckedCreateWithoutUserInput> | SessionCreateWithoutUserInput[] | SessionUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: SessionCreateOrConnectWithoutUserInput | SessionCreateOrConnectWithoutUserInput[]
+    upsert?: SessionUpsertWithWhereUniqueWithoutUserInput | SessionUpsertWithWhereUniqueWithoutUserInput[]
+    createMany?: SessionCreateManyUserInputEnvelope
+    set?: SessionWhereUniqueInput | SessionWhereUniqueInput[]
+    disconnect?: SessionWhereUniqueInput | SessionWhereUniqueInput[]
+    delete?: SessionWhereUniqueInput | SessionWhereUniqueInput[]
+    connect?: SessionWhereUniqueInput | SessionWhereUniqueInput[]
+    update?: SessionUpdateWithWhereUniqueWithoutUserInput | SessionUpdateWithWhereUniqueWithoutUserInput[]
+    updateMany?: SessionUpdateManyWithWhereWithoutUserInput | SessionUpdateManyWithWhereWithoutUserInput[]
+    deleteMany?: SessionScalarWhereInput | SessionScalarWhereInput[]
+  }
+
+  export type NotificationPreferenceUpdateManyWithoutUserNestedInput = {
+    create?: XOR<NotificationPreferenceCreateWithoutUserInput, NotificationPreferenceUncheckedCreateWithoutUserInput> | NotificationPreferenceCreateWithoutUserInput[] | NotificationPreferenceUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: NotificationPreferenceCreateOrConnectWithoutUserInput | NotificationPreferenceCreateOrConnectWithoutUserInput[]
+    upsert?: NotificationPreferenceUpsertWithWhereUniqueWithoutUserInput | NotificationPreferenceUpsertWithWhereUniqueWithoutUserInput[]
+    createMany?: NotificationPreferenceCreateManyUserInputEnvelope
+    set?: NotificationPreferenceWhereUniqueInput | NotificationPreferenceWhereUniqueInput[]
+    disconnect?: NotificationPreferenceWhereUniqueInput | NotificationPreferenceWhereUniqueInput[]
+    delete?: NotificationPreferenceWhereUniqueInput | NotificationPreferenceWhereUniqueInput[]
+    connect?: NotificationPreferenceWhereUniqueInput | NotificationPreferenceWhereUniqueInput[]
+    update?: NotificationPreferenceUpdateWithWhereUniqueWithoutUserInput | NotificationPreferenceUpdateWithWhereUniqueWithoutUserInput[]
+    updateMany?: NotificationPreferenceUpdateManyWithWhereWithoutUserInput | NotificationPreferenceUpdateManyWithWhereWithoutUserInput[]
+    deleteMany?: NotificationPreferenceScalarWhereInput | NotificationPreferenceScalarWhereInput[]
+  }
+
+  export type NotificationLogUpdateManyWithoutUserNestedInput = {
+    create?: XOR<NotificationLogCreateWithoutUserInput, NotificationLogUncheckedCreateWithoutUserInput> | NotificationLogCreateWithoutUserInput[] | NotificationLogUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: NotificationLogCreateOrConnectWithoutUserInput | NotificationLogCreateOrConnectWithoutUserInput[]
+    upsert?: NotificationLogUpsertWithWhereUniqueWithoutUserInput | NotificationLogUpsertWithWhereUniqueWithoutUserInput[]
+    createMany?: NotificationLogCreateManyUserInputEnvelope
+    set?: NotificationLogWhereUniqueInput | NotificationLogWhereUniqueInput[]
+    disconnect?: NotificationLogWhereUniqueInput | NotificationLogWhereUniqueInput[]
+    delete?: NotificationLogWhereUniqueInput | NotificationLogWhereUniqueInput[]
+    connect?: NotificationLogWhereUniqueInput | NotificationLogWhereUniqueInput[]
+    update?: NotificationLogUpdateWithWhereUniqueWithoutUserInput | NotificationLogUpdateWithWhereUniqueWithoutUserInput[]
+    updateMany?: NotificationLogUpdateManyWithWhereWithoutUserInput | NotificationLogUpdateManyWithWhereWithoutUserInput[]
+    deleteMany?: NotificationLogScalarWhereInput | NotificationLogScalarWhereInput[]
+  }
+
   export type TenderAssignmentUncheckedUpdateManyWithoutUserNestedInput = {
     create?: XOR<TenderAssignmentCreateWithoutUserInput, TenderAssignmentUncheckedCreateWithoutUserInput> | TenderAssignmentCreateWithoutUserInput[] | TenderAssignmentUncheckedCreateWithoutUserInput[]
     connectOrCreate?: TenderAssignmentCreateOrConnectWithoutUserInput | TenderAssignmentCreateOrConnectWithoutUserInput[]
@@ -23406,6 +29619,62 @@ export namespace Prisma {
     update?: AuditLogUpdateWithWhereUniqueWithoutUserInput | AuditLogUpdateWithWhereUniqueWithoutUserInput[]
     updateMany?: AuditLogUpdateManyWithWhereWithoutUserInput | AuditLogUpdateManyWithWhereWithoutUserInput[]
     deleteMany?: AuditLogScalarWhereInput | AuditLogScalarWhereInput[]
+  }
+
+  export type ScrapingLogUncheckedUpdateManyWithoutTriggeredByUserNestedInput = {
+    create?: XOR<ScrapingLogCreateWithoutTriggeredByUserInput, ScrapingLogUncheckedCreateWithoutTriggeredByUserInput> | ScrapingLogCreateWithoutTriggeredByUserInput[] | ScrapingLogUncheckedCreateWithoutTriggeredByUserInput[]
+    connectOrCreate?: ScrapingLogCreateOrConnectWithoutTriggeredByUserInput | ScrapingLogCreateOrConnectWithoutTriggeredByUserInput[]
+    upsert?: ScrapingLogUpsertWithWhereUniqueWithoutTriggeredByUserInput | ScrapingLogUpsertWithWhereUniqueWithoutTriggeredByUserInput[]
+    createMany?: ScrapingLogCreateManyTriggeredByUserInputEnvelope
+    set?: ScrapingLogWhereUniqueInput | ScrapingLogWhereUniqueInput[]
+    disconnect?: ScrapingLogWhereUniqueInput | ScrapingLogWhereUniqueInput[]
+    delete?: ScrapingLogWhereUniqueInput | ScrapingLogWhereUniqueInput[]
+    connect?: ScrapingLogWhereUniqueInput | ScrapingLogWhereUniqueInput[]
+    update?: ScrapingLogUpdateWithWhereUniqueWithoutTriggeredByUserInput | ScrapingLogUpdateWithWhereUniqueWithoutTriggeredByUserInput[]
+    updateMany?: ScrapingLogUpdateManyWithWhereWithoutTriggeredByUserInput | ScrapingLogUpdateManyWithWhereWithoutTriggeredByUserInput[]
+    deleteMany?: ScrapingLogScalarWhereInput | ScrapingLogScalarWhereInput[]
+  }
+
+  export type SessionUncheckedUpdateManyWithoutUserNestedInput = {
+    create?: XOR<SessionCreateWithoutUserInput, SessionUncheckedCreateWithoutUserInput> | SessionCreateWithoutUserInput[] | SessionUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: SessionCreateOrConnectWithoutUserInput | SessionCreateOrConnectWithoutUserInput[]
+    upsert?: SessionUpsertWithWhereUniqueWithoutUserInput | SessionUpsertWithWhereUniqueWithoutUserInput[]
+    createMany?: SessionCreateManyUserInputEnvelope
+    set?: SessionWhereUniqueInput | SessionWhereUniqueInput[]
+    disconnect?: SessionWhereUniqueInput | SessionWhereUniqueInput[]
+    delete?: SessionWhereUniqueInput | SessionWhereUniqueInput[]
+    connect?: SessionWhereUniqueInput | SessionWhereUniqueInput[]
+    update?: SessionUpdateWithWhereUniqueWithoutUserInput | SessionUpdateWithWhereUniqueWithoutUserInput[]
+    updateMany?: SessionUpdateManyWithWhereWithoutUserInput | SessionUpdateManyWithWhereWithoutUserInput[]
+    deleteMany?: SessionScalarWhereInput | SessionScalarWhereInput[]
+  }
+
+  export type NotificationPreferenceUncheckedUpdateManyWithoutUserNestedInput = {
+    create?: XOR<NotificationPreferenceCreateWithoutUserInput, NotificationPreferenceUncheckedCreateWithoutUserInput> | NotificationPreferenceCreateWithoutUserInput[] | NotificationPreferenceUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: NotificationPreferenceCreateOrConnectWithoutUserInput | NotificationPreferenceCreateOrConnectWithoutUserInput[]
+    upsert?: NotificationPreferenceUpsertWithWhereUniqueWithoutUserInput | NotificationPreferenceUpsertWithWhereUniqueWithoutUserInput[]
+    createMany?: NotificationPreferenceCreateManyUserInputEnvelope
+    set?: NotificationPreferenceWhereUniqueInput | NotificationPreferenceWhereUniqueInput[]
+    disconnect?: NotificationPreferenceWhereUniqueInput | NotificationPreferenceWhereUniqueInput[]
+    delete?: NotificationPreferenceWhereUniqueInput | NotificationPreferenceWhereUniqueInput[]
+    connect?: NotificationPreferenceWhereUniqueInput | NotificationPreferenceWhereUniqueInput[]
+    update?: NotificationPreferenceUpdateWithWhereUniqueWithoutUserInput | NotificationPreferenceUpdateWithWhereUniqueWithoutUserInput[]
+    updateMany?: NotificationPreferenceUpdateManyWithWhereWithoutUserInput | NotificationPreferenceUpdateManyWithWhereWithoutUserInput[]
+    deleteMany?: NotificationPreferenceScalarWhereInput | NotificationPreferenceScalarWhereInput[]
+  }
+
+  export type NotificationLogUncheckedUpdateManyWithoutUserNestedInput = {
+    create?: XOR<NotificationLogCreateWithoutUserInput, NotificationLogUncheckedCreateWithoutUserInput> | NotificationLogCreateWithoutUserInput[] | NotificationLogUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: NotificationLogCreateOrConnectWithoutUserInput | NotificationLogCreateOrConnectWithoutUserInput[]
+    upsert?: NotificationLogUpsertWithWhereUniqueWithoutUserInput | NotificationLogUpsertWithWhereUniqueWithoutUserInput[]
+    createMany?: NotificationLogCreateManyUserInputEnvelope
+    set?: NotificationLogWhereUniqueInput | NotificationLogWhereUniqueInput[]
+    disconnect?: NotificationLogWhereUniqueInput | NotificationLogWhereUniqueInput[]
+    delete?: NotificationLogWhereUniqueInput | NotificationLogWhereUniqueInput[]
+    connect?: NotificationLogWhereUniqueInput | NotificationLogWhereUniqueInput[]
+    update?: NotificationLogUpdateWithWhereUniqueWithoutUserInput | NotificationLogUpdateWithWhereUniqueWithoutUserInput[]
+    updateMany?: NotificationLogUpdateManyWithWhereWithoutUserInput | NotificationLogUpdateManyWithWhereWithoutUserInput[]
+    deleteMany?: NotificationLogScalarWhereInput | NotificationLogScalarWhereInput[]
   }
 
   export type TenantCreateNestedOneWithoutTendersInput = {
@@ -23530,10 +29799,6 @@ export namespace Prisma {
     connectOrCreate?: NotificationCreateOrConnectWithoutTenderInput | NotificationCreateOrConnectWithoutTenderInput[]
     createMany?: NotificationCreateManyTenderInputEnvelope
     connect?: NotificationWhereUniqueInput | NotificationWhereUniqueInput[]
-  }
-
-  export type NullableStringFieldUpdateOperationsInput = {
-    set?: string | null
   }
 
   export type EnumTenderStatusFieldUpdateOperationsInput = {
@@ -23848,10 +30113,12 @@ export namespace Prisma {
     set?: $Enums.DocumentType
   }
 
-  export type TenderUpdateOneRequiredWithoutDocumentsNestedInput = {
+  export type TenderUpdateOneWithoutDocumentsNestedInput = {
     create?: XOR<TenderCreateWithoutDocumentsInput, TenderUncheckedCreateWithoutDocumentsInput>
     connectOrCreate?: TenderCreateOrConnectWithoutDocumentsInput
     upsert?: TenderUpsertWithoutDocumentsInput
+    disconnect?: TenderWhereInput | boolean
+    delete?: TenderWhereInput | boolean
     connect?: TenderWhereUniqueInput
     update?: XOR<XOR<TenderUpdateToOneWithWhereWithoutDocumentsInput, TenderUpdateWithoutDocumentsInput>, TenderUncheckedUpdateWithoutDocumentsInput>
   }
@@ -24070,6 +30337,131 @@ export namespace Prisma {
     update?: XOR<XOR<TenantUpdateToOneWithWhereWithoutApiKeysInput, TenantUpdateWithoutApiKeysInput>, TenantUncheckedUpdateWithoutApiKeysInput>
   }
 
+  export type TenantCreateNestedOneWithoutScrapingLogsInput = {
+    create?: XOR<TenantCreateWithoutScrapingLogsInput, TenantUncheckedCreateWithoutScrapingLogsInput>
+    connectOrCreate?: TenantCreateOrConnectWithoutScrapingLogsInput
+    connect?: TenantWhereUniqueInput
+  }
+
+  export type UserCreateNestedOneWithoutTriggeredScrapingsInput = {
+    create?: XOR<UserCreateWithoutTriggeredScrapingsInput, UserUncheckedCreateWithoutTriggeredScrapingsInput>
+    connectOrCreate?: UserCreateOrConnectWithoutTriggeredScrapingsInput
+    connect?: UserWhereUniqueInput
+  }
+
+  export type EnumScrapingStatusFieldUpdateOperationsInput = {
+    set?: $Enums.ScrapingStatus
+  }
+
+  export type NullableIntFieldUpdateOperationsInput = {
+    set?: number | null
+    increment?: number
+    decrement?: number
+    multiply?: number
+    divide?: number
+  }
+
+  export type TenantUpdateOneRequiredWithoutScrapingLogsNestedInput = {
+    create?: XOR<TenantCreateWithoutScrapingLogsInput, TenantUncheckedCreateWithoutScrapingLogsInput>
+    connectOrCreate?: TenantCreateOrConnectWithoutScrapingLogsInput
+    upsert?: TenantUpsertWithoutScrapingLogsInput
+    connect?: TenantWhereUniqueInput
+    update?: XOR<XOR<TenantUpdateToOneWithWhereWithoutScrapingLogsInput, TenantUpdateWithoutScrapingLogsInput>, TenantUncheckedUpdateWithoutScrapingLogsInput>
+  }
+
+  export type UserUpdateOneRequiredWithoutTriggeredScrapingsNestedInput = {
+    create?: XOR<UserCreateWithoutTriggeredScrapingsInput, UserUncheckedCreateWithoutTriggeredScrapingsInput>
+    connectOrCreate?: UserCreateOrConnectWithoutTriggeredScrapingsInput
+    upsert?: UserUpsertWithoutTriggeredScrapingsInput
+    connect?: UserWhereUniqueInput
+    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutTriggeredScrapingsInput, UserUpdateWithoutTriggeredScrapingsInput>, UserUncheckedUpdateWithoutTriggeredScrapingsInput>
+  }
+
+  export type UserCreateNestedOneWithoutSessionsInput = {
+    create?: XOR<UserCreateWithoutSessionsInput, UserUncheckedCreateWithoutSessionsInput>
+    connectOrCreate?: UserCreateOrConnectWithoutSessionsInput
+    connect?: UserWhereUniqueInput
+  }
+
+  export type UserUpdateOneRequiredWithoutSessionsNestedInput = {
+    create?: XOR<UserCreateWithoutSessionsInput, UserUncheckedCreateWithoutSessionsInput>
+    connectOrCreate?: UserCreateOrConnectWithoutSessionsInput
+    upsert?: UserUpsertWithoutSessionsInput
+    connect?: UserWhereUniqueInput
+    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutSessionsInput, UserUpdateWithoutSessionsInput>, UserUncheckedUpdateWithoutSessionsInput>
+  }
+
+  export type NotificationPreferenceCreatechannelsInput = {
+    set: string[]
+  }
+
+  export type UserCreateNestedOneWithoutNotificationPreferencesInput = {
+    create?: XOR<UserCreateWithoutNotificationPreferencesInput, UserUncheckedCreateWithoutNotificationPreferencesInput>
+    connectOrCreate?: UserCreateOrConnectWithoutNotificationPreferencesInput
+    connect?: UserWhereUniqueInput
+  }
+
+  export type NotificationPreferenceUpdatechannelsInput = {
+    set?: string[]
+    push?: string | string[]
+  }
+
+  export type UserUpdateOneRequiredWithoutNotificationPreferencesNestedInput = {
+    create?: XOR<UserCreateWithoutNotificationPreferencesInput, UserUncheckedCreateWithoutNotificationPreferencesInput>
+    connectOrCreate?: UserCreateOrConnectWithoutNotificationPreferencesInput
+    upsert?: UserUpsertWithoutNotificationPreferencesInput
+    connect?: UserWhereUniqueInput
+    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutNotificationPreferencesInput, UserUpdateWithoutNotificationPreferencesInput>, UserUncheckedUpdateWithoutNotificationPreferencesInput>
+  }
+
+  export type NotificationLogCreatechannelsInput = {
+    set: string[]
+  }
+
+  export type NotificationLogCreaterecipientsInput = {
+    set: string[]
+  }
+
+  export type TenantCreateNestedOneWithoutNotificationLogsInput = {
+    create?: XOR<TenantCreateWithoutNotificationLogsInput, TenantUncheckedCreateWithoutNotificationLogsInput>
+    connectOrCreate?: TenantCreateOrConnectWithoutNotificationLogsInput
+    connect?: TenantWhereUniqueInput
+  }
+
+  export type UserCreateNestedOneWithoutNotificationLogsInput = {
+    create?: XOR<UserCreateWithoutNotificationLogsInput, UserUncheckedCreateWithoutNotificationLogsInput>
+    connectOrCreate?: UserCreateOrConnectWithoutNotificationLogsInput
+    connect?: UserWhereUniqueInput
+  }
+
+  export type NotificationLogUpdatechannelsInput = {
+    set?: string[]
+    push?: string | string[]
+  }
+
+  export type NotificationLogUpdaterecipientsInput = {
+    set?: string[]
+    push?: string | string[]
+  }
+
+  export type TenantUpdateOneRequiredWithoutNotificationLogsNestedInput = {
+    create?: XOR<TenantCreateWithoutNotificationLogsInput, TenantUncheckedCreateWithoutNotificationLogsInput>
+    connectOrCreate?: TenantCreateOrConnectWithoutNotificationLogsInput
+    upsert?: TenantUpsertWithoutNotificationLogsInput
+    connect?: TenantWhereUniqueInput
+    update?: XOR<XOR<TenantUpdateToOneWithWhereWithoutNotificationLogsInput, TenantUpdateWithoutNotificationLogsInput>, TenantUncheckedUpdateWithoutNotificationLogsInput>
+  }
+
+  export type UserUpdateOneWithoutNotificationLogsNestedInput = {
+    create?: XOR<UserCreateWithoutNotificationLogsInput, UserUncheckedCreateWithoutNotificationLogsInput>
+    connectOrCreate?: UserCreateOrConnectWithoutNotificationLogsInput
+    upsert?: UserUpsertWithoutNotificationLogsInput
+    disconnect?: UserWhereInput | boolean
+    delete?: UserWhereInput | boolean
+    connect?: UserWhereUniqueInput
+    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutNotificationLogsInput, UserUpdateWithoutNotificationLogsInput>, UserUncheckedUpdateWithoutNotificationLogsInput>
+  }
+
   export type NestedStringFilter<$PrismaModel = never> = {
     equals?: string | StringFieldRefInput<$PrismaModel>
     in?: string[] | ListStringFieldRefInput<$PrismaModel>
@@ -24082,6 +30474,20 @@ export namespace Prisma {
     startsWith?: string | StringFieldRefInput<$PrismaModel>
     endsWith?: string | StringFieldRefInput<$PrismaModel>
     not?: NestedStringFilter<$PrismaModel> | string
+  }
+
+  export type NestedStringNullableFilter<$PrismaModel = never> = {
+    equals?: string | StringFieldRefInput<$PrismaModel> | null
+    in?: string[] | ListStringFieldRefInput<$PrismaModel> | null
+    notIn?: string[] | ListStringFieldRefInput<$PrismaModel> | null
+    lt?: string | StringFieldRefInput<$PrismaModel>
+    lte?: string | StringFieldRefInput<$PrismaModel>
+    gt?: string | StringFieldRefInput<$PrismaModel>
+    gte?: string | StringFieldRefInput<$PrismaModel>
+    contains?: string | StringFieldRefInput<$PrismaModel>
+    startsWith?: string | StringFieldRefInput<$PrismaModel>
+    endsWith?: string | StringFieldRefInput<$PrismaModel>
+    not?: NestedStringNullableFilter<$PrismaModel> | string | null
   }
 
   export type NestedBoolFilter<$PrismaModel = never> = {
@@ -24161,6 +30567,34 @@ export namespace Prisma {
     not?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
   }
 
+  export type NestedStringNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: string | StringFieldRefInput<$PrismaModel> | null
+    in?: string[] | ListStringFieldRefInput<$PrismaModel> | null
+    notIn?: string[] | ListStringFieldRefInput<$PrismaModel> | null
+    lt?: string | StringFieldRefInput<$PrismaModel>
+    lte?: string | StringFieldRefInput<$PrismaModel>
+    gt?: string | StringFieldRefInput<$PrismaModel>
+    gte?: string | StringFieldRefInput<$PrismaModel>
+    contains?: string | StringFieldRefInput<$PrismaModel>
+    startsWith?: string | StringFieldRefInput<$PrismaModel>
+    endsWith?: string | StringFieldRefInput<$PrismaModel>
+    not?: NestedStringNullableWithAggregatesFilter<$PrismaModel> | string | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedStringNullableFilter<$PrismaModel>
+    _max?: NestedStringNullableFilter<$PrismaModel>
+  }
+
+  export type NestedIntNullableFilter<$PrismaModel = never> = {
+    equals?: number | IntFieldRefInput<$PrismaModel> | null
+    in?: number[] | ListIntFieldRefInput<$PrismaModel> | null
+    notIn?: number[] | ListIntFieldRefInput<$PrismaModel> | null
+    lt?: number | IntFieldRefInput<$PrismaModel>
+    lte?: number | IntFieldRefInput<$PrismaModel>
+    gt?: number | IntFieldRefInput<$PrismaModel>
+    gte?: number | IntFieldRefInput<$PrismaModel>
+    not?: NestedIntNullableFilter<$PrismaModel> | number | null
+  }
+
   export type NestedBoolWithAggregatesFilter<$PrismaModel = never> = {
     equals?: boolean | BooleanFieldRefInput<$PrismaModel>
     not?: NestedBoolWithAggregatesFilter<$PrismaModel> | boolean
@@ -24197,17 +30631,6 @@ export namespace Prisma {
     _max?: NestedDateTimeNullableFilter<$PrismaModel>
   }
 
-  export type NestedIntNullableFilter<$PrismaModel = never> = {
-    equals?: number | IntFieldRefInput<$PrismaModel> | null
-    in?: number[] | ListIntFieldRefInput<$PrismaModel> | null
-    notIn?: number[] | ListIntFieldRefInput<$PrismaModel> | null
-    lt?: number | IntFieldRefInput<$PrismaModel>
-    lte?: number | IntFieldRefInput<$PrismaModel>
-    gt?: number | IntFieldRefInput<$PrismaModel>
-    gte?: number | IntFieldRefInput<$PrismaModel>
-    not?: NestedIntNullableFilter<$PrismaModel> | number | null
-  }
-
   export type NestedEnumUserRoleFilter<$PrismaModel = never> = {
     equals?: $Enums.UserRole | EnumUserRoleFieldRefInput<$PrismaModel>
     in?: $Enums.UserRole[] | ListEnumUserRoleFieldRefInput<$PrismaModel>
@@ -24223,20 +30646,6 @@ export namespace Prisma {
     _count?: NestedIntFilter<$PrismaModel>
     _min?: NestedEnumUserRoleFilter<$PrismaModel>
     _max?: NestedEnumUserRoleFilter<$PrismaModel>
-  }
-
-  export type NestedStringNullableFilter<$PrismaModel = never> = {
-    equals?: string | StringFieldRefInput<$PrismaModel> | null
-    in?: string[] | ListStringFieldRefInput<$PrismaModel> | null
-    notIn?: string[] | ListStringFieldRefInput<$PrismaModel> | null
-    lt?: string | StringFieldRefInput<$PrismaModel>
-    lte?: string | StringFieldRefInput<$PrismaModel>
-    gt?: string | StringFieldRefInput<$PrismaModel>
-    gte?: string | StringFieldRefInput<$PrismaModel>
-    contains?: string | StringFieldRefInput<$PrismaModel>
-    startsWith?: string | StringFieldRefInput<$PrismaModel>
-    endsWith?: string | StringFieldRefInput<$PrismaModel>
-    not?: NestedStringNullableFilter<$PrismaModel> | string | null
   }
 
   export type NestedEnumTenderStatusFilter<$PrismaModel = never> = {
@@ -24262,23 +30671,6 @@ export namespace Prisma {
     gt?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
     gte?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
     not?: NestedDecimalNullableFilter<$PrismaModel> | Decimal | DecimalJsLike | number | string | null
-  }
-
-  export type NestedStringNullableWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: string | StringFieldRefInput<$PrismaModel> | null
-    in?: string[] | ListStringFieldRefInput<$PrismaModel> | null
-    notIn?: string[] | ListStringFieldRefInput<$PrismaModel> | null
-    lt?: string | StringFieldRefInput<$PrismaModel>
-    lte?: string | StringFieldRefInput<$PrismaModel>
-    gt?: string | StringFieldRefInput<$PrismaModel>
-    gte?: string | StringFieldRefInput<$PrismaModel>
-    contains?: string | StringFieldRefInput<$PrismaModel>
-    startsWith?: string | StringFieldRefInput<$PrismaModel>
-    endsWith?: string | StringFieldRefInput<$PrismaModel>
-    not?: NestedStringNullableWithAggregatesFilter<$PrismaModel> | string | null
-    _count?: NestedIntNullableFilter<$PrismaModel>
-    _min?: NestedStringNullableFilter<$PrismaModel>
-    _max?: NestedStringNullableFilter<$PrismaModel>
   }
 
   export type NestedEnumTenderStatusWithAggregatesFilter<$PrismaModel = never> = {
@@ -24315,6 +30707,28 @@ export namespace Prisma {
     _sum?: NestedDecimalNullableFilter<$PrismaModel>
     _min?: NestedDecimalNullableFilter<$PrismaModel>
     _max?: NestedDecimalNullableFilter<$PrismaModel>
+  }
+  export type NestedJsonNullableFilter<$PrismaModel = never> = 
+    | PatchUndefined<
+        Either<Required<NestedJsonNullableFilterBase<$PrismaModel>>, Exclude<keyof Required<NestedJsonNullableFilterBase<$PrismaModel>>, 'path'>>,
+        Required<NestedJsonNullableFilterBase<$PrismaModel>>
+      >
+    | OptionalFlat<Omit<Required<NestedJsonNullableFilterBase<$PrismaModel>>, 'path'>>
+
+  export type NestedJsonNullableFilterBase<$PrismaModel = never> = {
+    equals?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
+    path?: string[]
+    string_contains?: string | StringFieldRefInput<$PrismaModel>
+    string_starts_with?: string | StringFieldRefInput<$PrismaModel>
+    string_ends_with?: string | StringFieldRefInput<$PrismaModel>
+    array_contains?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    array_starts_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    array_ends_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    lt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    lte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    gt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    gte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    not?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
   }
 
   export type NestedEnumTenderRoleFilter<$PrismaModel = never> = {
@@ -24394,28 +30808,6 @@ export namespace Prisma {
     _min?: NestedEnumSubmissionMethodFilter<$PrismaModel>
     _max?: NestedEnumSubmissionMethodFilter<$PrismaModel>
   }
-  export type NestedJsonNullableFilter<$PrismaModel = never> = 
-    | PatchUndefined<
-        Either<Required<NestedJsonNullableFilterBase<$PrismaModel>>, Exclude<keyof Required<NestedJsonNullableFilterBase<$PrismaModel>>, 'path'>>,
-        Required<NestedJsonNullableFilterBase<$PrismaModel>>
-      >
-    | OptionalFlat<Omit<Required<NestedJsonNullableFilterBase<$PrismaModel>>, 'path'>>
-
-  export type NestedJsonNullableFilterBase<$PrismaModel = never> = {
-    equals?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
-    path?: string[]
-    string_contains?: string | StringFieldRefInput<$PrismaModel>
-    string_starts_with?: string | StringFieldRefInput<$PrismaModel>
-    string_ends_with?: string | StringFieldRefInput<$PrismaModel>
-    array_contains?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
-    array_starts_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
-    array_ends_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
-    lt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
-    lte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
-    gt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
-    gte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
-    not?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
-  }
 
   export type NestedEnumTenderStatusNullableFilter<$PrismaModel = never> = {
     equals?: $Enums.TenderStatus | EnumTenderStatusFieldRefInput<$PrismaModel> | null
@@ -24468,11 +30860,57 @@ export namespace Prisma {
     _max?: NestedEnumAuditActionFilter<$PrismaModel>
   }
 
+  export type NestedEnumScrapingStatusFilter<$PrismaModel = never> = {
+    equals?: $Enums.ScrapingStatus | EnumScrapingStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.ScrapingStatus[] | ListEnumScrapingStatusFieldRefInput<$PrismaModel>
+    notIn?: $Enums.ScrapingStatus[] | ListEnumScrapingStatusFieldRefInput<$PrismaModel>
+    not?: NestedEnumScrapingStatusFilter<$PrismaModel> | $Enums.ScrapingStatus
+  }
+
+  export type NestedEnumScrapingStatusWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.ScrapingStatus | EnumScrapingStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.ScrapingStatus[] | ListEnumScrapingStatusFieldRefInput<$PrismaModel>
+    notIn?: $Enums.ScrapingStatus[] | ListEnumScrapingStatusFieldRefInput<$PrismaModel>
+    not?: NestedEnumScrapingStatusWithAggregatesFilter<$PrismaModel> | $Enums.ScrapingStatus
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumScrapingStatusFilter<$PrismaModel>
+    _max?: NestedEnumScrapingStatusFilter<$PrismaModel>
+  }
+
+  export type NestedIntNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: number | IntFieldRefInput<$PrismaModel> | null
+    in?: number[] | ListIntFieldRefInput<$PrismaModel> | null
+    notIn?: number[] | ListIntFieldRefInput<$PrismaModel> | null
+    lt?: number | IntFieldRefInput<$PrismaModel>
+    lte?: number | IntFieldRefInput<$PrismaModel>
+    gt?: number | IntFieldRefInput<$PrismaModel>
+    gte?: number | IntFieldRefInput<$PrismaModel>
+    not?: NestedIntNullableWithAggregatesFilter<$PrismaModel> | number | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _avg?: NestedFloatNullableFilter<$PrismaModel>
+    _sum?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedIntNullableFilter<$PrismaModel>
+    _max?: NestedIntNullableFilter<$PrismaModel>
+  }
+
+  export type NestedFloatNullableFilter<$PrismaModel = never> = {
+    equals?: number | FloatFieldRefInput<$PrismaModel> | null
+    in?: number[] | ListFloatFieldRefInput<$PrismaModel> | null
+    notIn?: number[] | ListFloatFieldRefInput<$PrismaModel> | null
+    lt?: number | FloatFieldRefInput<$PrismaModel>
+    lte?: number | FloatFieldRefInput<$PrismaModel>
+    gt?: number | FloatFieldRefInput<$PrismaModel>
+    gte?: number | FloatFieldRefInput<$PrismaModel>
+    not?: NestedFloatNullableFilter<$PrismaModel> | number | null
+  }
+
   export type UserCreateWithoutTenantInput = {
     id?: string
     email: string
+    passwordHash?: string | null
     firstName: string
     lastName: string
+    phone?: string | null
     role?: $Enums.UserRole
     isActive?: boolean
     lastLoginAt?: Date | string | null
@@ -24488,13 +30926,19 @@ export namespace Prisma {
     comments?: CommentCreateNestedManyWithoutAuthorInput
     notifications?: NotificationCreateNestedManyWithoutUserInput
     audits?: AuditLogCreateNestedManyWithoutUserInput
+    triggeredScrapings?: ScrapingLogCreateNestedManyWithoutTriggeredByUserInput
+    sessions?: SessionCreateNestedManyWithoutUserInput
+    notificationPreferences?: NotificationPreferenceCreateNestedManyWithoutUserInput
+    notificationLogs?: NotificationLogCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutTenantInput = {
     id?: string
     email: string
+    passwordHash?: string | null
     firstName: string
     lastName: string
+    phone?: string | null
     role?: $Enums.UserRole
     isActive?: boolean
     lastLoginAt?: Date | string | null
@@ -24510,6 +30954,10 @@ export namespace Prisma {
     comments?: CommentUncheckedCreateNestedManyWithoutAuthorInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
     audits?: AuditLogUncheckedCreateNestedManyWithoutUserInput
+    triggeredScrapings?: ScrapingLogUncheckedCreateNestedManyWithoutTriggeredByUserInput
+    sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
+    notificationPreferences?: NotificationPreferenceUncheckedCreateNestedManyWithoutUserInput
+    notificationLogs?: NotificationLogUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutTenantInput = {
@@ -24539,6 +30987,13 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     deletedAt?: Date | string | null
+    scrapedAt?: Date | string | null
+    sourcePortal?: string | null
+    originalTitle?: string | null
+    originalStatus?: string | null
+    originalValue?: string | null
+    exchangeRates?: NullableJsonNullValueInput | InputJsonValue
+    sourceUrl?: string | null
     creator: UserCreateNestedOneWithoutCreatedTendersInput
     assignments?: TenderAssignmentCreateNestedManyWithoutTenderInput
     documents?: DocumentCreateNestedManyWithoutTenderInput
@@ -24568,6 +31023,13 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     deletedAt?: Date | string | null
+    scrapedAt?: Date | string | null
+    sourcePortal?: string | null
+    originalTitle?: string | null
+    originalStatus?: string | null
+    originalValue?: string | null
+    exchangeRates?: NullableJsonNullValueInput | InputJsonValue
+    sourceUrl?: string | null
     assignments?: TenderAssignmentUncheckedCreateNestedManyWithoutTenderInput
     documents?: DocumentUncheckedCreateNestedManyWithoutTenderInput
     bids?: BidUncheckedCreateNestedManyWithoutTenderInput
@@ -24599,6 +31061,8 @@ export namespace Prisma {
     ipAddress?: string | null
     userAgent?: string | null
     timestamp?: Date | string
+    archived?: boolean
+    archivedAt?: Date | string | null
     user?: UserCreateNestedOneWithoutAuditsInput
   }
 
@@ -24614,6 +31078,8 @@ export namespace Prisma {
     ipAddress?: string | null
     userAgent?: string | null
     timestamp?: Date | string
+    archived?: boolean
+    archivedAt?: Date | string | null
   }
 
   export type AuditLogCreateOrConnectWithoutTenantInput = {
@@ -24660,6 +31126,86 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
+  export type ScrapingLogCreateWithoutTenantInput = {
+    id?: string
+    sourcePortal: string
+    status?: $Enums.ScrapingStatus
+    startedAt?: Date | string
+    completedAt?: Date | string | null
+    pagesProcessed?: number
+    totalPages?: number | null
+    tendersFound?: number
+    tendersImported?: number
+    tendersUpdated?: number
+    tendersSkipped?: number
+    errorMessage?: string | null
+    errorDetails?: NullableJsonNullValueInput | InputJsonValue
+    metadata?: JsonNullValueInput | InputJsonValue
+    triggeredByUser: UserCreateNestedOneWithoutTriggeredScrapingsInput
+  }
+
+  export type ScrapingLogUncheckedCreateWithoutTenantInput = {
+    id?: string
+    sourcePortal: string
+    status?: $Enums.ScrapingStatus
+    startedAt?: Date | string
+    completedAt?: Date | string | null
+    pagesProcessed?: number
+    totalPages?: number | null
+    tendersFound?: number
+    tendersImported?: number
+    tendersUpdated?: number
+    tendersSkipped?: number
+    errorMessage?: string | null
+    errorDetails?: NullableJsonNullValueInput | InputJsonValue
+    metadata?: JsonNullValueInput | InputJsonValue
+    triggeredBy: string
+  }
+
+  export type ScrapingLogCreateOrConnectWithoutTenantInput = {
+    where: ScrapingLogWhereUniqueInput
+    create: XOR<ScrapingLogCreateWithoutTenantInput, ScrapingLogUncheckedCreateWithoutTenantInput>
+  }
+
+  export type ScrapingLogCreateManyTenantInputEnvelope = {
+    data: ScrapingLogCreateManyTenantInput | ScrapingLogCreateManyTenantInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type NotificationLogCreateWithoutTenantInput = {
+    id?: string
+    type: string
+    priority?: string
+    channels?: NotificationLogCreatechannelsInput | string[]
+    recipients?: NotificationLogCreaterecipientsInput | string[]
+    metadata?: JsonNullValueInput | InputJsonValue
+    sentAt?: Date | string | null
+    createdAt?: Date | string
+    user?: UserCreateNestedOneWithoutNotificationLogsInput
+  }
+
+  export type NotificationLogUncheckedCreateWithoutTenantInput = {
+    id?: string
+    type: string
+    userId?: string | null
+    priority?: string
+    channels?: NotificationLogCreatechannelsInput | string[]
+    recipients?: NotificationLogCreaterecipientsInput | string[]
+    metadata?: JsonNullValueInput | InputJsonValue
+    sentAt?: Date | string | null
+    createdAt?: Date | string
+  }
+
+  export type NotificationLogCreateOrConnectWithoutTenantInput = {
+    where: NotificationLogWhereUniqueInput
+    create: XOR<NotificationLogCreateWithoutTenantInput, NotificationLogUncheckedCreateWithoutTenantInput>
+  }
+
+  export type NotificationLogCreateManyTenantInputEnvelope = {
+    data: NotificationLogCreateManyTenantInput | NotificationLogCreateManyTenantInput[]
+    skipDuplicates?: boolean
+  }
+
   export type UserUpsertWithWhereUniqueWithoutTenantInput = {
     where: UserWhereUniqueInput
     update: XOR<UserUpdateWithoutTenantInput, UserUncheckedUpdateWithoutTenantInput>
@@ -24683,8 +31229,10 @@ export namespace Prisma {
     id?: StringFilter<"User"> | string
     tenantId?: StringFilter<"User"> | string
     email?: StringFilter<"User"> | string
+    passwordHash?: StringNullableFilter<"User"> | string | null
     firstName?: StringFilter<"User"> | string
     lastName?: StringFilter<"User"> | string
+    phone?: StringNullableFilter<"User"> | string | null
     role?: EnumUserRoleFilter<"User"> | $Enums.UserRole
     isActive?: BoolFilter<"User"> | boolean
     lastLoginAt?: DateTimeNullableFilter<"User"> | Date | string | null
@@ -24732,6 +31280,13 @@ export namespace Prisma {
     createdAt?: DateTimeFilter<"Tender"> | Date | string
     updatedAt?: DateTimeFilter<"Tender"> | Date | string
     deletedAt?: DateTimeNullableFilter<"Tender"> | Date | string | null
+    scrapedAt?: DateTimeNullableFilter<"Tender"> | Date | string | null
+    sourcePortal?: StringNullableFilter<"Tender"> | string | null
+    originalTitle?: StringNullableFilter<"Tender"> | string | null
+    originalStatus?: StringNullableFilter<"Tender"> | string | null
+    originalValue?: StringNullableFilter<"Tender"> | string | null
+    exchangeRates?: JsonNullableFilter<"Tender">
+    sourceUrl?: StringNullableFilter<"Tender"> | string | null
   }
 
   export type AuditLogUpsertWithWhereUniqueWithoutTenantInput = {
@@ -24766,6 +31321,8 @@ export namespace Prisma {
     ipAddress?: StringNullableFilter<"AuditLog"> | string | null
     userAgent?: StringNullableFilter<"AuditLog"> | string | null
     timestamp?: DateTimeFilter<"AuditLog"> | Date | string
+    archived?: BoolFilter<"AuditLog"> | boolean
+    archivedAt?: DateTimeNullableFilter<"AuditLog"> | Date | string | null
   }
 
   export type ApiKeyUpsertWithWhereUniqueWithoutTenantInput = {
@@ -24800,11 +31357,83 @@ export namespace Prisma {
     updatedAt?: DateTimeFilter<"ApiKey"> | Date | string
   }
 
+  export type ScrapingLogUpsertWithWhereUniqueWithoutTenantInput = {
+    where: ScrapingLogWhereUniqueInput
+    update: XOR<ScrapingLogUpdateWithoutTenantInput, ScrapingLogUncheckedUpdateWithoutTenantInput>
+    create: XOR<ScrapingLogCreateWithoutTenantInput, ScrapingLogUncheckedCreateWithoutTenantInput>
+  }
+
+  export type ScrapingLogUpdateWithWhereUniqueWithoutTenantInput = {
+    where: ScrapingLogWhereUniqueInput
+    data: XOR<ScrapingLogUpdateWithoutTenantInput, ScrapingLogUncheckedUpdateWithoutTenantInput>
+  }
+
+  export type ScrapingLogUpdateManyWithWhereWithoutTenantInput = {
+    where: ScrapingLogScalarWhereInput
+    data: XOR<ScrapingLogUpdateManyMutationInput, ScrapingLogUncheckedUpdateManyWithoutTenantInput>
+  }
+
+  export type ScrapingLogScalarWhereInput = {
+    AND?: ScrapingLogScalarWhereInput | ScrapingLogScalarWhereInput[]
+    OR?: ScrapingLogScalarWhereInput[]
+    NOT?: ScrapingLogScalarWhereInput | ScrapingLogScalarWhereInput[]
+    id?: StringFilter<"ScrapingLog"> | string
+    tenantId?: StringFilter<"ScrapingLog"> | string
+    sourcePortal?: StringFilter<"ScrapingLog"> | string
+    status?: EnumScrapingStatusFilter<"ScrapingLog"> | $Enums.ScrapingStatus
+    startedAt?: DateTimeFilter<"ScrapingLog"> | Date | string
+    completedAt?: DateTimeNullableFilter<"ScrapingLog"> | Date | string | null
+    pagesProcessed?: IntFilter<"ScrapingLog"> | number
+    totalPages?: IntNullableFilter<"ScrapingLog"> | number | null
+    tendersFound?: IntFilter<"ScrapingLog"> | number
+    tendersImported?: IntFilter<"ScrapingLog"> | number
+    tendersUpdated?: IntFilter<"ScrapingLog"> | number
+    tendersSkipped?: IntFilter<"ScrapingLog"> | number
+    errorMessage?: StringNullableFilter<"ScrapingLog"> | string | null
+    errorDetails?: JsonNullableFilter<"ScrapingLog">
+    metadata?: JsonFilter<"ScrapingLog">
+    triggeredBy?: StringFilter<"ScrapingLog"> | string
+  }
+
+  export type NotificationLogUpsertWithWhereUniqueWithoutTenantInput = {
+    where: NotificationLogWhereUniqueInput
+    update: XOR<NotificationLogUpdateWithoutTenantInput, NotificationLogUncheckedUpdateWithoutTenantInput>
+    create: XOR<NotificationLogCreateWithoutTenantInput, NotificationLogUncheckedCreateWithoutTenantInput>
+  }
+
+  export type NotificationLogUpdateWithWhereUniqueWithoutTenantInput = {
+    where: NotificationLogWhereUniqueInput
+    data: XOR<NotificationLogUpdateWithoutTenantInput, NotificationLogUncheckedUpdateWithoutTenantInput>
+  }
+
+  export type NotificationLogUpdateManyWithWhereWithoutTenantInput = {
+    where: NotificationLogScalarWhereInput
+    data: XOR<NotificationLogUpdateManyMutationInput, NotificationLogUncheckedUpdateManyWithoutTenantInput>
+  }
+
+  export type NotificationLogScalarWhereInput = {
+    AND?: NotificationLogScalarWhereInput | NotificationLogScalarWhereInput[]
+    OR?: NotificationLogScalarWhereInput[]
+    NOT?: NotificationLogScalarWhereInput | NotificationLogScalarWhereInput[]
+    id?: StringFilter<"NotificationLog"> | string
+    type?: StringFilter<"NotificationLog"> | string
+    tenantId?: StringFilter<"NotificationLog"> | string
+    userId?: StringNullableFilter<"NotificationLog"> | string | null
+    priority?: StringFilter<"NotificationLog"> | string
+    channels?: StringNullableListFilter<"NotificationLog">
+    recipients?: StringNullableListFilter<"NotificationLog">
+    metadata?: JsonFilter<"NotificationLog">
+    sentAt?: DateTimeNullableFilter<"NotificationLog"> | Date | string | null
+    createdAt?: DateTimeFilter<"NotificationLog"> | Date | string
+  }
+
   export type TenantCreateWithoutUsersInput = {
     id?: string
     name: string
     subdomain: string
     settings?: JsonNullValueInput | InputJsonValue
+    webhookUrl?: string | null
+    metadata?: JsonNullValueInput | InputJsonValue
     isActive?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -24812,6 +31441,8 @@ export namespace Prisma {
     tenders?: TenderCreateNestedManyWithoutTenantInput
     audits?: AuditLogCreateNestedManyWithoutTenantInput
     apiKeys?: ApiKeyCreateNestedManyWithoutTenantInput
+    scrapingLogs?: ScrapingLogCreateNestedManyWithoutTenantInput
+    notificationLogs?: NotificationLogCreateNestedManyWithoutTenantInput
   }
 
   export type TenantUncheckedCreateWithoutUsersInput = {
@@ -24819,6 +31450,8 @@ export namespace Prisma {
     name: string
     subdomain: string
     settings?: JsonNullValueInput | InputJsonValue
+    webhookUrl?: string | null
+    metadata?: JsonNullValueInput | InputJsonValue
     isActive?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -24826,6 +31459,8 @@ export namespace Prisma {
     tenders?: TenderUncheckedCreateNestedManyWithoutTenantInput
     audits?: AuditLogUncheckedCreateNestedManyWithoutTenantInput
     apiKeys?: ApiKeyUncheckedCreateNestedManyWithoutTenantInput
+    scrapingLogs?: ScrapingLogUncheckedCreateNestedManyWithoutTenantInput
+    notificationLogs?: NotificationLogUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type TenantCreateOrConnectWithoutUsersInput = {
@@ -24876,6 +31511,13 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     deletedAt?: Date | string | null
+    scrapedAt?: Date | string | null
+    sourcePortal?: string | null
+    originalTitle?: string | null
+    originalStatus?: string | null
+    originalValue?: string | null
+    exchangeRates?: NullableJsonNullValueInput | InputJsonValue
+    sourceUrl?: string | null
     tenant: TenantCreateNestedOneWithoutTendersInput
     assignments?: TenderAssignmentCreateNestedManyWithoutTenderInput
     documents?: DocumentCreateNestedManyWithoutTenderInput
@@ -24905,6 +31547,13 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     deletedAt?: Date | string | null
+    scrapedAt?: Date | string | null
+    sourcePortal?: string | null
+    originalTitle?: string | null
+    originalStatus?: string | null
+    originalValue?: string | null
+    exchangeRates?: NullableJsonNullValueInput | InputJsonValue
+    sourceUrl?: string | null
     assignments?: TenderAssignmentUncheckedCreateNestedManyWithoutTenderInput
     documents?: DocumentUncheckedCreateNestedManyWithoutTenderInput
     bids?: BidUncheckedCreateNestedManyWithoutTenderInput
@@ -24988,12 +31637,12 @@ export namespace Prisma {
     isDeleted?: boolean
     uploadedAt?: Date | string
     updatedAt?: Date | string
-    tender: TenderCreateNestedOneWithoutDocumentsInput
+    tender?: TenderCreateNestedOneWithoutDocumentsInput
   }
 
   export type DocumentUncheckedCreateWithoutUploaderInput = {
     id?: string
-    tenderId: string
+    tenderId?: string | null
     filename: string
     originalName: string
     mimeType: string
@@ -25140,6 +31789,8 @@ export namespace Prisma {
     ipAddress?: string | null
     userAgent?: string | null
     timestamp?: Date | string
+    archived?: boolean
+    archivedAt?: Date | string | null
     tenant: TenantCreateNestedOneWithoutAuditsInput
   }
 
@@ -25155,6 +31806,8 @@ export namespace Prisma {
     ipAddress?: string | null
     userAgent?: string | null
     timestamp?: Date | string
+    archived?: boolean
+    archivedAt?: Date | string | null
   }
 
   export type AuditLogCreateOrConnectWithoutUserInput = {
@@ -25164,6 +31817,142 @@ export namespace Prisma {
 
   export type AuditLogCreateManyUserInputEnvelope = {
     data: AuditLogCreateManyUserInput | AuditLogCreateManyUserInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type ScrapingLogCreateWithoutTriggeredByUserInput = {
+    id?: string
+    sourcePortal: string
+    status?: $Enums.ScrapingStatus
+    startedAt?: Date | string
+    completedAt?: Date | string | null
+    pagesProcessed?: number
+    totalPages?: number | null
+    tendersFound?: number
+    tendersImported?: number
+    tendersUpdated?: number
+    tendersSkipped?: number
+    errorMessage?: string | null
+    errorDetails?: NullableJsonNullValueInput | InputJsonValue
+    metadata?: JsonNullValueInput | InputJsonValue
+    tenant: TenantCreateNestedOneWithoutScrapingLogsInput
+  }
+
+  export type ScrapingLogUncheckedCreateWithoutTriggeredByUserInput = {
+    id?: string
+    tenantId: string
+    sourcePortal: string
+    status?: $Enums.ScrapingStatus
+    startedAt?: Date | string
+    completedAt?: Date | string | null
+    pagesProcessed?: number
+    totalPages?: number | null
+    tendersFound?: number
+    tendersImported?: number
+    tendersUpdated?: number
+    tendersSkipped?: number
+    errorMessage?: string | null
+    errorDetails?: NullableJsonNullValueInput | InputJsonValue
+    metadata?: JsonNullValueInput | InputJsonValue
+  }
+
+  export type ScrapingLogCreateOrConnectWithoutTriggeredByUserInput = {
+    where: ScrapingLogWhereUniqueInput
+    create: XOR<ScrapingLogCreateWithoutTriggeredByUserInput, ScrapingLogUncheckedCreateWithoutTriggeredByUserInput>
+  }
+
+  export type ScrapingLogCreateManyTriggeredByUserInputEnvelope = {
+    data: ScrapingLogCreateManyTriggeredByUserInput | ScrapingLogCreateManyTriggeredByUserInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type SessionCreateWithoutUserInput = {
+    id?: string
+    sessionToken: string
+    expiresAt: Date | string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    data?: JsonNullValueInput | InputJsonValue
+  }
+
+  export type SessionUncheckedCreateWithoutUserInput = {
+    id?: string
+    sessionToken: string
+    expiresAt: Date | string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    data?: JsonNullValueInput | InputJsonValue
+  }
+
+  export type SessionCreateOrConnectWithoutUserInput = {
+    where: SessionWhereUniqueInput
+    create: XOR<SessionCreateWithoutUserInput, SessionUncheckedCreateWithoutUserInput>
+  }
+
+  export type SessionCreateManyUserInputEnvelope = {
+    data: SessionCreateManyUserInput | SessionCreateManyUserInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type NotificationPreferenceCreateWithoutUserInput = {
+    id?: string
+    type: string
+    enabled?: boolean
+    channels?: NotificationPreferenceCreatechannelsInput | string[]
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type NotificationPreferenceUncheckedCreateWithoutUserInput = {
+    id?: string
+    type: string
+    enabled?: boolean
+    channels?: NotificationPreferenceCreatechannelsInput | string[]
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type NotificationPreferenceCreateOrConnectWithoutUserInput = {
+    where: NotificationPreferenceWhereUniqueInput
+    create: XOR<NotificationPreferenceCreateWithoutUserInput, NotificationPreferenceUncheckedCreateWithoutUserInput>
+  }
+
+  export type NotificationPreferenceCreateManyUserInputEnvelope = {
+    data: NotificationPreferenceCreateManyUserInput | NotificationPreferenceCreateManyUserInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type NotificationLogCreateWithoutUserInput = {
+    id?: string
+    type: string
+    priority?: string
+    channels?: NotificationLogCreatechannelsInput | string[]
+    recipients?: NotificationLogCreaterecipientsInput | string[]
+    metadata?: JsonNullValueInput | InputJsonValue
+    sentAt?: Date | string | null
+    createdAt?: Date | string
+    tenant: TenantCreateNestedOneWithoutNotificationLogsInput
+  }
+
+  export type NotificationLogUncheckedCreateWithoutUserInput = {
+    id?: string
+    type: string
+    tenantId: string
+    priority?: string
+    channels?: NotificationLogCreatechannelsInput | string[]
+    recipients?: NotificationLogCreaterecipientsInput | string[]
+    metadata?: JsonNullValueInput | InputJsonValue
+    sentAt?: Date | string | null
+    createdAt?: Date | string
+  }
+
+  export type NotificationLogCreateOrConnectWithoutUserInput = {
+    where: NotificationLogWhereUniqueInput
+    create: XOR<NotificationLogCreateWithoutUserInput, NotificationLogUncheckedCreateWithoutUserInput>
+  }
+
+  export type NotificationLogCreateManyUserInputEnvelope = {
+    data: NotificationLogCreateManyUserInput | NotificationLogCreateManyUserInput[]
     skipDuplicates?: boolean
   }
 
@@ -25183,6 +31972,8 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     subdomain?: StringFieldUpdateOperationsInput | string
     settings?: JsonNullValueInput | InputJsonValue
+    webhookUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    metadata?: JsonNullValueInput | InputJsonValue
     isActive?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -25190,6 +31981,8 @@ export namespace Prisma {
     tenders?: TenderUpdateManyWithoutTenantNestedInput
     audits?: AuditLogUpdateManyWithoutTenantNestedInput
     apiKeys?: ApiKeyUpdateManyWithoutTenantNestedInput
+    scrapingLogs?: ScrapingLogUpdateManyWithoutTenantNestedInput
+    notificationLogs?: NotificationLogUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantUncheckedUpdateWithoutUsersInput = {
@@ -25197,6 +31990,8 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     subdomain?: StringFieldUpdateOperationsInput | string
     settings?: JsonNullValueInput | InputJsonValue
+    webhookUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    metadata?: JsonNullValueInput | InputJsonValue
     isActive?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -25204,6 +31999,8 @@ export namespace Prisma {
     tenders?: TenderUncheckedUpdateManyWithoutTenantNestedInput
     audits?: AuditLogUncheckedUpdateManyWithoutTenantNestedInput
     apiKeys?: ApiKeyUncheckedUpdateManyWithoutTenantNestedInput
+    scrapingLogs?: ScrapingLogUncheckedUpdateManyWithoutTenantNestedInput
+    notificationLogs?: NotificationLogUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type TenderAssignmentUpsertWithWhereUniqueWithoutUserInput = {
@@ -25311,7 +32108,7 @@ export namespace Prisma {
     OR?: DocumentScalarWhereInput[]
     NOT?: DocumentScalarWhereInput | DocumentScalarWhereInput[]
     id?: StringFilter<"Document"> | string
-    tenderId?: StringFilter<"Document"> | string
+    tenderId?: StringNullableFilter<"Document"> | string | null
     uploadedBy?: StringFilter<"Document"> | string
     filename?: StringFilter<"Document"> | string
     originalName?: StringFilter<"Document"> | string
@@ -25443,11 +32240,103 @@ export namespace Prisma {
     data: XOR<AuditLogUpdateManyMutationInput, AuditLogUncheckedUpdateManyWithoutUserInput>
   }
 
+  export type ScrapingLogUpsertWithWhereUniqueWithoutTriggeredByUserInput = {
+    where: ScrapingLogWhereUniqueInput
+    update: XOR<ScrapingLogUpdateWithoutTriggeredByUserInput, ScrapingLogUncheckedUpdateWithoutTriggeredByUserInput>
+    create: XOR<ScrapingLogCreateWithoutTriggeredByUserInput, ScrapingLogUncheckedCreateWithoutTriggeredByUserInput>
+  }
+
+  export type ScrapingLogUpdateWithWhereUniqueWithoutTriggeredByUserInput = {
+    where: ScrapingLogWhereUniqueInput
+    data: XOR<ScrapingLogUpdateWithoutTriggeredByUserInput, ScrapingLogUncheckedUpdateWithoutTriggeredByUserInput>
+  }
+
+  export type ScrapingLogUpdateManyWithWhereWithoutTriggeredByUserInput = {
+    where: ScrapingLogScalarWhereInput
+    data: XOR<ScrapingLogUpdateManyMutationInput, ScrapingLogUncheckedUpdateManyWithoutTriggeredByUserInput>
+  }
+
+  export type SessionUpsertWithWhereUniqueWithoutUserInput = {
+    where: SessionWhereUniqueInput
+    update: XOR<SessionUpdateWithoutUserInput, SessionUncheckedUpdateWithoutUserInput>
+    create: XOR<SessionCreateWithoutUserInput, SessionUncheckedCreateWithoutUserInput>
+  }
+
+  export type SessionUpdateWithWhereUniqueWithoutUserInput = {
+    where: SessionWhereUniqueInput
+    data: XOR<SessionUpdateWithoutUserInput, SessionUncheckedUpdateWithoutUserInput>
+  }
+
+  export type SessionUpdateManyWithWhereWithoutUserInput = {
+    where: SessionScalarWhereInput
+    data: XOR<SessionUpdateManyMutationInput, SessionUncheckedUpdateManyWithoutUserInput>
+  }
+
+  export type SessionScalarWhereInput = {
+    AND?: SessionScalarWhereInput | SessionScalarWhereInput[]
+    OR?: SessionScalarWhereInput[]
+    NOT?: SessionScalarWhereInput | SessionScalarWhereInput[]
+    id?: StringFilter<"Session"> | string
+    sessionToken?: StringFilter<"Session"> | string
+    userId?: StringFilter<"Session"> | string
+    expiresAt?: DateTimeFilter<"Session"> | Date | string
+    createdAt?: DateTimeFilter<"Session"> | Date | string
+    updatedAt?: DateTimeFilter<"Session"> | Date | string
+    data?: JsonFilter<"Session">
+  }
+
+  export type NotificationPreferenceUpsertWithWhereUniqueWithoutUserInput = {
+    where: NotificationPreferenceWhereUniqueInput
+    update: XOR<NotificationPreferenceUpdateWithoutUserInput, NotificationPreferenceUncheckedUpdateWithoutUserInput>
+    create: XOR<NotificationPreferenceCreateWithoutUserInput, NotificationPreferenceUncheckedCreateWithoutUserInput>
+  }
+
+  export type NotificationPreferenceUpdateWithWhereUniqueWithoutUserInput = {
+    where: NotificationPreferenceWhereUniqueInput
+    data: XOR<NotificationPreferenceUpdateWithoutUserInput, NotificationPreferenceUncheckedUpdateWithoutUserInput>
+  }
+
+  export type NotificationPreferenceUpdateManyWithWhereWithoutUserInput = {
+    where: NotificationPreferenceScalarWhereInput
+    data: XOR<NotificationPreferenceUpdateManyMutationInput, NotificationPreferenceUncheckedUpdateManyWithoutUserInput>
+  }
+
+  export type NotificationPreferenceScalarWhereInput = {
+    AND?: NotificationPreferenceScalarWhereInput | NotificationPreferenceScalarWhereInput[]
+    OR?: NotificationPreferenceScalarWhereInput[]
+    NOT?: NotificationPreferenceScalarWhereInput | NotificationPreferenceScalarWhereInput[]
+    id?: StringFilter<"NotificationPreference"> | string
+    userId?: StringFilter<"NotificationPreference"> | string
+    type?: StringFilter<"NotificationPreference"> | string
+    enabled?: BoolFilter<"NotificationPreference"> | boolean
+    channels?: StringNullableListFilter<"NotificationPreference">
+    createdAt?: DateTimeFilter<"NotificationPreference"> | Date | string
+    updatedAt?: DateTimeFilter<"NotificationPreference"> | Date | string
+  }
+
+  export type NotificationLogUpsertWithWhereUniqueWithoutUserInput = {
+    where: NotificationLogWhereUniqueInput
+    update: XOR<NotificationLogUpdateWithoutUserInput, NotificationLogUncheckedUpdateWithoutUserInput>
+    create: XOR<NotificationLogCreateWithoutUserInput, NotificationLogUncheckedCreateWithoutUserInput>
+  }
+
+  export type NotificationLogUpdateWithWhereUniqueWithoutUserInput = {
+    where: NotificationLogWhereUniqueInput
+    data: XOR<NotificationLogUpdateWithoutUserInput, NotificationLogUncheckedUpdateWithoutUserInput>
+  }
+
+  export type NotificationLogUpdateManyWithWhereWithoutUserInput = {
+    where: NotificationLogScalarWhereInput
+    data: XOR<NotificationLogUpdateManyMutationInput, NotificationLogUncheckedUpdateManyWithoutUserInput>
+  }
+
   export type TenantCreateWithoutTendersInput = {
     id?: string
     name: string
     subdomain: string
     settings?: JsonNullValueInput | InputJsonValue
+    webhookUrl?: string | null
+    metadata?: JsonNullValueInput | InputJsonValue
     isActive?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -25455,6 +32344,8 @@ export namespace Prisma {
     users?: UserCreateNestedManyWithoutTenantInput
     audits?: AuditLogCreateNestedManyWithoutTenantInput
     apiKeys?: ApiKeyCreateNestedManyWithoutTenantInput
+    scrapingLogs?: ScrapingLogCreateNestedManyWithoutTenantInput
+    notificationLogs?: NotificationLogCreateNestedManyWithoutTenantInput
   }
 
   export type TenantUncheckedCreateWithoutTendersInput = {
@@ -25462,6 +32353,8 @@ export namespace Prisma {
     name: string
     subdomain: string
     settings?: JsonNullValueInput | InputJsonValue
+    webhookUrl?: string | null
+    metadata?: JsonNullValueInput | InputJsonValue
     isActive?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -25469,6 +32362,8 @@ export namespace Prisma {
     users?: UserUncheckedCreateNestedManyWithoutTenantInput
     audits?: AuditLogUncheckedCreateNestedManyWithoutTenantInput
     apiKeys?: ApiKeyUncheckedCreateNestedManyWithoutTenantInput
+    scrapingLogs?: ScrapingLogUncheckedCreateNestedManyWithoutTenantInput
+    notificationLogs?: NotificationLogUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type TenantCreateOrConnectWithoutTendersInput = {
@@ -25479,8 +32374,10 @@ export namespace Prisma {
   export type UserCreateWithoutCreatedTendersInput = {
     id?: string
     email: string
+    passwordHash?: string | null
     firstName: string
     lastName: string
+    phone?: string | null
     role?: $Enums.UserRole
     isActive?: boolean
     lastLoginAt?: Date | string | null
@@ -25496,14 +32393,20 @@ export namespace Prisma {
     comments?: CommentCreateNestedManyWithoutAuthorInput
     notifications?: NotificationCreateNestedManyWithoutUserInput
     audits?: AuditLogCreateNestedManyWithoutUserInput
+    triggeredScrapings?: ScrapingLogCreateNestedManyWithoutTriggeredByUserInput
+    sessions?: SessionCreateNestedManyWithoutUserInput
+    notificationPreferences?: NotificationPreferenceCreateNestedManyWithoutUserInput
+    notificationLogs?: NotificationLogCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutCreatedTendersInput = {
     id?: string
     tenantId: string
     email: string
+    passwordHash?: string | null
     firstName: string
     lastName: string
+    phone?: string | null
     role?: $Enums.UserRole
     isActive?: boolean
     lastLoginAt?: Date | string | null
@@ -25518,6 +32421,10 @@ export namespace Prisma {
     comments?: CommentUncheckedCreateNestedManyWithoutAuthorInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
     audits?: AuditLogUncheckedCreateNestedManyWithoutUserInput
+    triggeredScrapings?: ScrapingLogUncheckedCreateNestedManyWithoutTriggeredByUserInput
+    sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
+    notificationPreferences?: NotificationPreferenceUncheckedCreateNestedManyWithoutUserInput
+    notificationLogs?: NotificationLogUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutCreatedTendersInput = {
@@ -25835,6 +32742,8 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     subdomain?: StringFieldUpdateOperationsInput | string
     settings?: JsonNullValueInput | InputJsonValue
+    webhookUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    metadata?: JsonNullValueInput | InputJsonValue
     isActive?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -25842,6 +32751,8 @@ export namespace Prisma {
     users?: UserUpdateManyWithoutTenantNestedInput
     audits?: AuditLogUpdateManyWithoutTenantNestedInput
     apiKeys?: ApiKeyUpdateManyWithoutTenantNestedInput
+    scrapingLogs?: ScrapingLogUpdateManyWithoutTenantNestedInput
+    notificationLogs?: NotificationLogUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantUncheckedUpdateWithoutTendersInput = {
@@ -25849,6 +32760,8 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     subdomain?: StringFieldUpdateOperationsInput | string
     settings?: JsonNullValueInput | InputJsonValue
+    webhookUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    metadata?: JsonNullValueInput | InputJsonValue
     isActive?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -25856,6 +32769,8 @@ export namespace Prisma {
     users?: UserUncheckedUpdateManyWithoutTenantNestedInput
     audits?: AuditLogUncheckedUpdateManyWithoutTenantNestedInput
     apiKeys?: ApiKeyUncheckedUpdateManyWithoutTenantNestedInput
+    scrapingLogs?: ScrapingLogUncheckedUpdateManyWithoutTenantNestedInput
+    notificationLogs?: NotificationLogUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type UserUpsertWithoutCreatedTendersInput = {
@@ -25872,8 +32787,10 @@ export namespace Prisma {
   export type UserUpdateWithoutCreatedTendersInput = {
     id?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
+    passwordHash?: NullableStringFieldUpdateOperationsInput | string | null
     firstName?: StringFieldUpdateOperationsInput | string
     lastName?: StringFieldUpdateOperationsInput | string
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
     role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
     isActive?: BoolFieldUpdateOperationsInput | boolean
     lastLoginAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -25889,14 +32806,20 @@ export namespace Prisma {
     comments?: CommentUpdateManyWithoutAuthorNestedInput
     notifications?: NotificationUpdateManyWithoutUserNestedInput
     audits?: AuditLogUpdateManyWithoutUserNestedInput
+    triggeredScrapings?: ScrapingLogUpdateManyWithoutTriggeredByUserNestedInput
+    sessions?: SessionUpdateManyWithoutUserNestedInput
+    notificationPreferences?: NotificationPreferenceUpdateManyWithoutUserNestedInput
+    notificationLogs?: NotificationLogUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutCreatedTendersInput = {
     id?: StringFieldUpdateOperationsInput | string
     tenantId?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
+    passwordHash?: NullableStringFieldUpdateOperationsInput | string | null
     firstName?: StringFieldUpdateOperationsInput | string
     lastName?: StringFieldUpdateOperationsInput | string
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
     role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
     isActive?: BoolFieldUpdateOperationsInput | boolean
     lastLoginAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -25911,6 +32834,10 @@ export namespace Prisma {
     comments?: CommentUncheckedUpdateManyWithoutAuthorNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
     audits?: AuditLogUncheckedUpdateManyWithoutUserNestedInput
+    triggeredScrapings?: ScrapingLogUncheckedUpdateManyWithoutTriggeredByUserNestedInput
+    sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
+    notificationPreferences?: NotificationPreferenceUncheckedUpdateManyWithoutUserNestedInput
+    notificationLogs?: NotificationLogUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type TenderAssignmentUpsertWithWhereUniqueWithoutTenderInput = {
@@ -26088,6 +33015,13 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     deletedAt?: Date | string | null
+    scrapedAt?: Date | string | null
+    sourcePortal?: string | null
+    originalTitle?: string | null
+    originalStatus?: string | null
+    originalValue?: string | null
+    exchangeRates?: NullableJsonNullValueInput | InputJsonValue
+    sourceUrl?: string | null
     tenant: TenantCreateNestedOneWithoutTendersInput
     creator: UserCreateNestedOneWithoutCreatedTendersInput
     documents?: DocumentCreateNestedManyWithoutTenderInput
@@ -26118,6 +33052,13 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     deletedAt?: Date | string | null
+    scrapedAt?: Date | string | null
+    sourcePortal?: string | null
+    originalTitle?: string | null
+    originalStatus?: string | null
+    originalValue?: string | null
+    exchangeRates?: NullableJsonNullValueInput | InputJsonValue
+    sourceUrl?: string | null
     documents?: DocumentUncheckedCreateNestedManyWithoutTenderInput
     bids?: BidUncheckedCreateNestedManyWithoutTenderInput
     submissions?: SubmissionUncheckedCreateNestedManyWithoutTenderInput
@@ -26135,8 +33076,10 @@ export namespace Prisma {
   export type UserCreateWithoutTenderAssignmentsInput = {
     id?: string
     email: string
+    passwordHash?: string | null
     firstName: string
     lastName: string
+    phone?: string | null
     role?: $Enums.UserRole
     isActive?: boolean
     lastLoginAt?: Date | string | null
@@ -26152,14 +33095,20 @@ export namespace Prisma {
     comments?: CommentCreateNestedManyWithoutAuthorInput
     notifications?: NotificationCreateNestedManyWithoutUserInput
     audits?: AuditLogCreateNestedManyWithoutUserInput
+    triggeredScrapings?: ScrapingLogCreateNestedManyWithoutTriggeredByUserInput
+    sessions?: SessionCreateNestedManyWithoutUserInput
+    notificationPreferences?: NotificationPreferenceCreateNestedManyWithoutUserInput
+    notificationLogs?: NotificationLogCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutTenderAssignmentsInput = {
     id?: string
     tenantId: string
     email: string
+    passwordHash?: string | null
     firstName: string
     lastName: string
+    phone?: string | null
     role?: $Enums.UserRole
     isActive?: boolean
     lastLoginAt?: Date | string | null
@@ -26174,6 +33123,10 @@ export namespace Prisma {
     comments?: CommentUncheckedCreateNestedManyWithoutAuthorInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
     audits?: AuditLogUncheckedCreateNestedManyWithoutUserInput
+    triggeredScrapings?: ScrapingLogUncheckedCreateNestedManyWithoutTriggeredByUserInput
+    sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
+    notificationPreferences?: NotificationPreferenceUncheckedCreateNestedManyWithoutUserInput
+    notificationLogs?: NotificationLogUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutTenderAssignmentsInput = {
@@ -26209,6 +33162,13 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    scrapedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    sourcePortal?: NullableStringFieldUpdateOperationsInput | string | null
+    originalTitle?: NullableStringFieldUpdateOperationsInput | string | null
+    originalStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    originalValue?: NullableStringFieldUpdateOperationsInput | string | null
+    exchangeRates?: NullableJsonNullValueInput | InputJsonValue
+    sourceUrl?: NullableStringFieldUpdateOperationsInput | string | null
     tenant?: TenantUpdateOneRequiredWithoutTendersNestedInput
     creator?: UserUpdateOneRequiredWithoutCreatedTendersNestedInput
     documents?: DocumentUpdateManyWithoutTenderNestedInput
@@ -26239,6 +33199,13 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    scrapedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    sourcePortal?: NullableStringFieldUpdateOperationsInput | string | null
+    originalTitle?: NullableStringFieldUpdateOperationsInput | string | null
+    originalStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    originalValue?: NullableStringFieldUpdateOperationsInput | string | null
+    exchangeRates?: NullableJsonNullValueInput | InputJsonValue
+    sourceUrl?: NullableStringFieldUpdateOperationsInput | string | null
     documents?: DocumentUncheckedUpdateManyWithoutTenderNestedInput
     bids?: BidUncheckedUpdateManyWithoutTenderNestedInput
     submissions?: SubmissionUncheckedUpdateManyWithoutTenderNestedInput
@@ -26262,8 +33229,10 @@ export namespace Prisma {
   export type UserUpdateWithoutTenderAssignmentsInput = {
     id?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
+    passwordHash?: NullableStringFieldUpdateOperationsInput | string | null
     firstName?: StringFieldUpdateOperationsInput | string
     lastName?: StringFieldUpdateOperationsInput | string
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
     role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
     isActive?: BoolFieldUpdateOperationsInput | boolean
     lastLoginAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -26279,14 +33248,20 @@ export namespace Prisma {
     comments?: CommentUpdateManyWithoutAuthorNestedInput
     notifications?: NotificationUpdateManyWithoutUserNestedInput
     audits?: AuditLogUpdateManyWithoutUserNestedInput
+    triggeredScrapings?: ScrapingLogUpdateManyWithoutTriggeredByUserNestedInput
+    sessions?: SessionUpdateManyWithoutUserNestedInput
+    notificationPreferences?: NotificationPreferenceUpdateManyWithoutUserNestedInput
+    notificationLogs?: NotificationLogUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutTenderAssignmentsInput = {
     id?: StringFieldUpdateOperationsInput | string
     tenantId?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
+    passwordHash?: NullableStringFieldUpdateOperationsInput | string | null
     firstName?: StringFieldUpdateOperationsInput | string
     lastName?: StringFieldUpdateOperationsInput | string
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
     role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
     isActive?: BoolFieldUpdateOperationsInput | boolean
     lastLoginAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -26301,6 +33276,10 @@ export namespace Prisma {
     comments?: CommentUncheckedUpdateManyWithoutAuthorNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
     audits?: AuditLogUncheckedUpdateManyWithoutUserNestedInput
+    triggeredScrapings?: ScrapingLogUncheckedUpdateManyWithoutTriggeredByUserNestedInput
+    sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
+    notificationPreferences?: NotificationPreferenceUncheckedUpdateManyWithoutUserNestedInput
+    notificationLogs?: NotificationLogUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type TenderCreateWithoutDocumentsInput = {
@@ -26320,6 +33299,13 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     deletedAt?: Date | string | null
+    scrapedAt?: Date | string | null
+    sourcePortal?: string | null
+    originalTitle?: string | null
+    originalStatus?: string | null
+    originalValue?: string | null
+    exchangeRates?: NullableJsonNullValueInput | InputJsonValue
+    sourceUrl?: string | null
     tenant: TenantCreateNestedOneWithoutTendersInput
     creator: UserCreateNestedOneWithoutCreatedTendersInput
     assignments?: TenderAssignmentCreateNestedManyWithoutTenderInput
@@ -26350,6 +33336,13 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     deletedAt?: Date | string | null
+    scrapedAt?: Date | string | null
+    sourcePortal?: string | null
+    originalTitle?: string | null
+    originalStatus?: string | null
+    originalValue?: string | null
+    exchangeRates?: NullableJsonNullValueInput | InputJsonValue
+    sourceUrl?: string | null
     assignments?: TenderAssignmentUncheckedCreateNestedManyWithoutTenderInput
     bids?: BidUncheckedCreateNestedManyWithoutTenderInput
     submissions?: SubmissionUncheckedCreateNestedManyWithoutTenderInput
@@ -26367,8 +33360,10 @@ export namespace Prisma {
   export type UserCreateWithoutDocumentsInput = {
     id?: string
     email: string
+    passwordHash?: string | null
     firstName: string
     lastName: string
+    phone?: string | null
     role?: $Enums.UserRole
     isActive?: boolean
     lastLoginAt?: Date | string | null
@@ -26384,14 +33379,20 @@ export namespace Prisma {
     comments?: CommentCreateNestedManyWithoutAuthorInput
     notifications?: NotificationCreateNestedManyWithoutUserInput
     audits?: AuditLogCreateNestedManyWithoutUserInput
+    triggeredScrapings?: ScrapingLogCreateNestedManyWithoutTriggeredByUserInput
+    sessions?: SessionCreateNestedManyWithoutUserInput
+    notificationPreferences?: NotificationPreferenceCreateNestedManyWithoutUserInput
+    notificationLogs?: NotificationLogCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutDocumentsInput = {
     id?: string
     tenantId: string
     email: string
+    passwordHash?: string | null
     firstName: string
     lastName: string
+    phone?: string | null
     role?: $Enums.UserRole
     isActive?: boolean
     lastLoginAt?: Date | string | null
@@ -26406,6 +33407,10 @@ export namespace Prisma {
     comments?: CommentUncheckedCreateNestedManyWithoutAuthorInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
     audits?: AuditLogUncheckedCreateNestedManyWithoutUserInput
+    triggeredScrapings?: ScrapingLogUncheckedCreateNestedManyWithoutTriggeredByUserInput
+    sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
+    notificationPreferences?: NotificationPreferenceUncheckedCreateNestedManyWithoutUserInput
+    notificationLogs?: NotificationLogUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutDocumentsInput = {
@@ -26441,6 +33446,13 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    scrapedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    sourcePortal?: NullableStringFieldUpdateOperationsInput | string | null
+    originalTitle?: NullableStringFieldUpdateOperationsInput | string | null
+    originalStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    originalValue?: NullableStringFieldUpdateOperationsInput | string | null
+    exchangeRates?: NullableJsonNullValueInput | InputJsonValue
+    sourceUrl?: NullableStringFieldUpdateOperationsInput | string | null
     tenant?: TenantUpdateOneRequiredWithoutTendersNestedInput
     creator?: UserUpdateOneRequiredWithoutCreatedTendersNestedInput
     assignments?: TenderAssignmentUpdateManyWithoutTenderNestedInput
@@ -26471,6 +33483,13 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    scrapedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    sourcePortal?: NullableStringFieldUpdateOperationsInput | string | null
+    originalTitle?: NullableStringFieldUpdateOperationsInput | string | null
+    originalStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    originalValue?: NullableStringFieldUpdateOperationsInput | string | null
+    exchangeRates?: NullableJsonNullValueInput | InputJsonValue
+    sourceUrl?: NullableStringFieldUpdateOperationsInput | string | null
     assignments?: TenderAssignmentUncheckedUpdateManyWithoutTenderNestedInput
     bids?: BidUncheckedUpdateManyWithoutTenderNestedInput
     submissions?: SubmissionUncheckedUpdateManyWithoutTenderNestedInput
@@ -26494,8 +33513,10 @@ export namespace Prisma {
   export type UserUpdateWithoutDocumentsInput = {
     id?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
+    passwordHash?: NullableStringFieldUpdateOperationsInput | string | null
     firstName?: StringFieldUpdateOperationsInput | string
     lastName?: StringFieldUpdateOperationsInput | string
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
     role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
     isActive?: BoolFieldUpdateOperationsInput | boolean
     lastLoginAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -26511,14 +33532,20 @@ export namespace Prisma {
     comments?: CommentUpdateManyWithoutAuthorNestedInput
     notifications?: NotificationUpdateManyWithoutUserNestedInput
     audits?: AuditLogUpdateManyWithoutUserNestedInput
+    triggeredScrapings?: ScrapingLogUpdateManyWithoutTriggeredByUserNestedInput
+    sessions?: SessionUpdateManyWithoutUserNestedInput
+    notificationPreferences?: NotificationPreferenceUpdateManyWithoutUserNestedInput
+    notificationLogs?: NotificationLogUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutDocumentsInput = {
     id?: StringFieldUpdateOperationsInput | string
     tenantId?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
+    passwordHash?: NullableStringFieldUpdateOperationsInput | string | null
     firstName?: StringFieldUpdateOperationsInput | string
     lastName?: StringFieldUpdateOperationsInput | string
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
     role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
     isActive?: BoolFieldUpdateOperationsInput | boolean
     lastLoginAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -26533,6 +33560,10 @@ export namespace Prisma {
     comments?: CommentUncheckedUpdateManyWithoutAuthorNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
     audits?: AuditLogUncheckedUpdateManyWithoutUserNestedInput
+    triggeredScrapings?: ScrapingLogUncheckedUpdateManyWithoutTriggeredByUserNestedInput
+    sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
+    notificationPreferences?: NotificationPreferenceUncheckedUpdateManyWithoutUserNestedInput
+    notificationLogs?: NotificationLogUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type TenderCreateWithoutBidsInput = {
@@ -26552,6 +33583,13 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     deletedAt?: Date | string | null
+    scrapedAt?: Date | string | null
+    sourcePortal?: string | null
+    originalTitle?: string | null
+    originalStatus?: string | null
+    originalValue?: string | null
+    exchangeRates?: NullableJsonNullValueInput | InputJsonValue
+    sourceUrl?: string | null
     tenant: TenantCreateNestedOneWithoutTendersInput
     creator: UserCreateNestedOneWithoutCreatedTendersInput
     assignments?: TenderAssignmentCreateNestedManyWithoutTenderInput
@@ -26582,6 +33620,13 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     deletedAt?: Date | string | null
+    scrapedAt?: Date | string | null
+    sourcePortal?: string | null
+    originalTitle?: string | null
+    originalStatus?: string | null
+    originalValue?: string | null
+    exchangeRates?: NullableJsonNullValueInput | InputJsonValue
+    sourceUrl?: string | null
     assignments?: TenderAssignmentUncheckedCreateNestedManyWithoutTenderInput
     documents?: DocumentUncheckedCreateNestedManyWithoutTenderInput
     submissions?: SubmissionUncheckedCreateNestedManyWithoutTenderInput
@@ -26599,8 +33644,10 @@ export namespace Prisma {
   export type UserCreateWithoutOwnedBidsInput = {
     id?: string
     email: string
+    passwordHash?: string | null
     firstName: string
     lastName: string
+    phone?: string | null
     role?: $Enums.UserRole
     isActive?: boolean
     lastLoginAt?: Date | string | null
@@ -26616,14 +33663,20 @@ export namespace Prisma {
     comments?: CommentCreateNestedManyWithoutAuthorInput
     notifications?: NotificationCreateNestedManyWithoutUserInput
     audits?: AuditLogCreateNestedManyWithoutUserInput
+    triggeredScrapings?: ScrapingLogCreateNestedManyWithoutTriggeredByUserInput
+    sessions?: SessionCreateNestedManyWithoutUserInput
+    notificationPreferences?: NotificationPreferenceCreateNestedManyWithoutUserInput
+    notificationLogs?: NotificationLogCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutOwnedBidsInput = {
     id?: string
     tenantId: string
     email: string
+    passwordHash?: string | null
     firstName: string
     lastName: string
+    phone?: string | null
     role?: $Enums.UserRole
     isActive?: boolean
     lastLoginAt?: Date | string | null
@@ -26638,6 +33691,10 @@ export namespace Prisma {
     comments?: CommentUncheckedCreateNestedManyWithoutAuthorInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
     audits?: AuditLogUncheckedCreateNestedManyWithoutUserInput
+    triggeredScrapings?: ScrapingLogUncheckedCreateNestedManyWithoutTriggeredByUserInput
+    sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
+    notificationPreferences?: NotificationPreferenceUncheckedCreateNestedManyWithoutUserInput
+    notificationLogs?: NotificationLogUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutOwnedBidsInput = {
@@ -26673,6 +33730,13 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    scrapedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    sourcePortal?: NullableStringFieldUpdateOperationsInput | string | null
+    originalTitle?: NullableStringFieldUpdateOperationsInput | string | null
+    originalStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    originalValue?: NullableStringFieldUpdateOperationsInput | string | null
+    exchangeRates?: NullableJsonNullValueInput | InputJsonValue
+    sourceUrl?: NullableStringFieldUpdateOperationsInput | string | null
     tenant?: TenantUpdateOneRequiredWithoutTendersNestedInput
     creator?: UserUpdateOneRequiredWithoutCreatedTendersNestedInput
     assignments?: TenderAssignmentUpdateManyWithoutTenderNestedInput
@@ -26703,6 +33767,13 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    scrapedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    sourcePortal?: NullableStringFieldUpdateOperationsInput | string | null
+    originalTitle?: NullableStringFieldUpdateOperationsInput | string | null
+    originalStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    originalValue?: NullableStringFieldUpdateOperationsInput | string | null
+    exchangeRates?: NullableJsonNullValueInput | InputJsonValue
+    sourceUrl?: NullableStringFieldUpdateOperationsInput | string | null
     assignments?: TenderAssignmentUncheckedUpdateManyWithoutTenderNestedInput
     documents?: DocumentUncheckedUpdateManyWithoutTenderNestedInput
     submissions?: SubmissionUncheckedUpdateManyWithoutTenderNestedInput
@@ -26726,8 +33797,10 @@ export namespace Prisma {
   export type UserUpdateWithoutOwnedBidsInput = {
     id?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
+    passwordHash?: NullableStringFieldUpdateOperationsInput | string | null
     firstName?: StringFieldUpdateOperationsInput | string
     lastName?: StringFieldUpdateOperationsInput | string
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
     role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
     isActive?: BoolFieldUpdateOperationsInput | boolean
     lastLoginAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -26743,14 +33816,20 @@ export namespace Prisma {
     comments?: CommentUpdateManyWithoutAuthorNestedInput
     notifications?: NotificationUpdateManyWithoutUserNestedInput
     audits?: AuditLogUpdateManyWithoutUserNestedInput
+    triggeredScrapings?: ScrapingLogUpdateManyWithoutTriggeredByUserNestedInput
+    sessions?: SessionUpdateManyWithoutUserNestedInput
+    notificationPreferences?: NotificationPreferenceUpdateManyWithoutUserNestedInput
+    notificationLogs?: NotificationLogUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutOwnedBidsInput = {
     id?: StringFieldUpdateOperationsInput | string
     tenantId?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
+    passwordHash?: NullableStringFieldUpdateOperationsInput | string | null
     firstName?: StringFieldUpdateOperationsInput | string
     lastName?: StringFieldUpdateOperationsInput | string
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
     role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
     isActive?: BoolFieldUpdateOperationsInput | boolean
     lastLoginAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -26765,6 +33844,10 @@ export namespace Prisma {
     comments?: CommentUncheckedUpdateManyWithoutAuthorNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
     audits?: AuditLogUncheckedUpdateManyWithoutUserNestedInput
+    triggeredScrapings?: ScrapingLogUncheckedUpdateManyWithoutTriggeredByUserNestedInput
+    sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
+    notificationPreferences?: NotificationPreferenceUncheckedUpdateManyWithoutUserNestedInput
+    notificationLogs?: NotificationLogUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type TenderCreateWithoutSubmissionsInput = {
@@ -26784,6 +33867,13 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     deletedAt?: Date | string | null
+    scrapedAt?: Date | string | null
+    sourcePortal?: string | null
+    originalTitle?: string | null
+    originalStatus?: string | null
+    originalValue?: string | null
+    exchangeRates?: NullableJsonNullValueInput | InputJsonValue
+    sourceUrl?: string | null
     tenant: TenantCreateNestedOneWithoutTendersInput
     creator: UserCreateNestedOneWithoutCreatedTendersInput
     assignments?: TenderAssignmentCreateNestedManyWithoutTenderInput
@@ -26814,6 +33904,13 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     deletedAt?: Date | string | null
+    scrapedAt?: Date | string | null
+    sourcePortal?: string | null
+    originalTitle?: string | null
+    originalStatus?: string | null
+    originalValue?: string | null
+    exchangeRates?: NullableJsonNullValueInput | InputJsonValue
+    sourceUrl?: string | null
     assignments?: TenderAssignmentUncheckedCreateNestedManyWithoutTenderInput
     documents?: DocumentUncheckedCreateNestedManyWithoutTenderInput
     bids?: BidUncheckedCreateNestedManyWithoutTenderInput
@@ -26831,8 +33928,10 @@ export namespace Prisma {
   export type UserCreateWithoutSubmissionsInput = {
     id?: string
     email: string
+    passwordHash?: string | null
     firstName: string
     lastName: string
+    phone?: string | null
     role?: $Enums.UserRole
     isActive?: boolean
     lastLoginAt?: Date | string | null
@@ -26848,14 +33947,20 @@ export namespace Prisma {
     comments?: CommentCreateNestedManyWithoutAuthorInput
     notifications?: NotificationCreateNestedManyWithoutUserInput
     audits?: AuditLogCreateNestedManyWithoutUserInput
+    triggeredScrapings?: ScrapingLogCreateNestedManyWithoutTriggeredByUserInput
+    sessions?: SessionCreateNestedManyWithoutUserInput
+    notificationPreferences?: NotificationPreferenceCreateNestedManyWithoutUserInput
+    notificationLogs?: NotificationLogCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutSubmissionsInput = {
     id?: string
     tenantId: string
     email: string
+    passwordHash?: string | null
     firstName: string
     lastName: string
+    phone?: string | null
     role?: $Enums.UserRole
     isActive?: boolean
     lastLoginAt?: Date | string | null
@@ -26870,6 +33975,10 @@ export namespace Prisma {
     comments?: CommentUncheckedCreateNestedManyWithoutAuthorInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
     audits?: AuditLogUncheckedCreateNestedManyWithoutUserInput
+    triggeredScrapings?: ScrapingLogUncheckedCreateNestedManyWithoutTriggeredByUserInput
+    sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
+    notificationPreferences?: NotificationPreferenceUncheckedCreateNestedManyWithoutUserInput
+    notificationLogs?: NotificationLogUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutSubmissionsInput = {
@@ -26905,6 +34014,13 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    scrapedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    sourcePortal?: NullableStringFieldUpdateOperationsInput | string | null
+    originalTitle?: NullableStringFieldUpdateOperationsInput | string | null
+    originalStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    originalValue?: NullableStringFieldUpdateOperationsInput | string | null
+    exchangeRates?: NullableJsonNullValueInput | InputJsonValue
+    sourceUrl?: NullableStringFieldUpdateOperationsInput | string | null
     tenant?: TenantUpdateOneRequiredWithoutTendersNestedInput
     creator?: UserUpdateOneRequiredWithoutCreatedTendersNestedInput
     assignments?: TenderAssignmentUpdateManyWithoutTenderNestedInput
@@ -26935,6 +34051,13 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    scrapedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    sourcePortal?: NullableStringFieldUpdateOperationsInput | string | null
+    originalTitle?: NullableStringFieldUpdateOperationsInput | string | null
+    originalStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    originalValue?: NullableStringFieldUpdateOperationsInput | string | null
+    exchangeRates?: NullableJsonNullValueInput | InputJsonValue
+    sourceUrl?: NullableStringFieldUpdateOperationsInput | string | null
     assignments?: TenderAssignmentUncheckedUpdateManyWithoutTenderNestedInput
     documents?: DocumentUncheckedUpdateManyWithoutTenderNestedInput
     bids?: BidUncheckedUpdateManyWithoutTenderNestedInput
@@ -26958,8 +34081,10 @@ export namespace Prisma {
   export type UserUpdateWithoutSubmissionsInput = {
     id?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
+    passwordHash?: NullableStringFieldUpdateOperationsInput | string | null
     firstName?: StringFieldUpdateOperationsInput | string
     lastName?: StringFieldUpdateOperationsInput | string
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
     role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
     isActive?: BoolFieldUpdateOperationsInput | boolean
     lastLoginAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -26975,14 +34100,20 @@ export namespace Prisma {
     comments?: CommentUpdateManyWithoutAuthorNestedInput
     notifications?: NotificationUpdateManyWithoutUserNestedInput
     audits?: AuditLogUpdateManyWithoutUserNestedInput
+    triggeredScrapings?: ScrapingLogUpdateManyWithoutTriggeredByUserNestedInput
+    sessions?: SessionUpdateManyWithoutUserNestedInput
+    notificationPreferences?: NotificationPreferenceUpdateManyWithoutUserNestedInput
+    notificationLogs?: NotificationLogUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutSubmissionsInput = {
     id?: StringFieldUpdateOperationsInput | string
     tenantId?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
+    passwordHash?: NullableStringFieldUpdateOperationsInput | string | null
     firstName?: StringFieldUpdateOperationsInput | string
     lastName?: StringFieldUpdateOperationsInput | string
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
     role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
     isActive?: BoolFieldUpdateOperationsInput | boolean
     lastLoginAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -26997,6 +34128,10 @@ export namespace Prisma {
     comments?: CommentUncheckedUpdateManyWithoutAuthorNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
     audits?: AuditLogUncheckedUpdateManyWithoutUserNestedInput
+    triggeredScrapings?: ScrapingLogUncheckedUpdateManyWithoutTriggeredByUserNestedInput
+    sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
+    notificationPreferences?: NotificationPreferenceUncheckedUpdateManyWithoutUserNestedInput
+    notificationLogs?: NotificationLogUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type TenderCreateWithoutValidationsInput = {
@@ -27016,6 +34151,13 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     deletedAt?: Date | string | null
+    scrapedAt?: Date | string | null
+    sourcePortal?: string | null
+    originalTitle?: string | null
+    originalStatus?: string | null
+    originalValue?: string | null
+    exchangeRates?: NullableJsonNullValueInput | InputJsonValue
+    sourceUrl?: string | null
     tenant: TenantCreateNestedOneWithoutTendersInput
     creator: UserCreateNestedOneWithoutCreatedTendersInput
     assignments?: TenderAssignmentCreateNestedManyWithoutTenderInput
@@ -27046,6 +34188,13 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     deletedAt?: Date | string | null
+    scrapedAt?: Date | string | null
+    sourcePortal?: string | null
+    originalTitle?: string | null
+    originalStatus?: string | null
+    originalValue?: string | null
+    exchangeRates?: NullableJsonNullValueInput | InputJsonValue
+    sourceUrl?: string | null
     assignments?: TenderAssignmentUncheckedCreateNestedManyWithoutTenderInput
     documents?: DocumentUncheckedCreateNestedManyWithoutTenderInput
     bids?: BidUncheckedCreateNestedManyWithoutTenderInput
@@ -27088,6 +34237,13 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    scrapedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    sourcePortal?: NullableStringFieldUpdateOperationsInput | string | null
+    originalTitle?: NullableStringFieldUpdateOperationsInput | string | null
+    originalStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    originalValue?: NullableStringFieldUpdateOperationsInput | string | null
+    exchangeRates?: NullableJsonNullValueInput | InputJsonValue
+    sourceUrl?: NullableStringFieldUpdateOperationsInput | string | null
     tenant?: TenantUpdateOneRequiredWithoutTendersNestedInput
     creator?: UserUpdateOneRequiredWithoutCreatedTendersNestedInput
     assignments?: TenderAssignmentUpdateManyWithoutTenderNestedInput
@@ -27118,6 +34274,13 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    scrapedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    sourcePortal?: NullableStringFieldUpdateOperationsInput | string | null
+    originalTitle?: NullableStringFieldUpdateOperationsInput | string | null
+    originalStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    originalValue?: NullableStringFieldUpdateOperationsInput | string | null
+    exchangeRates?: NullableJsonNullValueInput | InputJsonValue
+    sourceUrl?: NullableStringFieldUpdateOperationsInput | string | null
     assignments?: TenderAssignmentUncheckedUpdateManyWithoutTenderNestedInput
     documents?: DocumentUncheckedUpdateManyWithoutTenderNestedInput
     bids?: BidUncheckedUpdateManyWithoutTenderNestedInput
@@ -27144,6 +34307,13 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     deletedAt?: Date | string | null
+    scrapedAt?: Date | string | null
+    sourcePortal?: string | null
+    originalTitle?: string | null
+    originalStatus?: string | null
+    originalValue?: string | null
+    exchangeRates?: NullableJsonNullValueInput | InputJsonValue
+    sourceUrl?: string | null
     tenant: TenantCreateNestedOneWithoutTendersInput
     creator: UserCreateNestedOneWithoutCreatedTendersInput
     assignments?: TenderAssignmentCreateNestedManyWithoutTenderInput
@@ -27174,6 +34344,13 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     deletedAt?: Date | string | null
+    scrapedAt?: Date | string | null
+    sourcePortal?: string | null
+    originalTitle?: string | null
+    originalStatus?: string | null
+    originalValue?: string | null
+    exchangeRates?: NullableJsonNullValueInput | InputJsonValue
+    sourceUrl?: string | null
     assignments?: TenderAssignmentUncheckedCreateNestedManyWithoutTenderInput
     documents?: DocumentUncheckedCreateNestedManyWithoutTenderInput
     bids?: BidUncheckedCreateNestedManyWithoutTenderInput
@@ -27216,6 +34393,13 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    scrapedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    sourcePortal?: NullableStringFieldUpdateOperationsInput | string | null
+    originalTitle?: NullableStringFieldUpdateOperationsInput | string | null
+    originalStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    originalValue?: NullableStringFieldUpdateOperationsInput | string | null
+    exchangeRates?: NullableJsonNullValueInput | InputJsonValue
+    sourceUrl?: NullableStringFieldUpdateOperationsInput | string | null
     tenant?: TenantUpdateOneRequiredWithoutTendersNestedInput
     creator?: UserUpdateOneRequiredWithoutCreatedTendersNestedInput
     assignments?: TenderAssignmentUpdateManyWithoutTenderNestedInput
@@ -27246,6 +34430,13 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    scrapedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    sourcePortal?: NullableStringFieldUpdateOperationsInput | string | null
+    originalTitle?: NullableStringFieldUpdateOperationsInput | string | null
+    originalStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    originalValue?: NullableStringFieldUpdateOperationsInput | string | null
+    exchangeRates?: NullableJsonNullValueInput | InputJsonValue
+    sourceUrl?: NullableStringFieldUpdateOperationsInput | string | null
     assignments?: TenderAssignmentUncheckedUpdateManyWithoutTenderNestedInput
     documents?: DocumentUncheckedUpdateManyWithoutTenderNestedInput
     bids?: BidUncheckedUpdateManyWithoutTenderNestedInput
@@ -27272,6 +34463,13 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     deletedAt?: Date | string | null
+    scrapedAt?: Date | string | null
+    sourcePortal?: string | null
+    originalTitle?: string | null
+    originalStatus?: string | null
+    originalValue?: string | null
+    exchangeRates?: NullableJsonNullValueInput | InputJsonValue
+    sourceUrl?: string | null
     tenant: TenantCreateNestedOneWithoutTendersInput
     creator: UserCreateNestedOneWithoutCreatedTendersInput
     assignments?: TenderAssignmentCreateNestedManyWithoutTenderInput
@@ -27302,6 +34500,13 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     deletedAt?: Date | string | null
+    scrapedAt?: Date | string | null
+    sourcePortal?: string | null
+    originalTitle?: string | null
+    originalStatus?: string | null
+    originalValue?: string | null
+    exchangeRates?: NullableJsonNullValueInput | InputJsonValue
+    sourceUrl?: string | null
     assignments?: TenderAssignmentUncheckedCreateNestedManyWithoutTenderInput
     documents?: DocumentUncheckedCreateNestedManyWithoutTenderInput
     bids?: BidUncheckedCreateNestedManyWithoutTenderInput
@@ -27319,8 +34524,10 @@ export namespace Prisma {
   export type UserCreateWithoutCommentsInput = {
     id?: string
     email: string
+    passwordHash?: string | null
     firstName: string
     lastName: string
+    phone?: string | null
     role?: $Enums.UserRole
     isActive?: boolean
     lastLoginAt?: Date | string | null
@@ -27336,14 +34543,20 @@ export namespace Prisma {
     submissions?: SubmissionCreateNestedManyWithoutSubmitterInput
     notifications?: NotificationCreateNestedManyWithoutUserInput
     audits?: AuditLogCreateNestedManyWithoutUserInput
+    triggeredScrapings?: ScrapingLogCreateNestedManyWithoutTriggeredByUserInput
+    sessions?: SessionCreateNestedManyWithoutUserInput
+    notificationPreferences?: NotificationPreferenceCreateNestedManyWithoutUserInput
+    notificationLogs?: NotificationLogCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutCommentsInput = {
     id?: string
     tenantId: string
     email: string
+    passwordHash?: string | null
     firstName: string
     lastName: string
+    phone?: string | null
     role?: $Enums.UserRole
     isActive?: boolean
     lastLoginAt?: Date | string | null
@@ -27358,6 +34571,10 @@ export namespace Prisma {
     submissions?: SubmissionUncheckedCreateNestedManyWithoutSubmitterInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
     audits?: AuditLogUncheckedCreateNestedManyWithoutUserInput
+    triggeredScrapings?: ScrapingLogUncheckedCreateNestedManyWithoutTriggeredByUserInput
+    sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
+    notificationPreferences?: NotificationPreferenceUncheckedCreateNestedManyWithoutUserInput
+    notificationLogs?: NotificationLogUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutCommentsInput = {
@@ -27393,6 +34610,13 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    scrapedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    sourcePortal?: NullableStringFieldUpdateOperationsInput | string | null
+    originalTitle?: NullableStringFieldUpdateOperationsInput | string | null
+    originalStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    originalValue?: NullableStringFieldUpdateOperationsInput | string | null
+    exchangeRates?: NullableJsonNullValueInput | InputJsonValue
+    sourceUrl?: NullableStringFieldUpdateOperationsInput | string | null
     tenant?: TenantUpdateOneRequiredWithoutTendersNestedInput
     creator?: UserUpdateOneRequiredWithoutCreatedTendersNestedInput
     assignments?: TenderAssignmentUpdateManyWithoutTenderNestedInput
@@ -27423,6 +34647,13 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    scrapedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    sourcePortal?: NullableStringFieldUpdateOperationsInput | string | null
+    originalTitle?: NullableStringFieldUpdateOperationsInput | string | null
+    originalStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    originalValue?: NullableStringFieldUpdateOperationsInput | string | null
+    exchangeRates?: NullableJsonNullValueInput | InputJsonValue
+    sourceUrl?: NullableStringFieldUpdateOperationsInput | string | null
     assignments?: TenderAssignmentUncheckedUpdateManyWithoutTenderNestedInput
     documents?: DocumentUncheckedUpdateManyWithoutTenderNestedInput
     bids?: BidUncheckedUpdateManyWithoutTenderNestedInput
@@ -27446,8 +34677,10 @@ export namespace Prisma {
   export type UserUpdateWithoutCommentsInput = {
     id?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
+    passwordHash?: NullableStringFieldUpdateOperationsInput | string | null
     firstName?: StringFieldUpdateOperationsInput | string
     lastName?: StringFieldUpdateOperationsInput | string
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
     role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
     isActive?: BoolFieldUpdateOperationsInput | boolean
     lastLoginAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -27463,14 +34696,20 @@ export namespace Prisma {
     submissions?: SubmissionUpdateManyWithoutSubmitterNestedInput
     notifications?: NotificationUpdateManyWithoutUserNestedInput
     audits?: AuditLogUpdateManyWithoutUserNestedInput
+    triggeredScrapings?: ScrapingLogUpdateManyWithoutTriggeredByUserNestedInput
+    sessions?: SessionUpdateManyWithoutUserNestedInput
+    notificationPreferences?: NotificationPreferenceUpdateManyWithoutUserNestedInput
+    notificationLogs?: NotificationLogUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutCommentsInput = {
     id?: StringFieldUpdateOperationsInput | string
     tenantId?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
+    passwordHash?: NullableStringFieldUpdateOperationsInput | string | null
     firstName?: StringFieldUpdateOperationsInput | string
     lastName?: StringFieldUpdateOperationsInput | string
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
     role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
     isActive?: BoolFieldUpdateOperationsInput | boolean
     lastLoginAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -27485,13 +34724,19 @@ export namespace Prisma {
     submissions?: SubmissionUncheckedUpdateManyWithoutSubmitterNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
     audits?: AuditLogUncheckedUpdateManyWithoutUserNestedInput
+    triggeredScrapings?: ScrapingLogUncheckedUpdateManyWithoutTriggeredByUserNestedInput
+    sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
+    notificationPreferences?: NotificationPreferenceUncheckedUpdateManyWithoutUserNestedInput
+    notificationLogs?: NotificationLogUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserCreateWithoutNotificationsInput = {
     id?: string
     email: string
+    passwordHash?: string | null
     firstName: string
     lastName: string
+    phone?: string | null
     role?: $Enums.UserRole
     isActive?: boolean
     lastLoginAt?: Date | string | null
@@ -27507,14 +34752,20 @@ export namespace Prisma {
     submissions?: SubmissionCreateNestedManyWithoutSubmitterInput
     comments?: CommentCreateNestedManyWithoutAuthorInput
     audits?: AuditLogCreateNestedManyWithoutUserInput
+    triggeredScrapings?: ScrapingLogCreateNestedManyWithoutTriggeredByUserInput
+    sessions?: SessionCreateNestedManyWithoutUserInput
+    notificationPreferences?: NotificationPreferenceCreateNestedManyWithoutUserInput
+    notificationLogs?: NotificationLogCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutNotificationsInput = {
     id?: string
     tenantId: string
     email: string
+    passwordHash?: string | null
     firstName: string
     lastName: string
+    phone?: string | null
     role?: $Enums.UserRole
     isActive?: boolean
     lastLoginAt?: Date | string | null
@@ -27529,6 +34780,10 @@ export namespace Prisma {
     submissions?: SubmissionUncheckedCreateNestedManyWithoutSubmitterInput
     comments?: CommentUncheckedCreateNestedManyWithoutAuthorInput
     audits?: AuditLogUncheckedCreateNestedManyWithoutUserInput
+    triggeredScrapings?: ScrapingLogUncheckedCreateNestedManyWithoutTriggeredByUserInput
+    sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
+    notificationPreferences?: NotificationPreferenceUncheckedCreateNestedManyWithoutUserInput
+    notificationLogs?: NotificationLogUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutNotificationsInput = {
@@ -27553,6 +34808,13 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     deletedAt?: Date | string | null
+    scrapedAt?: Date | string | null
+    sourcePortal?: string | null
+    originalTitle?: string | null
+    originalStatus?: string | null
+    originalValue?: string | null
+    exchangeRates?: NullableJsonNullValueInput | InputJsonValue
+    sourceUrl?: string | null
     tenant: TenantCreateNestedOneWithoutTendersInput
     creator: UserCreateNestedOneWithoutCreatedTendersInput
     assignments?: TenderAssignmentCreateNestedManyWithoutTenderInput
@@ -27583,6 +34845,13 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     deletedAt?: Date | string | null
+    scrapedAt?: Date | string | null
+    sourcePortal?: string | null
+    originalTitle?: string | null
+    originalStatus?: string | null
+    originalValue?: string | null
+    exchangeRates?: NullableJsonNullValueInput | InputJsonValue
+    sourceUrl?: string | null
     assignments?: TenderAssignmentUncheckedCreateNestedManyWithoutTenderInput
     documents?: DocumentUncheckedCreateNestedManyWithoutTenderInput
     bids?: BidUncheckedCreateNestedManyWithoutTenderInput
@@ -27611,8 +34880,10 @@ export namespace Prisma {
   export type UserUpdateWithoutNotificationsInput = {
     id?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
+    passwordHash?: NullableStringFieldUpdateOperationsInput | string | null
     firstName?: StringFieldUpdateOperationsInput | string
     lastName?: StringFieldUpdateOperationsInput | string
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
     role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
     isActive?: BoolFieldUpdateOperationsInput | boolean
     lastLoginAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -27628,14 +34899,20 @@ export namespace Prisma {
     submissions?: SubmissionUpdateManyWithoutSubmitterNestedInput
     comments?: CommentUpdateManyWithoutAuthorNestedInput
     audits?: AuditLogUpdateManyWithoutUserNestedInput
+    triggeredScrapings?: ScrapingLogUpdateManyWithoutTriggeredByUserNestedInput
+    sessions?: SessionUpdateManyWithoutUserNestedInput
+    notificationPreferences?: NotificationPreferenceUpdateManyWithoutUserNestedInput
+    notificationLogs?: NotificationLogUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutNotificationsInput = {
     id?: StringFieldUpdateOperationsInput | string
     tenantId?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
+    passwordHash?: NullableStringFieldUpdateOperationsInput | string | null
     firstName?: StringFieldUpdateOperationsInput | string
     lastName?: StringFieldUpdateOperationsInput | string
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
     role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
     isActive?: BoolFieldUpdateOperationsInput | boolean
     lastLoginAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -27650,6 +34927,10 @@ export namespace Prisma {
     submissions?: SubmissionUncheckedUpdateManyWithoutSubmitterNestedInput
     comments?: CommentUncheckedUpdateManyWithoutAuthorNestedInput
     audits?: AuditLogUncheckedUpdateManyWithoutUserNestedInput
+    triggeredScrapings?: ScrapingLogUncheckedUpdateManyWithoutTriggeredByUserNestedInput
+    sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
+    notificationPreferences?: NotificationPreferenceUncheckedUpdateManyWithoutUserNestedInput
+    notificationLogs?: NotificationLogUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type TenderUpsertWithoutNotificationsInput = {
@@ -27680,6 +34961,13 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    scrapedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    sourcePortal?: NullableStringFieldUpdateOperationsInput | string | null
+    originalTitle?: NullableStringFieldUpdateOperationsInput | string | null
+    originalStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    originalValue?: NullableStringFieldUpdateOperationsInput | string | null
+    exchangeRates?: NullableJsonNullValueInput | InputJsonValue
+    sourceUrl?: NullableStringFieldUpdateOperationsInput | string | null
     tenant?: TenantUpdateOneRequiredWithoutTendersNestedInput
     creator?: UserUpdateOneRequiredWithoutCreatedTendersNestedInput
     assignments?: TenderAssignmentUpdateManyWithoutTenderNestedInput
@@ -27710,6 +34998,13 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    scrapedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    sourcePortal?: NullableStringFieldUpdateOperationsInput | string | null
+    originalTitle?: NullableStringFieldUpdateOperationsInput | string | null
+    originalStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    originalValue?: NullableStringFieldUpdateOperationsInput | string | null
+    exchangeRates?: NullableJsonNullValueInput | InputJsonValue
+    sourceUrl?: NullableStringFieldUpdateOperationsInput | string | null
     assignments?: TenderAssignmentUncheckedUpdateManyWithoutTenderNestedInput
     documents?: DocumentUncheckedUpdateManyWithoutTenderNestedInput
     bids?: BidUncheckedUpdateManyWithoutTenderNestedInput
@@ -27724,6 +35019,8 @@ export namespace Prisma {
     name: string
     subdomain: string
     settings?: JsonNullValueInput | InputJsonValue
+    webhookUrl?: string | null
+    metadata?: JsonNullValueInput | InputJsonValue
     isActive?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -27731,6 +35028,8 @@ export namespace Prisma {
     users?: UserCreateNestedManyWithoutTenantInput
     tenders?: TenderCreateNestedManyWithoutTenantInput
     apiKeys?: ApiKeyCreateNestedManyWithoutTenantInput
+    scrapingLogs?: ScrapingLogCreateNestedManyWithoutTenantInput
+    notificationLogs?: NotificationLogCreateNestedManyWithoutTenantInput
   }
 
   export type TenantUncheckedCreateWithoutAuditsInput = {
@@ -27738,6 +35037,8 @@ export namespace Prisma {
     name: string
     subdomain: string
     settings?: JsonNullValueInput | InputJsonValue
+    webhookUrl?: string | null
+    metadata?: JsonNullValueInput | InputJsonValue
     isActive?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -27745,6 +35046,8 @@ export namespace Prisma {
     users?: UserUncheckedCreateNestedManyWithoutTenantInput
     tenders?: TenderUncheckedCreateNestedManyWithoutTenantInput
     apiKeys?: ApiKeyUncheckedCreateNestedManyWithoutTenantInput
+    scrapingLogs?: ScrapingLogUncheckedCreateNestedManyWithoutTenantInput
+    notificationLogs?: NotificationLogUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type TenantCreateOrConnectWithoutAuditsInput = {
@@ -27755,8 +35058,10 @@ export namespace Prisma {
   export type UserCreateWithoutAuditsInput = {
     id?: string
     email: string
+    passwordHash?: string | null
     firstName: string
     lastName: string
+    phone?: string | null
     role?: $Enums.UserRole
     isActive?: boolean
     lastLoginAt?: Date | string | null
@@ -27772,14 +35077,20 @@ export namespace Prisma {
     submissions?: SubmissionCreateNestedManyWithoutSubmitterInput
     comments?: CommentCreateNestedManyWithoutAuthorInput
     notifications?: NotificationCreateNestedManyWithoutUserInput
+    triggeredScrapings?: ScrapingLogCreateNestedManyWithoutTriggeredByUserInput
+    sessions?: SessionCreateNestedManyWithoutUserInput
+    notificationPreferences?: NotificationPreferenceCreateNestedManyWithoutUserInput
+    notificationLogs?: NotificationLogCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutAuditsInput = {
     id?: string
     tenantId: string
     email: string
+    passwordHash?: string | null
     firstName: string
     lastName: string
+    phone?: string | null
     role?: $Enums.UserRole
     isActive?: boolean
     lastLoginAt?: Date | string | null
@@ -27794,6 +35105,10 @@ export namespace Prisma {
     submissions?: SubmissionUncheckedCreateNestedManyWithoutSubmitterInput
     comments?: CommentUncheckedCreateNestedManyWithoutAuthorInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
+    triggeredScrapings?: ScrapingLogUncheckedCreateNestedManyWithoutTriggeredByUserInput
+    sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
+    notificationPreferences?: NotificationPreferenceUncheckedCreateNestedManyWithoutUserInput
+    notificationLogs?: NotificationLogUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutAuditsInput = {
@@ -27817,6 +35132,8 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     subdomain?: StringFieldUpdateOperationsInput | string
     settings?: JsonNullValueInput | InputJsonValue
+    webhookUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    metadata?: JsonNullValueInput | InputJsonValue
     isActive?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -27824,6 +35141,8 @@ export namespace Prisma {
     users?: UserUpdateManyWithoutTenantNestedInput
     tenders?: TenderUpdateManyWithoutTenantNestedInput
     apiKeys?: ApiKeyUpdateManyWithoutTenantNestedInput
+    scrapingLogs?: ScrapingLogUpdateManyWithoutTenantNestedInput
+    notificationLogs?: NotificationLogUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantUncheckedUpdateWithoutAuditsInput = {
@@ -27831,6 +35150,8 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     subdomain?: StringFieldUpdateOperationsInput | string
     settings?: JsonNullValueInput | InputJsonValue
+    webhookUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    metadata?: JsonNullValueInput | InputJsonValue
     isActive?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -27838,6 +35159,8 @@ export namespace Prisma {
     users?: UserUncheckedUpdateManyWithoutTenantNestedInput
     tenders?: TenderUncheckedUpdateManyWithoutTenantNestedInput
     apiKeys?: ApiKeyUncheckedUpdateManyWithoutTenantNestedInput
+    scrapingLogs?: ScrapingLogUncheckedUpdateManyWithoutTenantNestedInput
+    notificationLogs?: NotificationLogUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type UserUpsertWithoutAuditsInput = {
@@ -27854,8 +35177,10 @@ export namespace Prisma {
   export type UserUpdateWithoutAuditsInput = {
     id?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
+    passwordHash?: NullableStringFieldUpdateOperationsInput | string | null
     firstName?: StringFieldUpdateOperationsInput | string
     lastName?: StringFieldUpdateOperationsInput | string
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
     role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
     isActive?: BoolFieldUpdateOperationsInput | boolean
     lastLoginAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -27871,14 +35196,20 @@ export namespace Prisma {
     submissions?: SubmissionUpdateManyWithoutSubmitterNestedInput
     comments?: CommentUpdateManyWithoutAuthorNestedInput
     notifications?: NotificationUpdateManyWithoutUserNestedInput
+    triggeredScrapings?: ScrapingLogUpdateManyWithoutTriggeredByUserNestedInput
+    sessions?: SessionUpdateManyWithoutUserNestedInput
+    notificationPreferences?: NotificationPreferenceUpdateManyWithoutUserNestedInput
+    notificationLogs?: NotificationLogUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutAuditsInput = {
     id?: StringFieldUpdateOperationsInput | string
     tenantId?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
+    passwordHash?: NullableStringFieldUpdateOperationsInput | string | null
     firstName?: StringFieldUpdateOperationsInput | string
     lastName?: StringFieldUpdateOperationsInput | string
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
     role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
     isActive?: BoolFieldUpdateOperationsInput | boolean
     lastLoginAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -27893,6 +35224,10 @@ export namespace Prisma {
     submissions?: SubmissionUncheckedUpdateManyWithoutSubmitterNestedInput
     comments?: CommentUncheckedUpdateManyWithoutAuthorNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
+    triggeredScrapings?: ScrapingLogUncheckedUpdateManyWithoutTriggeredByUserNestedInput
+    sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
+    notificationPreferences?: NotificationPreferenceUncheckedUpdateManyWithoutUserNestedInput
+    notificationLogs?: NotificationLogUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type TenantCreateWithoutApiKeysInput = {
@@ -27900,6 +35235,8 @@ export namespace Prisma {
     name: string
     subdomain: string
     settings?: JsonNullValueInput | InputJsonValue
+    webhookUrl?: string | null
+    metadata?: JsonNullValueInput | InputJsonValue
     isActive?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -27907,6 +35244,8 @@ export namespace Prisma {
     users?: UserCreateNestedManyWithoutTenantInput
     tenders?: TenderCreateNestedManyWithoutTenantInput
     audits?: AuditLogCreateNestedManyWithoutTenantInput
+    scrapingLogs?: ScrapingLogCreateNestedManyWithoutTenantInput
+    notificationLogs?: NotificationLogCreateNestedManyWithoutTenantInput
   }
 
   export type TenantUncheckedCreateWithoutApiKeysInput = {
@@ -27914,6 +35253,8 @@ export namespace Prisma {
     name: string
     subdomain: string
     settings?: JsonNullValueInput | InputJsonValue
+    webhookUrl?: string | null
+    metadata?: JsonNullValueInput | InputJsonValue
     isActive?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -27921,6 +35262,8 @@ export namespace Prisma {
     users?: UserUncheckedCreateNestedManyWithoutTenantInput
     tenders?: TenderUncheckedCreateNestedManyWithoutTenantInput
     audits?: AuditLogUncheckedCreateNestedManyWithoutTenantInput
+    scrapingLogs?: ScrapingLogUncheckedCreateNestedManyWithoutTenantInput
+    notificationLogs?: NotificationLogUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type TenantCreateOrConnectWithoutApiKeysInput = {
@@ -27944,6 +35287,8 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     subdomain?: StringFieldUpdateOperationsInput | string
     settings?: JsonNullValueInput | InputJsonValue
+    webhookUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    metadata?: JsonNullValueInput | InputJsonValue
     isActive?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -27951,6 +35296,8 @@ export namespace Prisma {
     users?: UserUpdateManyWithoutTenantNestedInput
     tenders?: TenderUpdateManyWithoutTenantNestedInput
     audits?: AuditLogUpdateManyWithoutTenantNestedInput
+    scrapingLogs?: ScrapingLogUpdateManyWithoutTenantNestedInput
+    notificationLogs?: NotificationLogUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantUncheckedUpdateWithoutApiKeysInput = {
@@ -27958,6 +35305,8 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     subdomain?: StringFieldUpdateOperationsInput | string
     settings?: JsonNullValueInput | InputJsonValue
+    webhookUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    metadata?: JsonNullValueInput | InputJsonValue
     isActive?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -27965,13 +35314,705 @@ export namespace Prisma {
     users?: UserUncheckedUpdateManyWithoutTenantNestedInput
     tenders?: TenderUncheckedUpdateManyWithoutTenantNestedInput
     audits?: AuditLogUncheckedUpdateManyWithoutTenantNestedInput
+    scrapingLogs?: ScrapingLogUncheckedUpdateManyWithoutTenantNestedInput
+    notificationLogs?: NotificationLogUncheckedUpdateManyWithoutTenantNestedInput
+  }
+
+  export type TenantCreateWithoutScrapingLogsInput = {
+    id?: string
+    name: string
+    subdomain: string
+    settings?: JsonNullValueInput | InputJsonValue
+    webhookUrl?: string | null
+    metadata?: JsonNullValueInput | InputJsonValue
+    isActive?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    deletedAt?: Date | string | null
+    users?: UserCreateNestedManyWithoutTenantInput
+    tenders?: TenderCreateNestedManyWithoutTenantInput
+    audits?: AuditLogCreateNestedManyWithoutTenantInput
+    apiKeys?: ApiKeyCreateNestedManyWithoutTenantInput
+    notificationLogs?: NotificationLogCreateNestedManyWithoutTenantInput
+  }
+
+  export type TenantUncheckedCreateWithoutScrapingLogsInput = {
+    id?: string
+    name: string
+    subdomain: string
+    settings?: JsonNullValueInput | InputJsonValue
+    webhookUrl?: string | null
+    metadata?: JsonNullValueInput | InputJsonValue
+    isActive?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    deletedAt?: Date | string | null
+    users?: UserUncheckedCreateNestedManyWithoutTenantInput
+    tenders?: TenderUncheckedCreateNestedManyWithoutTenantInput
+    audits?: AuditLogUncheckedCreateNestedManyWithoutTenantInput
+    apiKeys?: ApiKeyUncheckedCreateNestedManyWithoutTenantInput
+    notificationLogs?: NotificationLogUncheckedCreateNestedManyWithoutTenantInput
+  }
+
+  export type TenantCreateOrConnectWithoutScrapingLogsInput = {
+    where: TenantWhereUniqueInput
+    create: XOR<TenantCreateWithoutScrapingLogsInput, TenantUncheckedCreateWithoutScrapingLogsInput>
+  }
+
+  export type UserCreateWithoutTriggeredScrapingsInput = {
+    id?: string
+    email: string
+    passwordHash?: string | null
+    firstName: string
+    lastName: string
+    phone?: string | null
+    role?: $Enums.UserRole
+    isActive?: boolean
+    lastLoginAt?: Date | string | null
+    settings?: JsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    deletedAt?: Date | string | null
+    tenant: TenantCreateNestedOneWithoutUsersInput
+    tenderAssignments?: TenderAssignmentCreateNestedManyWithoutUserInput
+    createdTenders?: TenderCreateNestedManyWithoutCreatorInput
+    ownedBids?: BidCreateNestedManyWithoutOwnerInput
+    documents?: DocumentCreateNestedManyWithoutUploaderInput
+    submissions?: SubmissionCreateNestedManyWithoutSubmitterInput
+    comments?: CommentCreateNestedManyWithoutAuthorInput
+    notifications?: NotificationCreateNestedManyWithoutUserInput
+    audits?: AuditLogCreateNestedManyWithoutUserInput
+    sessions?: SessionCreateNestedManyWithoutUserInput
+    notificationPreferences?: NotificationPreferenceCreateNestedManyWithoutUserInput
+    notificationLogs?: NotificationLogCreateNestedManyWithoutUserInput
+  }
+
+  export type UserUncheckedCreateWithoutTriggeredScrapingsInput = {
+    id?: string
+    tenantId: string
+    email: string
+    passwordHash?: string | null
+    firstName: string
+    lastName: string
+    phone?: string | null
+    role?: $Enums.UserRole
+    isActive?: boolean
+    lastLoginAt?: Date | string | null
+    settings?: JsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    deletedAt?: Date | string | null
+    tenderAssignments?: TenderAssignmentUncheckedCreateNestedManyWithoutUserInput
+    createdTenders?: TenderUncheckedCreateNestedManyWithoutCreatorInput
+    ownedBids?: BidUncheckedCreateNestedManyWithoutOwnerInput
+    documents?: DocumentUncheckedCreateNestedManyWithoutUploaderInput
+    submissions?: SubmissionUncheckedCreateNestedManyWithoutSubmitterInput
+    comments?: CommentUncheckedCreateNestedManyWithoutAuthorInput
+    notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
+    audits?: AuditLogUncheckedCreateNestedManyWithoutUserInput
+    sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
+    notificationPreferences?: NotificationPreferenceUncheckedCreateNestedManyWithoutUserInput
+    notificationLogs?: NotificationLogUncheckedCreateNestedManyWithoutUserInput
+  }
+
+  export type UserCreateOrConnectWithoutTriggeredScrapingsInput = {
+    where: UserWhereUniqueInput
+    create: XOR<UserCreateWithoutTriggeredScrapingsInput, UserUncheckedCreateWithoutTriggeredScrapingsInput>
+  }
+
+  export type TenantUpsertWithoutScrapingLogsInput = {
+    update: XOR<TenantUpdateWithoutScrapingLogsInput, TenantUncheckedUpdateWithoutScrapingLogsInput>
+    create: XOR<TenantCreateWithoutScrapingLogsInput, TenantUncheckedCreateWithoutScrapingLogsInput>
+    where?: TenantWhereInput
+  }
+
+  export type TenantUpdateToOneWithWhereWithoutScrapingLogsInput = {
+    where?: TenantWhereInput
+    data: XOR<TenantUpdateWithoutScrapingLogsInput, TenantUncheckedUpdateWithoutScrapingLogsInput>
+  }
+
+  export type TenantUpdateWithoutScrapingLogsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    subdomain?: StringFieldUpdateOperationsInput | string
+    settings?: JsonNullValueInput | InputJsonValue
+    webhookUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    metadata?: JsonNullValueInput | InputJsonValue
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    users?: UserUpdateManyWithoutTenantNestedInput
+    tenders?: TenderUpdateManyWithoutTenantNestedInput
+    audits?: AuditLogUpdateManyWithoutTenantNestedInput
+    apiKeys?: ApiKeyUpdateManyWithoutTenantNestedInput
+    notificationLogs?: NotificationLogUpdateManyWithoutTenantNestedInput
+  }
+
+  export type TenantUncheckedUpdateWithoutScrapingLogsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    subdomain?: StringFieldUpdateOperationsInput | string
+    settings?: JsonNullValueInput | InputJsonValue
+    webhookUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    metadata?: JsonNullValueInput | InputJsonValue
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    users?: UserUncheckedUpdateManyWithoutTenantNestedInput
+    tenders?: TenderUncheckedUpdateManyWithoutTenantNestedInput
+    audits?: AuditLogUncheckedUpdateManyWithoutTenantNestedInput
+    apiKeys?: ApiKeyUncheckedUpdateManyWithoutTenantNestedInput
+    notificationLogs?: NotificationLogUncheckedUpdateManyWithoutTenantNestedInput
+  }
+
+  export type UserUpsertWithoutTriggeredScrapingsInput = {
+    update: XOR<UserUpdateWithoutTriggeredScrapingsInput, UserUncheckedUpdateWithoutTriggeredScrapingsInput>
+    create: XOR<UserCreateWithoutTriggeredScrapingsInput, UserUncheckedCreateWithoutTriggeredScrapingsInput>
+    where?: UserWhereInput
+  }
+
+  export type UserUpdateToOneWithWhereWithoutTriggeredScrapingsInput = {
+    where?: UserWhereInput
+    data: XOR<UserUpdateWithoutTriggeredScrapingsInput, UserUncheckedUpdateWithoutTriggeredScrapingsInput>
+  }
+
+  export type UserUpdateWithoutTriggeredScrapingsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    passwordHash?: NullableStringFieldUpdateOperationsInput | string | null
+    firstName?: StringFieldUpdateOperationsInput | string
+    lastName?: StringFieldUpdateOperationsInput | string
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    lastLoginAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    settings?: JsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    tenant?: TenantUpdateOneRequiredWithoutUsersNestedInput
+    tenderAssignments?: TenderAssignmentUpdateManyWithoutUserNestedInput
+    createdTenders?: TenderUpdateManyWithoutCreatorNestedInput
+    ownedBids?: BidUpdateManyWithoutOwnerNestedInput
+    documents?: DocumentUpdateManyWithoutUploaderNestedInput
+    submissions?: SubmissionUpdateManyWithoutSubmitterNestedInput
+    comments?: CommentUpdateManyWithoutAuthorNestedInput
+    notifications?: NotificationUpdateManyWithoutUserNestedInput
+    audits?: AuditLogUpdateManyWithoutUserNestedInput
+    sessions?: SessionUpdateManyWithoutUserNestedInput
+    notificationPreferences?: NotificationPreferenceUpdateManyWithoutUserNestedInput
+    notificationLogs?: NotificationLogUpdateManyWithoutUserNestedInput
+  }
+
+  export type UserUncheckedUpdateWithoutTriggeredScrapingsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    tenantId?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    passwordHash?: NullableStringFieldUpdateOperationsInput | string | null
+    firstName?: StringFieldUpdateOperationsInput | string
+    lastName?: StringFieldUpdateOperationsInput | string
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    lastLoginAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    settings?: JsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    tenderAssignments?: TenderAssignmentUncheckedUpdateManyWithoutUserNestedInput
+    createdTenders?: TenderUncheckedUpdateManyWithoutCreatorNestedInput
+    ownedBids?: BidUncheckedUpdateManyWithoutOwnerNestedInput
+    documents?: DocumentUncheckedUpdateManyWithoutUploaderNestedInput
+    submissions?: SubmissionUncheckedUpdateManyWithoutSubmitterNestedInput
+    comments?: CommentUncheckedUpdateManyWithoutAuthorNestedInput
+    notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
+    audits?: AuditLogUncheckedUpdateManyWithoutUserNestedInput
+    sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
+    notificationPreferences?: NotificationPreferenceUncheckedUpdateManyWithoutUserNestedInput
+    notificationLogs?: NotificationLogUncheckedUpdateManyWithoutUserNestedInput
+  }
+
+  export type UserCreateWithoutSessionsInput = {
+    id?: string
+    email: string
+    passwordHash?: string | null
+    firstName: string
+    lastName: string
+    phone?: string | null
+    role?: $Enums.UserRole
+    isActive?: boolean
+    lastLoginAt?: Date | string | null
+    settings?: JsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    deletedAt?: Date | string | null
+    tenant: TenantCreateNestedOneWithoutUsersInput
+    tenderAssignments?: TenderAssignmentCreateNestedManyWithoutUserInput
+    createdTenders?: TenderCreateNestedManyWithoutCreatorInput
+    ownedBids?: BidCreateNestedManyWithoutOwnerInput
+    documents?: DocumentCreateNestedManyWithoutUploaderInput
+    submissions?: SubmissionCreateNestedManyWithoutSubmitterInput
+    comments?: CommentCreateNestedManyWithoutAuthorInput
+    notifications?: NotificationCreateNestedManyWithoutUserInput
+    audits?: AuditLogCreateNestedManyWithoutUserInput
+    triggeredScrapings?: ScrapingLogCreateNestedManyWithoutTriggeredByUserInput
+    notificationPreferences?: NotificationPreferenceCreateNestedManyWithoutUserInput
+    notificationLogs?: NotificationLogCreateNestedManyWithoutUserInput
+  }
+
+  export type UserUncheckedCreateWithoutSessionsInput = {
+    id?: string
+    tenantId: string
+    email: string
+    passwordHash?: string | null
+    firstName: string
+    lastName: string
+    phone?: string | null
+    role?: $Enums.UserRole
+    isActive?: boolean
+    lastLoginAt?: Date | string | null
+    settings?: JsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    deletedAt?: Date | string | null
+    tenderAssignments?: TenderAssignmentUncheckedCreateNestedManyWithoutUserInput
+    createdTenders?: TenderUncheckedCreateNestedManyWithoutCreatorInput
+    ownedBids?: BidUncheckedCreateNestedManyWithoutOwnerInput
+    documents?: DocumentUncheckedCreateNestedManyWithoutUploaderInput
+    submissions?: SubmissionUncheckedCreateNestedManyWithoutSubmitterInput
+    comments?: CommentUncheckedCreateNestedManyWithoutAuthorInput
+    notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
+    audits?: AuditLogUncheckedCreateNestedManyWithoutUserInput
+    triggeredScrapings?: ScrapingLogUncheckedCreateNestedManyWithoutTriggeredByUserInput
+    notificationPreferences?: NotificationPreferenceUncheckedCreateNestedManyWithoutUserInput
+    notificationLogs?: NotificationLogUncheckedCreateNestedManyWithoutUserInput
+  }
+
+  export type UserCreateOrConnectWithoutSessionsInput = {
+    where: UserWhereUniqueInput
+    create: XOR<UserCreateWithoutSessionsInput, UserUncheckedCreateWithoutSessionsInput>
+  }
+
+  export type UserUpsertWithoutSessionsInput = {
+    update: XOR<UserUpdateWithoutSessionsInput, UserUncheckedUpdateWithoutSessionsInput>
+    create: XOR<UserCreateWithoutSessionsInput, UserUncheckedCreateWithoutSessionsInput>
+    where?: UserWhereInput
+  }
+
+  export type UserUpdateToOneWithWhereWithoutSessionsInput = {
+    where?: UserWhereInput
+    data: XOR<UserUpdateWithoutSessionsInput, UserUncheckedUpdateWithoutSessionsInput>
+  }
+
+  export type UserUpdateWithoutSessionsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    passwordHash?: NullableStringFieldUpdateOperationsInput | string | null
+    firstName?: StringFieldUpdateOperationsInput | string
+    lastName?: StringFieldUpdateOperationsInput | string
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    lastLoginAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    settings?: JsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    tenant?: TenantUpdateOneRequiredWithoutUsersNestedInput
+    tenderAssignments?: TenderAssignmentUpdateManyWithoutUserNestedInput
+    createdTenders?: TenderUpdateManyWithoutCreatorNestedInput
+    ownedBids?: BidUpdateManyWithoutOwnerNestedInput
+    documents?: DocumentUpdateManyWithoutUploaderNestedInput
+    submissions?: SubmissionUpdateManyWithoutSubmitterNestedInput
+    comments?: CommentUpdateManyWithoutAuthorNestedInput
+    notifications?: NotificationUpdateManyWithoutUserNestedInput
+    audits?: AuditLogUpdateManyWithoutUserNestedInput
+    triggeredScrapings?: ScrapingLogUpdateManyWithoutTriggeredByUserNestedInput
+    notificationPreferences?: NotificationPreferenceUpdateManyWithoutUserNestedInput
+    notificationLogs?: NotificationLogUpdateManyWithoutUserNestedInput
+  }
+
+  export type UserUncheckedUpdateWithoutSessionsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    tenantId?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    passwordHash?: NullableStringFieldUpdateOperationsInput | string | null
+    firstName?: StringFieldUpdateOperationsInput | string
+    lastName?: StringFieldUpdateOperationsInput | string
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    lastLoginAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    settings?: JsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    tenderAssignments?: TenderAssignmentUncheckedUpdateManyWithoutUserNestedInput
+    createdTenders?: TenderUncheckedUpdateManyWithoutCreatorNestedInput
+    ownedBids?: BidUncheckedUpdateManyWithoutOwnerNestedInput
+    documents?: DocumentUncheckedUpdateManyWithoutUploaderNestedInput
+    submissions?: SubmissionUncheckedUpdateManyWithoutSubmitterNestedInput
+    comments?: CommentUncheckedUpdateManyWithoutAuthorNestedInput
+    notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
+    audits?: AuditLogUncheckedUpdateManyWithoutUserNestedInput
+    triggeredScrapings?: ScrapingLogUncheckedUpdateManyWithoutTriggeredByUserNestedInput
+    notificationPreferences?: NotificationPreferenceUncheckedUpdateManyWithoutUserNestedInput
+    notificationLogs?: NotificationLogUncheckedUpdateManyWithoutUserNestedInput
+  }
+
+  export type UserCreateWithoutNotificationPreferencesInput = {
+    id?: string
+    email: string
+    passwordHash?: string | null
+    firstName: string
+    lastName: string
+    phone?: string | null
+    role?: $Enums.UserRole
+    isActive?: boolean
+    lastLoginAt?: Date | string | null
+    settings?: JsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    deletedAt?: Date | string | null
+    tenant: TenantCreateNestedOneWithoutUsersInput
+    tenderAssignments?: TenderAssignmentCreateNestedManyWithoutUserInput
+    createdTenders?: TenderCreateNestedManyWithoutCreatorInput
+    ownedBids?: BidCreateNestedManyWithoutOwnerInput
+    documents?: DocumentCreateNestedManyWithoutUploaderInput
+    submissions?: SubmissionCreateNestedManyWithoutSubmitterInput
+    comments?: CommentCreateNestedManyWithoutAuthorInput
+    notifications?: NotificationCreateNestedManyWithoutUserInput
+    audits?: AuditLogCreateNestedManyWithoutUserInput
+    triggeredScrapings?: ScrapingLogCreateNestedManyWithoutTriggeredByUserInput
+    sessions?: SessionCreateNestedManyWithoutUserInput
+    notificationLogs?: NotificationLogCreateNestedManyWithoutUserInput
+  }
+
+  export type UserUncheckedCreateWithoutNotificationPreferencesInput = {
+    id?: string
+    tenantId: string
+    email: string
+    passwordHash?: string | null
+    firstName: string
+    lastName: string
+    phone?: string | null
+    role?: $Enums.UserRole
+    isActive?: boolean
+    lastLoginAt?: Date | string | null
+    settings?: JsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    deletedAt?: Date | string | null
+    tenderAssignments?: TenderAssignmentUncheckedCreateNestedManyWithoutUserInput
+    createdTenders?: TenderUncheckedCreateNestedManyWithoutCreatorInput
+    ownedBids?: BidUncheckedCreateNestedManyWithoutOwnerInput
+    documents?: DocumentUncheckedCreateNestedManyWithoutUploaderInput
+    submissions?: SubmissionUncheckedCreateNestedManyWithoutSubmitterInput
+    comments?: CommentUncheckedCreateNestedManyWithoutAuthorInput
+    notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
+    audits?: AuditLogUncheckedCreateNestedManyWithoutUserInput
+    triggeredScrapings?: ScrapingLogUncheckedCreateNestedManyWithoutTriggeredByUserInput
+    sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
+    notificationLogs?: NotificationLogUncheckedCreateNestedManyWithoutUserInput
+  }
+
+  export type UserCreateOrConnectWithoutNotificationPreferencesInput = {
+    where: UserWhereUniqueInput
+    create: XOR<UserCreateWithoutNotificationPreferencesInput, UserUncheckedCreateWithoutNotificationPreferencesInput>
+  }
+
+  export type UserUpsertWithoutNotificationPreferencesInput = {
+    update: XOR<UserUpdateWithoutNotificationPreferencesInput, UserUncheckedUpdateWithoutNotificationPreferencesInput>
+    create: XOR<UserCreateWithoutNotificationPreferencesInput, UserUncheckedCreateWithoutNotificationPreferencesInput>
+    where?: UserWhereInput
+  }
+
+  export type UserUpdateToOneWithWhereWithoutNotificationPreferencesInput = {
+    where?: UserWhereInput
+    data: XOR<UserUpdateWithoutNotificationPreferencesInput, UserUncheckedUpdateWithoutNotificationPreferencesInput>
+  }
+
+  export type UserUpdateWithoutNotificationPreferencesInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    passwordHash?: NullableStringFieldUpdateOperationsInput | string | null
+    firstName?: StringFieldUpdateOperationsInput | string
+    lastName?: StringFieldUpdateOperationsInput | string
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    lastLoginAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    settings?: JsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    tenant?: TenantUpdateOneRequiredWithoutUsersNestedInput
+    tenderAssignments?: TenderAssignmentUpdateManyWithoutUserNestedInput
+    createdTenders?: TenderUpdateManyWithoutCreatorNestedInput
+    ownedBids?: BidUpdateManyWithoutOwnerNestedInput
+    documents?: DocumentUpdateManyWithoutUploaderNestedInput
+    submissions?: SubmissionUpdateManyWithoutSubmitterNestedInput
+    comments?: CommentUpdateManyWithoutAuthorNestedInput
+    notifications?: NotificationUpdateManyWithoutUserNestedInput
+    audits?: AuditLogUpdateManyWithoutUserNestedInput
+    triggeredScrapings?: ScrapingLogUpdateManyWithoutTriggeredByUserNestedInput
+    sessions?: SessionUpdateManyWithoutUserNestedInput
+    notificationLogs?: NotificationLogUpdateManyWithoutUserNestedInput
+  }
+
+  export type UserUncheckedUpdateWithoutNotificationPreferencesInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    tenantId?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    passwordHash?: NullableStringFieldUpdateOperationsInput | string | null
+    firstName?: StringFieldUpdateOperationsInput | string
+    lastName?: StringFieldUpdateOperationsInput | string
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    lastLoginAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    settings?: JsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    tenderAssignments?: TenderAssignmentUncheckedUpdateManyWithoutUserNestedInput
+    createdTenders?: TenderUncheckedUpdateManyWithoutCreatorNestedInput
+    ownedBids?: BidUncheckedUpdateManyWithoutOwnerNestedInput
+    documents?: DocumentUncheckedUpdateManyWithoutUploaderNestedInput
+    submissions?: SubmissionUncheckedUpdateManyWithoutSubmitterNestedInput
+    comments?: CommentUncheckedUpdateManyWithoutAuthorNestedInput
+    notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
+    audits?: AuditLogUncheckedUpdateManyWithoutUserNestedInput
+    triggeredScrapings?: ScrapingLogUncheckedUpdateManyWithoutTriggeredByUserNestedInput
+    sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
+    notificationLogs?: NotificationLogUncheckedUpdateManyWithoutUserNestedInput
+  }
+
+  export type TenantCreateWithoutNotificationLogsInput = {
+    id?: string
+    name: string
+    subdomain: string
+    settings?: JsonNullValueInput | InputJsonValue
+    webhookUrl?: string | null
+    metadata?: JsonNullValueInput | InputJsonValue
+    isActive?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    deletedAt?: Date | string | null
+    users?: UserCreateNestedManyWithoutTenantInput
+    tenders?: TenderCreateNestedManyWithoutTenantInput
+    audits?: AuditLogCreateNestedManyWithoutTenantInput
+    apiKeys?: ApiKeyCreateNestedManyWithoutTenantInput
+    scrapingLogs?: ScrapingLogCreateNestedManyWithoutTenantInput
+  }
+
+  export type TenantUncheckedCreateWithoutNotificationLogsInput = {
+    id?: string
+    name: string
+    subdomain: string
+    settings?: JsonNullValueInput | InputJsonValue
+    webhookUrl?: string | null
+    metadata?: JsonNullValueInput | InputJsonValue
+    isActive?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    deletedAt?: Date | string | null
+    users?: UserUncheckedCreateNestedManyWithoutTenantInput
+    tenders?: TenderUncheckedCreateNestedManyWithoutTenantInput
+    audits?: AuditLogUncheckedCreateNestedManyWithoutTenantInput
+    apiKeys?: ApiKeyUncheckedCreateNestedManyWithoutTenantInput
+    scrapingLogs?: ScrapingLogUncheckedCreateNestedManyWithoutTenantInput
+  }
+
+  export type TenantCreateOrConnectWithoutNotificationLogsInput = {
+    where: TenantWhereUniqueInput
+    create: XOR<TenantCreateWithoutNotificationLogsInput, TenantUncheckedCreateWithoutNotificationLogsInput>
+  }
+
+  export type UserCreateWithoutNotificationLogsInput = {
+    id?: string
+    email: string
+    passwordHash?: string | null
+    firstName: string
+    lastName: string
+    phone?: string | null
+    role?: $Enums.UserRole
+    isActive?: boolean
+    lastLoginAt?: Date | string | null
+    settings?: JsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    deletedAt?: Date | string | null
+    tenant: TenantCreateNestedOneWithoutUsersInput
+    tenderAssignments?: TenderAssignmentCreateNestedManyWithoutUserInput
+    createdTenders?: TenderCreateNestedManyWithoutCreatorInput
+    ownedBids?: BidCreateNestedManyWithoutOwnerInput
+    documents?: DocumentCreateNestedManyWithoutUploaderInput
+    submissions?: SubmissionCreateNestedManyWithoutSubmitterInput
+    comments?: CommentCreateNestedManyWithoutAuthorInput
+    notifications?: NotificationCreateNestedManyWithoutUserInput
+    audits?: AuditLogCreateNestedManyWithoutUserInput
+    triggeredScrapings?: ScrapingLogCreateNestedManyWithoutTriggeredByUserInput
+    sessions?: SessionCreateNestedManyWithoutUserInput
+    notificationPreferences?: NotificationPreferenceCreateNestedManyWithoutUserInput
+  }
+
+  export type UserUncheckedCreateWithoutNotificationLogsInput = {
+    id?: string
+    tenantId: string
+    email: string
+    passwordHash?: string | null
+    firstName: string
+    lastName: string
+    phone?: string | null
+    role?: $Enums.UserRole
+    isActive?: boolean
+    lastLoginAt?: Date | string | null
+    settings?: JsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    deletedAt?: Date | string | null
+    tenderAssignments?: TenderAssignmentUncheckedCreateNestedManyWithoutUserInput
+    createdTenders?: TenderUncheckedCreateNestedManyWithoutCreatorInput
+    ownedBids?: BidUncheckedCreateNestedManyWithoutOwnerInput
+    documents?: DocumentUncheckedCreateNestedManyWithoutUploaderInput
+    submissions?: SubmissionUncheckedCreateNestedManyWithoutSubmitterInput
+    comments?: CommentUncheckedCreateNestedManyWithoutAuthorInput
+    notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
+    audits?: AuditLogUncheckedCreateNestedManyWithoutUserInput
+    triggeredScrapings?: ScrapingLogUncheckedCreateNestedManyWithoutTriggeredByUserInput
+    sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
+    notificationPreferences?: NotificationPreferenceUncheckedCreateNestedManyWithoutUserInput
+  }
+
+  export type UserCreateOrConnectWithoutNotificationLogsInput = {
+    where: UserWhereUniqueInput
+    create: XOR<UserCreateWithoutNotificationLogsInput, UserUncheckedCreateWithoutNotificationLogsInput>
+  }
+
+  export type TenantUpsertWithoutNotificationLogsInput = {
+    update: XOR<TenantUpdateWithoutNotificationLogsInput, TenantUncheckedUpdateWithoutNotificationLogsInput>
+    create: XOR<TenantCreateWithoutNotificationLogsInput, TenantUncheckedCreateWithoutNotificationLogsInput>
+    where?: TenantWhereInput
+  }
+
+  export type TenantUpdateToOneWithWhereWithoutNotificationLogsInput = {
+    where?: TenantWhereInput
+    data: XOR<TenantUpdateWithoutNotificationLogsInput, TenantUncheckedUpdateWithoutNotificationLogsInput>
+  }
+
+  export type TenantUpdateWithoutNotificationLogsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    subdomain?: StringFieldUpdateOperationsInput | string
+    settings?: JsonNullValueInput | InputJsonValue
+    webhookUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    metadata?: JsonNullValueInput | InputJsonValue
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    users?: UserUpdateManyWithoutTenantNestedInput
+    tenders?: TenderUpdateManyWithoutTenantNestedInput
+    audits?: AuditLogUpdateManyWithoutTenantNestedInput
+    apiKeys?: ApiKeyUpdateManyWithoutTenantNestedInput
+    scrapingLogs?: ScrapingLogUpdateManyWithoutTenantNestedInput
+  }
+
+  export type TenantUncheckedUpdateWithoutNotificationLogsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    subdomain?: StringFieldUpdateOperationsInput | string
+    settings?: JsonNullValueInput | InputJsonValue
+    webhookUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    metadata?: JsonNullValueInput | InputJsonValue
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    users?: UserUncheckedUpdateManyWithoutTenantNestedInput
+    tenders?: TenderUncheckedUpdateManyWithoutTenantNestedInput
+    audits?: AuditLogUncheckedUpdateManyWithoutTenantNestedInput
+    apiKeys?: ApiKeyUncheckedUpdateManyWithoutTenantNestedInput
+    scrapingLogs?: ScrapingLogUncheckedUpdateManyWithoutTenantNestedInput
+  }
+
+  export type UserUpsertWithoutNotificationLogsInput = {
+    update: XOR<UserUpdateWithoutNotificationLogsInput, UserUncheckedUpdateWithoutNotificationLogsInput>
+    create: XOR<UserCreateWithoutNotificationLogsInput, UserUncheckedCreateWithoutNotificationLogsInput>
+    where?: UserWhereInput
+  }
+
+  export type UserUpdateToOneWithWhereWithoutNotificationLogsInput = {
+    where?: UserWhereInput
+    data: XOR<UserUpdateWithoutNotificationLogsInput, UserUncheckedUpdateWithoutNotificationLogsInput>
+  }
+
+  export type UserUpdateWithoutNotificationLogsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    passwordHash?: NullableStringFieldUpdateOperationsInput | string | null
+    firstName?: StringFieldUpdateOperationsInput | string
+    lastName?: StringFieldUpdateOperationsInput | string
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    lastLoginAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    settings?: JsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    tenant?: TenantUpdateOneRequiredWithoutUsersNestedInput
+    tenderAssignments?: TenderAssignmentUpdateManyWithoutUserNestedInput
+    createdTenders?: TenderUpdateManyWithoutCreatorNestedInput
+    ownedBids?: BidUpdateManyWithoutOwnerNestedInput
+    documents?: DocumentUpdateManyWithoutUploaderNestedInput
+    submissions?: SubmissionUpdateManyWithoutSubmitterNestedInput
+    comments?: CommentUpdateManyWithoutAuthorNestedInput
+    notifications?: NotificationUpdateManyWithoutUserNestedInput
+    audits?: AuditLogUpdateManyWithoutUserNestedInput
+    triggeredScrapings?: ScrapingLogUpdateManyWithoutTriggeredByUserNestedInput
+    sessions?: SessionUpdateManyWithoutUserNestedInput
+    notificationPreferences?: NotificationPreferenceUpdateManyWithoutUserNestedInput
+  }
+
+  export type UserUncheckedUpdateWithoutNotificationLogsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    tenantId?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    passwordHash?: NullableStringFieldUpdateOperationsInput | string | null
+    firstName?: StringFieldUpdateOperationsInput | string
+    lastName?: StringFieldUpdateOperationsInput | string
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    lastLoginAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    settings?: JsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    tenderAssignments?: TenderAssignmentUncheckedUpdateManyWithoutUserNestedInput
+    createdTenders?: TenderUncheckedUpdateManyWithoutCreatorNestedInput
+    ownedBids?: BidUncheckedUpdateManyWithoutOwnerNestedInput
+    documents?: DocumentUncheckedUpdateManyWithoutUploaderNestedInput
+    submissions?: SubmissionUncheckedUpdateManyWithoutSubmitterNestedInput
+    comments?: CommentUncheckedUpdateManyWithoutAuthorNestedInput
+    notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
+    audits?: AuditLogUncheckedUpdateManyWithoutUserNestedInput
+    triggeredScrapings?: ScrapingLogUncheckedUpdateManyWithoutTriggeredByUserNestedInput
+    sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
+    notificationPreferences?: NotificationPreferenceUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserCreateManyTenantInput = {
     id?: string
     email: string
+    passwordHash?: string | null
     firstName: string
     lastName: string
+    phone?: string | null
     role?: $Enums.UserRole
     isActive?: boolean
     lastLoginAt?: Date | string | null
@@ -27999,6 +36040,13 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     deletedAt?: Date | string | null
+    scrapedAt?: Date | string | null
+    sourcePortal?: string | null
+    originalTitle?: string | null
+    originalStatus?: string | null
+    originalValue?: string | null
+    exchangeRates?: NullableJsonNullValueInput | InputJsonValue
+    sourceUrl?: string | null
   }
 
   export type AuditLogCreateManyTenantInput = {
@@ -28013,6 +36061,8 @@ export namespace Prisma {
     ipAddress?: string | null
     userAgent?: string | null
     timestamp?: Date | string
+    archived?: boolean
+    archivedAt?: Date | string | null
   }
 
   export type ApiKeyCreateManyTenantInput = {
@@ -28027,11 +36077,43 @@ export namespace Prisma {
     updatedAt?: Date | string
   }
 
+  export type ScrapingLogCreateManyTenantInput = {
+    id?: string
+    sourcePortal: string
+    status?: $Enums.ScrapingStatus
+    startedAt?: Date | string
+    completedAt?: Date | string | null
+    pagesProcessed?: number
+    totalPages?: number | null
+    tendersFound?: number
+    tendersImported?: number
+    tendersUpdated?: number
+    tendersSkipped?: number
+    errorMessage?: string | null
+    errorDetails?: NullableJsonNullValueInput | InputJsonValue
+    metadata?: JsonNullValueInput | InputJsonValue
+    triggeredBy: string
+  }
+
+  export type NotificationLogCreateManyTenantInput = {
+    id?: string
+    type: string
+    userId?: string | null
+    priority?: string
+    channels?: NotificationLogCreatechannelsInput | string[]
+    recipients?: NotificationLogCreaterecipientsInput | string[]
+    metadata?: JsonNullValueInput | InputJsonValue
+    sentAt?: Date | string | null
+    createdAt?: Date | string
+  }
+
   export type UserUpdateWithoutTenantInput = {
     id?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
+    passwordHash?: NullableStringFieldUpdateOperationsInput | string | null
     firstName?: StringFieldUpdateOperationsInput | string
     lastName?: StringFieldUpdateOperationsInput | string
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
     role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
     isActive?: BoolFieldUpdateOperationsInput | boolean
     lastLoginAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -28047,13 +36129,19 @@ export namespace Prisma {
     comments?: CommentUpdateManyWithoutAuthorNestedInput
     notifications?: NotificationUpdateManyWithoutUserNestedInput
     audits?: AuditLogUpdateManyWithoutUserNestedInput
+    triggeredScrapings?: ScrapingLogUpdateManyWithoutTriggeredByUserNestedInput
+    sessions?: SessionUpdateManyWithoutUserNestedInput
+    notificationPreferences?: NotificationPreferenceUpdateManyWithoutUserNestedInput
+    notificationLogs?: NotificationLogUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutTenantInput = {
     id?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
+    passwordHash?: NullableStringFieldUpdateOperationsInput | string | null
     firstName?: StringFieldUpdateOperationsInput | string
     lastName?: StringFieldUpdateOperationsInput | string
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
     role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
     isActive?: BoolFieldUpdateOperationsInput | boolean
     lastLoginAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -28069,13 +36157,19 @@ export namespace Prisma {
     comments?: CommentUncheckedUpdateManyWithoutAuthorNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
     audits?: AuditLogUncheckedUpdateManyWithoutUserNestedInput
+    triggeredScrapings?: ScrapingLogUncheckedUpdateManyWithoutTriggeredByUserNestedInput
+    sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
+    notificationPreferences?: NotificationPreferenceUncheckedUpdateManyWithoutUserNestedInput
+    notificationLogs?: NotificationLogUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateManyWithoutTenantInput = {
     id?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
+    passwordHash?: NullableStringFieldUpdateOperationsInput | string | null
     firstName?: StringFieldUpdateOperationsInput | string
     lastName?: StringFieldUpdateOperationsInput | string
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
     role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
     isActive?: BoolFieldUpdateOperationsInput | boolean
     lastLoginAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -28102,6 +36196,13 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    scrapedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    sourcePortal?: NullableStringFieldUpdateOperationsInput | string | null
+    originalTitle?: NullableStringFieldUpdateOperationsInput | string | null
+    originalStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    originalValue?: NullableStringFieldUpdateOperationsInput | string | null
+    exchangeRates?: NullableJsonNullValueInput | InputJsonValue
+    sourceUrl?: NullableStringFieldUpdateOperationsInput | string | null
     creator?: UserUpdateOneRequiredWithoutCreatedTendersNestedInput
     assignments?: TenderAssignmentUpdateManyWithoutTenderNestedInput
     documents?: DocumentUpdateManyWithoutTenderNestedInput
@@ -28131,6 +36232,13 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    scrapedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    sourcePortal?: NullableStringFieldUpdateOperationsInput | string | null
+    originalTitle?: NullableStringFieldUpdateOperationsInput | string | null
+    originalStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    originalValue?: NullableStringFieldUpdateOperationsInput | string | null
+    exchangeRates?: NullableJsonNullValueInput | InputJsonValue
+    sourceUrl?: NullableStringFieldUpdateOperationsInput | string | null
     assignments?: TenderAssignmentUncheckedUpdateManyWithoutTenderNestedInput
     documents?: DocumentUncheckedUpdateManyWithoutTenderNestedInput
     bids?: BidUncheckedUpdateManyWithoutTenderNestedInput
@@ -28159,6 +36267,13 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    scrapedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    sourcePortal?: NullableStringFieldUpdateOperationsInput | string | null
+    originalTitle?: NullableStringFieldUpdateOperationsInput | string | null
+    originalStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    originalValue?: NullableStringFieldUpdateOperationsInput | string | null
+    exchangeRates?: NullableJsonNullValueInput | InputJsonValue
+    sourceUrl?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type AuditLogUpdateWithoutTenantInput = {
@@ -28172,6 +36287,8 @@ export namespace Prisma {
     ipAddress?: NullableStringFieldUpdateOperationsInput | string | null
     userAgent?: NullableStringFieldUpdateOperationsInput | string | null
     timestamp?: DateTimeFieldUpdateOperationsInput | Date | string
+    archived?: BoolFieldUpdateOperationsInput | boolean
+    archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     user?: UserUpdateOneWithoutAuditsNestedInput
   }
 
@@ -28187,6 +36304,8 @@ export namespace Prisma {
     ipAddress?: NullableStringFieldUpdateOperationsInput | string | null
     userAgent?: NullableStringFieldUpdateOperationsInput | string | null
     timestamp?: DateTimeFieldUpdateOperationsInput | Date | string
+    archived?: BoolFieldUpdateOperationsInput | boolean
+    archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }
 
   export type AuditLogUncheckedUpdateManyWithoutTenantInput = {
@@ -28201,6 +36320,8 @@ export namespace Prisma {
     ipAddress?: NullableStringFieldUpdateOperationsInput | string | null
     userAgent?: NullableStringFieldUpdateOperationsInput | string | null
     timestamp?: DateTimeFieldUpdateOperationsInput | Date | string
+    archived?: BoolFieldUpdateOperationsInput | boolean
+    archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }
 
   export type ApiKeyUpdateWithoutTenantInput = {
@@ -28239,6 +36360,96 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
+  export type ScrapingLogUpdateWithoutTenantInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    sourcePortal?: StringFieldUpdateOperationsInput | string
+    status?: EnumScrapingStatusFieldUpdateOperationsInput | $Enums.ScrapingStatus
+    startedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    pagesProcessed?: IntFieldUpdateOperationsInput | number
+    totalPages?: NullableIntFieldUpdateOperationsInput | number | null
+    tendersFound?: IntFieldUpdateOperationsInput | number
+    tendersImported?: IntFieldUpdateOperationsInput | number
+    tendersUpdated?: IntFieldUpdateOperationsInput | number
+    tendersSkipped?: IntFieldUpdateOperationsInput | number
+    errorMessage?: NullableStringFieldUpdateOperationsInput | string | null
+    errorDetails?: NullableJsonNullValueInput | InputJsonValue
+    metadata?: JsonNullValueInput | InputJsonValue
+    triggeredByUser?: UserUpdateOneRequiredWithoutTriggeredScrapingsNestedInput
+  }
+
+  export type ScrapingLogUncheckedUpdateWithoutTenantInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    sourcePortal?: StringFieldUpdateOperationsInput | string
+    status?: EnumScrapingStatusFieldUpdateOperationsInput | $Enums.ScrapingStatus
+    startedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    pagesProcessed?: IntFieldUpdateOperationsInput | number
+    totalPages?: NullableIntFieldUpdateOperationsInput | number | null
+    tendersFound?: IntFieldUpdateOperationsInput | number
+    tendersImported?: IntFieldUpdateOperationsInput | number
+    tendersUpdated?: IntFieldUpdateOperationsInput | number
+    tendersSkipped?: IntFieldUpdateOperationsInput | number
+    errorMessage?: NullableStringFieldUpdateOperationsInput | string | null
+    errorDetails?: NullableJsonNullValueInput | InputJsonValue
+    metadata?: JsonNullValueInput | InputJsonValue
+    triggeredBy?: StringFieldUpdateOperationsInput | string
+  }
+
+  export type ScrapingLogUncheckedUpdateManyWithoutTenantInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    sourcePortal?: StringFieldUpdateOperationsInput | string
+    status?: EnumScrapingStatusFieldUpdateOperationsInput | $Enums.ScrapingStatus
+    startedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    pagesProcessed?: IntFieldUpdateOperationsInput | number
+    totalPages?: NullableIntFieldUpdateOperationsInput | number | null
+    tendersFound?: IntFieldUpdateOperationsInput | number
+    tendersImported?: IntFieldUpdateOperationsInput | number
+    tendersUpdated?: IntFieldUpdateOperationsInput | number
+    tendersSkipped?: IntFieldUpdateOperationsInput | number
+    errorMessage?: NullableStringFieldUpdateOperationsInput | string | null
+    errorDetails?: NullableJsonNullValueInput | InputJsonValue
+    metadata?: JsonNullValueInput | InputJsonValue
+    triggeredBy?: StringFieldUpdateOperationsInput | string
+  }
+
+  export type NotificationLogUpdateWithoutTenantInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    type?: StringFieldUpdateOperationsInput | string
+    priority?: StringFieldUpdateOperationsInput | string
+    channels?: NotificationLogUpdatechannelsInput | string[]
+    recipients?: NotificationLogUpdaterecipientsInput | string[]
+    metadata?: JsonNullValueInput | InputJsonValue
+    sentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    user?: UserUpdateOneWithoutNotificationLogsNestedInput
+  }
+
+  export type NotificationLogUncheckedUpdateWithoutTenantInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    type?: StringFieldUpdateOperationsInput | string
+    userId?: NullableStringFieldUpdateOperationsInput | string | null
+    priority?: StringFieldUpdateOperationsInput | string
+    channels?: NotificationLogUpdatechannelsInput | string[]
+    recipients?: NotificationLogUpdaterecipientsInput | string[]
+    metadata?: JsonNullValueInput | InputJsonValue
+    sentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type NotificationLogUncheckedUpdateManyWithoutTenantInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    type?: StringFieldUpdateOperationsInput | string
+    userId?: NullableStringFieldUpdateOperationsInput | string | null
+    priority?: StringFieldUpdateOperationsInput | string
+    channels?: NotificationLogUpdatechannelsInput | string[]
+    recipients?: NotificationLogUpdaterecipientsInput | string[]
+    metadata?: JsonNullValueInput | InputJsonValue
+    sentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
   export type TenderAssignmentCreateManyUserInput = {
     id?: string
     tenderId: string
@@ -28265,6 +36476,13 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     deletedAt?: Date | string | null
+    scrapedAt?: Date | string | null
+    sourcePortal?: string | null
+    originalTitle?: string | null
+    originalStatus?: string | null
+    originalValue?: string | null
+    exchangeRates?: NullableJsonNullValueInput | InputJsonValue
+    sourceUrl?: string | null
   }
 
   export type BidCreateManyOwnerInput = {
@@ -28289,7 +36507,7 @@ export namespace Prisma {
 
   export type DocumentCreateManyUploaderInput = {
     id?: string
-    tenderId: string
+    tenderId?: string | null
     filename: string
     originalName: string
     mimeType: string
@@ -28356,6 +36574,56 @@ export namespace Prisma {
     ipAddress?: string | null
     userAgent?: string | null
     timestamp?: Date | string
+    archived?: boolean
+    archivedAt?: Date | string | null
+  }
+
+  export type ScrapingLogCreateManyTriggeredByUserInput = {
+    id?: string
+    tenantId: string
+    sourcePortal: string
+    status?: $Enums.ScrapingStatus
+    startedAt?: Date | string
+    completedAt?: Date | string | null
+    pagesProcessed?: number
+    totalPages?: number | null
+    tendersFound?: number
+    tendersImported?: number
+    tendersUpdated?: number
+    tendersSkipped?: number
+    errorMessage?: string | null
+    errorDetails?: NullableJsonNullValueInput | InputJsonValue
+    metadata?: JsonNullValueInput | InputJsonValue
+  }
+
+  export type SessionCreateManyUserInput = {
+    id?: string
+    sessionToken: string
+    expiresAt: Date | string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    data?: JsonNullValueInput | InputJsonValue
+  }
+
+  export type NotificationPreferenceCreateManyUserInput = {
+    id?: string
+    type: string
+    enabled?: boolean
+    channels?: NotificationPreferenceCreatechannelsInput | string[]
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type NotificationLogCreateManyUserInput = {
+    id?: string
+    type: string
+    tenantId: string
+    priority?: string
+    channels?: NotificationLogCreatechannelsInput | string[]
+    recipients?: NotificationLogCreaterecipientsInput | string[]
+    metadata?: JsonNullValueInput | InputJsonValue
+    sentAt?: Date | string | null
+    createdAt?: Date | string
   }
 
   export type TenderAssignmentUpdateWithoutUserInput = {
@@ -28399,6 +36667,13 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    scrapedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    sourcePortal?: NullableStringFieldUpdateOperationsInput | string | null
+    originalTitle?: NullableStringFieldUpdateOperationsInput | string | null
+    originalStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    originalValue?: NullableStringFieldUpdateOperationsInput | string | null
+    exchangeRates?: NullableJsonNullValueInput | InputJsonValue
+    sourceUrl?: NullableStringFieldUpdateOperationsInput | string | null
     tenant?: TenantUpdateOneRequiredWithoutTendersNestedInput
     assignments?: TenderAssignmentUpdateManyWithoutTenderNestedInput
     documents?: DocumentUpdateManyWithoutTenderNestedInput
@@ -28428,6 +36703,13 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    scrapedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    sourcePortal?: NullableStringFieldUpdateOperationsInput | string | null
+    originalTitle?: NullableStringFieldUpdateOperationsInput | string | null
+    originalStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    originalValue?: NullableStringFieldUpdateOperationsInput | string | null
+    exchangeRates?: NullableJsonNullValueInput | InputJsonValue
+    sourceUrl?: NullableStringFieldUpdateOperationsInput | string | null
     assignments?: TenderAssignmentUncheckedUpdateManyWithoutTenderNestedInput
     documents?: DocumentUncheckedUpdateManyWithoutTenderNestedInput
     bids?: BidUncheckedUpdateManyWithoutTenderNestedInput
@@ -28456,6 +36738,13 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    scrapedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    sourcePortal?: NullableStringFieldUpdateOperationsInput | string | null
+    originalTitle?: NullableStringFieldUpdateOperationsInput | string | null
+    originalStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    originalValue?: NullableStringFieldUpdateOperationsInput | string | null
+    exchangeRates?: NullableJsonNullValueInput | InputJsonValue
+    sourceUrl?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type BidUpdateWithoutOwnerInput = {
@@ -28531,12 +36820,12 @@ export namespace Prisma {
     isDeleted?: BoolFieldUpdateOperationsInput | boolean
     uploadedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    tender?: TenderUpdateOneRequiredWithoutDocumentsNestedInput
+    tender?: TenderUpdateOneWithoutDocumentsNestedInput
   }
 
   export type DocumentUncheckedUpdateWithoutUploaderInput = {
     id?: StringFieldUpdateOperationsInput | string
-    tenderId?: StringFieldUpdateOperationsInput | string
+    tenderId?: NullableStringFieldUpdateOperationsInput | string | null
     filename?: StringFieldUpdateOperationsInput | string
     originalName?: StringFieldUpdateOperationsInput | string
     mimeType?: StringFieldUpdateOperationsInput | string
@@ -28552,7 +36841,7 @@ export namespace Prisma {
 
   export type DocumentUncheckedUpdateManyWithoutUploaderInput = {
     id?: StringFieldUpdateOperationsInput | string
-    tenderId?: StringFieldUpdateOperationsInput | string
+    tenderId?: NullableStringFieldUpdateOperationsInput | string | null
     filename?: StringFieldUpdateOperationsInput | string
     originalName?: StringFieldUpdateOperationsInput | string
     mimeType?: StringFieldUpdateOperationsInput | string
@@ -28700,6 +36989,8 @@ export namespace Prisma {
     ipAddress?: NullableStringFieldUpdateOperationsInput | string | null
     userAgent?: NullableStringFieldUpdateOperationsInput | string | null
     timestamp?: DateTimeFieldUpdateOperationsInput | Date | string
+    archived?: BoolFieldUpdateOperationsInput | boolean
+    archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     tenant?: TenantUpdateOneRequiredWithoutAuditsNestedInput
   }
 
@@ -28715,6 +37006,8 @@ export namespace Prisma {
     ipAddress?: NullableStringFieldUpdateOperationsInput | string | null
     userAgent?: NullableStringFieldUpdateOperationsInput | string | null
     timestamp?: DateTimeFieldUpdateOperationsInput | Date | string
+    archived?: BoolFieldUpdateOperationsInput | boolean
+    archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }
 
   export type AuditLogUncheckedUpdateManyWithoutUserInput = {
@@ -28729,6 +37022,152 @@ export namespace Prisma {
     ipAddress?: NullableStringFieldUpdateOperationsInput | string | null
     userAgent?: NullableStringFieldUpdateOperationsInput | string | null
     timestamp?: DateTimeFieldUpdateOperationsInput | Date | string
+    archived?: BoolFieldUpdateOperationsInput | boolean
+    archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  }
+
+  export type ScrapingLogUpdateWithoutTriggeredByUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    sourcePortal?: StringFieldUpdateOperationsInput | string
+    status?: EnumScrapingStatusFieldUpdateOperationsInput | $Enums.ScrapingStatus
+    startedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    pagesProcessed?: IntFieldUpdateOperationsInput | number
+    totalPages?: NullableIntFieldUpdateOperationsInput | number | null
+    tendersFound?: IntFieldUpdateOperationsInput | number
+    tendersImported?: IntFieldUpdateOperationsInput | number
+    tendersUpdated?: IntFieldUpdateOperationsInput | number
+    tendersSkipped?: IntFieldUpdateOperationsInput | number
+    errorMessage?: NullableStringFieldUpdateOperationsInput | string | null
+    errorDetails?: NullableJsonNullValueInput | InputJsonValue
+    metadata?: JsonNullValueInput | InputJsonValue
+    tenant?: TenantUpdateOneRequiredWithoutScrapingLogsNestedInput
+  }
+
+  export type ScrapingLogUncheckedUpdateWithoutTriggeredByUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    tenantId?: StringFieldUpdateOperationsInput | string
+    sourcePortal?: StringFieldUpdateOperationsInput | string
+    status?: EnumScrapingStatusFieldUpdateOperationsInput | $Enums.ScrapingStatus
+    startedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    pagesProcessed?: IntFieldUpdateOperationsInput | number
+    totalPages?: NullableIntFieldUpdateOperationsInput | number | null
+    tendersFound?: IntFieldUpdateOperationsInput | number
+    tendersImported?: IntFieldUpdateOperationsInput | number
+    tendersUpdated?: IntFieldUpdateOperationsInput | number
+    tendersSkipped?: IntFieldUpdateOperationsInput | number
+    errorMessage?: NullableStringFieldUpdateOperationsInput | string | null
+    errorDetails?: NullableJsonNullValueInput | InputJsonValue
+    metadata?: JsonNullValueInput | InputJsonValue
+  }
+
+  export type ScrapingLogUncheckedUpdateManyWithoutTriggeredByUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    tenantId?: StringFieldUpdateOperationsInput | string
+    sourcePortal?: StringFieldUpdateOperationsInput | string
+    status?: EnumScrapingStatusFieldUpdateOperationsInput | $Enums.ScrapingStatus
+    startedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    pagesProcessed?: IntFieldUpdateOperationsInput | number
+    totalPages?: NullableIntFieldUpdateOperationsInput | number | null
+    tendersFound?: IntFieldUpdateOperationsInput | number
+    tendersImported?: IntFieldUpdateOperationsInput | number
+    tendersUpdated?: IntFieldUpdateOperationsInput | number
+    tendersSkipped?: IntFieldUpdateOperationsInput | number
+    errorMessage?: NullableStringFieldUpdateOperationsInput | string | null
+    errorDetails?: NullableJsonNullValueInput | InputJsonValue
+    metadata?: JsonNullValueInput | InputJsonValue
+  }
+
+  export type SessionUpdateWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    sessionToken?: StringFieldUpdateOperationsInput | string
+    expiresAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    data?: JsonNullValueInput | InputJsonValue
+  }
+
+  export type SessionUncheckedUpdateWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    sessionToken?: StringFieldUpdateOperationsInput | string
+    expiresAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    data?: JsonNullValueInput | InputJsonValue
+  }
+
+  export type SessionUncheckedUpdateManyWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    sessionToken?: StringFieldUpdateOperationsInput | string
+    expiresAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    data?: JsonNullValueInput | InputJsonValue
+  }
+
+  export type NotificationPreferenceUpdateWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    type?: StringFieldUpdateOperationsInput | string
+    enabled?: BoolFieldUpdateOperationsInput | boolean
+    channels?: NotificationPreferenceUpdatechannelsInput | string[]
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type NotificationPreferenceUncheckedUpdateWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    type?: StringFieldUpdateOperationsInput | string
+    enabled?: BoolFieldUpdateOperationsInput | boolean
+    channels?: NotificationPreferenceUpdatechannelsInput | string[]
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type NotificationPreferenceUncheckedUpdateManyWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    type?: StringFieldUpdateOperationsInput | string
+    enabled?: BoolFieldUpdateOperationsInput | boolean
+    channels?: NotificationPreferenceUpdatechannelsInput | string[]
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type NotificationLogUpdateWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    type?: StringFieldUpdateOperationsInput | string
+    priority?: StringFieldUpdateOperationsInput | string
+    channels?: NotificationLogUpdatechannelsInput | string[]
+    recipients?: NotificationLogUpdaterecipientsInput | string[]
+    metadata?: JsonNullValueInput | InputJsonValue
+    sentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    tenant?: TenantUpdateOneRequiredWithoutNotificationLogsNestedInput
+  }
+
+  export type NotificationLogUncheckedUpdateWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    type?: StringFieldUpdateOperationsInput | string
+    tenantId?: StringFieldUpdateOperationsInput | string
+    priority?: StringFieldUpdateOperationsInput | string
+    channels?: NotificationLogUpdatechannelsInput | string[]
+    recipients?: NotificationLogUpdaterecipientsInput | string[]
+    metadata?: JsonNullValueInput | InputJsonValue
+    sentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type NotificationLogUncheckedUpdateManyWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    type?: StringFieldUpdateOperationsInput | string
+    tenantId?: StringFieldUpdateOperationsInput | string
+    priority?: StringFieldUpdateOperationsInput | string
+    channels?: NotificationLogUpdatechannelsInput | string[]
+    recipients?: NotificationLogUpdaterecipientsInput | string[]
+    metadata?: JsonNullValueInput | InputJsonValue
+    sentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type TenderAssignmentCreateManyTenderInput = {
@@ -29236,6 +37675,22 @@ export namespace Prisma {
      * @deprecated Use ApiKeyDefaultArgs instead
      */
     export type ApiKeyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = ApiKeyDefaultArgs<ExtArgs>
+    /**
+     * @deprecated Use ScrapingLogDefaultArgs instead
+     */
+    export type ScrapingLogArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = ScrapingLogDefaultArgs<ExtArgs>
+    /**
+     * @deprecated Use SessionDefaultArgs instead
+     */
+    export type SessionArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = SessionDefaultArgs<ExtArgs>
+    /**
+     * @deprecated Use NotificationPreferenceDefaultArgs instead
+     */
+    export type NotificationPreferenceArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = NotificationPreferenceDefaultArgs<ExtArgs>
+    /**
+     * @deprecated Use NotificationLogDefaultArgs instead
+     */
+    export type NotificationLogArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = NotificationLogDefaultArgs<ExtArgs>
 
   /**
    * Batch Payload for updateMany & deleteMany & createMany

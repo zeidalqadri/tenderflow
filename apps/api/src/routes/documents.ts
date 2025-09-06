@@ -1,7 +1,8 @@
 // Document routes for TenderFlow API
 import { FastifyInstance, FastifyPluginAsync } from 'fastify';
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient } from '../generated/prisma';
 import { z } from 'zod';
+import { toJsonSchema } from '../utils/schema-converter';
 import {
   DocumentBaseSchema,
   CreateDocumentSchema,
@@ -23,9 +24,9 @@ const documentRoutes: FastifyPluginAsync = async (fastify: FastifyInstance) => {
       description: 'Get paginated list of documents',
       tags: ['Documents'],
       security: [{ bearerAuth: [] }],
-      querystring: DocumentQuerySchema,
+      querystring: toJsonSchema(DocumentQuerySchema),
       response: {
-        200: PaginatedResponseSchema(DocumentBaseSchema.extend({
+        200: toJsonSchema(PaginatedResponseSchema(DocumentBaseSchema.extend({
           tender: z.object({
             id: z.string(),
             title: z.string(),
@@ -34,7 +35,7 @@ const documentRoutes: FastifyPluginAsync = async (fastify: FastifyInstance) => {
             firstName: z.string(),
             lastName: z.string(),
           }),
-        })),
+        }))),
       },
     },
     preHandler: [fastify.authenticate, fastify.requireTenant],
@@ -94,13 +95,13 @@ const documentRoutes: FastifyPluginAsync = async (fastify: FastifyInstance) => {
       description: 'Get presigned URL for document upload',
       tags: ['Documents'],
       security: [{ bearerAuth: [] }],
-      body: DocumentPresignSchema,
+      body: toJsonSchema(DocumentPresignSchema),
       response: {
-        200: ApiResponseSchema(z.object({
+        200: toJsonSchema(ApiResponseSchema(z.object({
           uploadUrl: z.string(),
           documentId: z.string(),
           expiresIn: z.number(),
-        })),
+        }))),
       },
     },
     preHandler: [fastify.authenticate, fastify.requireTenant],
@@ -147,9 +148,9 @@ const documentRoutes: FastifyPluginAsync = async (fastify: FastifyInstance) => {
       description: 'Confirm document upload completion',
       tags: ['Documents'],
       security: [{ bearerAuth: [] }],
-      body: DocumentUploadConfirmSchema,
+      body: toJsonSchema(DocumentUploadConfirmSchema),
       response: {
-        200: ApiResponseSchema(DocumentBaseSchema),
+        200: toJsonSchema(ApiResponseSchema(DocumentBaseSchema)),
       },
     },
     preHandler: [fastify.authenticate, fastify.requireTenant],

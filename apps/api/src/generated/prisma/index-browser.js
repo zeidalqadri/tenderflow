@@ -127,6 +127,8 @@ exports.Prisma.TenantScalarFieldEnum = {
   name: 'name',
   subdomain: 'subdomain',
   settings: 'settings',
+  webhookUrl: 'webhookUrl',
+  metadata: 'metadata',
   isActive: 'isActive',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
@@ -137,8 +139,10 @@ exports.Prisma.UserScalarFieldEnum = {
   id: 'id',
   tenantId: 'tenantId',
   email: 'email',
+  passwordHash: 'passwordHash',
   firstName: 'firstName',
   lastName: 'lastName',
+  phone: 'phone',
   role: 'role',
   isActive: 'isActive',
   lastLoginAt: 'lastLoginAt',
@@ -166,7 +170,14 @@ exports.Prisma.TenderScalarFieldEnum = {
   createdBy: 'createdBy',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
-  deletedAt: 'deletedAt'
+  deletedAt: 'deletedAt',
+  scrapedAt: 'scrapedAt',
+  sourcePortal: 'sourcePortal',
+  originalTitle: 'originalTitle',
+  originalStatus: 'originalStatus',
+  originalValue: 'originalValue',
+  exchangeRates: 'exchangeRates',
+  sourceUrl: 'sourceUrl'
 };
 
 exports.Prisma.TenderAssignmentScalarFieldEnum = {
@@ -296,7 +307,9 @@ exports.Prisma.AuditLogScalarFieldEnum = {
   metadata: 'metadata',
   ipAddress: 'ipAddress',
   userAgent: 'userAgent',
-  timestamp: 'timestamp'
+  timestamp: 'timestamp',
+  archived: 'archived',
+  archivedAt: 'archivedAt'
 };
 
 exports.Prisma.SystemConfigScalarFieldEnum = {
@@ -335,6 +348,58 @@ exports.Prisma.ApiKeyScalarFieldEnum = {
   expiresAt: 'expiresAt',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
+};
+
+exports.Prisma.ScrapingLogScalarFieldEnum = {
+  id: 'id',
+  tenantId: 'tenantId',
+  sourcePortal: 'sourcePortal',
+  status: 'status',
+  startedAt: 'startedAt',
+  completedAt: 'completedAt',
+  pagesProcessed: 'pagesProcessed',
+  totalPages: 'totalPages',
+  tendersFound: 'tendersFound',
+  tendersImported: 'tendersImported',
+  tendersUpdated: 'tendersUpdated',
+  tendersSkipped: 'tendersSkipped',
+  errorMessage: 'errorMessage',
+  errorDetails: 'errorDetails',
+  metadata: 'metadata',
+  triggeredBy: 'triggeredBy'
+};
+
+exports.Prisma.SessionScalarFieldEnum = {
+  id: 'id',
+  sessionToken: 'sessionToken',
+  userId: 'userId',
+  expiresAt: 'expiresAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  data: 'data'
+};
+
+exports.Prisma.NotificationPreferenceScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  type: 'type',
+  enabled: 'enabled',
+  channels: 'channels',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.NotificationLogScalarFieldEnum = {
+  id: 'id',
+  type: 'type',
+  tenantId: 'tenantId',
+  userId: 'userId',
+  priority: 'priority',
+  channels: 'channels',
+  recipients: 'recipients',
+  metadata: 'metadata',
+  sentAt: 'sentAt',
+  createdAt: 'createdAt'
 };
 
 exports.Prisma.SortOrder = {
@@ -441,6 +506,14 @@ exports.AuditAction = exports.$Enums.AuditAction = {
   LOGOUT: 'LOGOUT'
 };
 
+exports.ScrapingStatus = exports.$Enums.ScrapingStatus = {
+  PENDING: 'PENDING',
+  RUNNING: 'RUNNING',
+  COMPLETED: 'COMPLETED',
+  FAILED: 'FAILED',
+  CANCELLED: 'CANCELLED'
+};
+
 exports.Prisma.ModelName = {
   Tenant: 'Tenant',
   User: 'User',
@@ -456,7 +529,11 @@ exports.Prisma.ModelName = {
   AuditLog: 'AuditLog',
   SystemConfig: 'SystemConfig',
   JobQueue: 'JobQueue',
-  ApiKey: 'ApiKey'
+  ApiKey: 'ApiKey',
+  ScrapingLog: 'ScrapingLog',
+  Session: 'Session',
+  NotificationPreference: 'NotificationPreference',
+  NotificationLog: 'NotificationLog'
 };
 
 /**

@@ -1,7 +1,7 @@
 // Audit logging plugin for TenderFlow API
 import { FastifyInstance, FastifyPluginAsync, FastifyRequest } from 'fastify';
 import fp from 'fastify-plugin';
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient } from '../generated/prisma';
 
 export type AuditAction = 
   | 'CREATE' 

@@ -53,7 +53,7 @@ export function useSocket() {
       return
     }
 
-    const socketUrl = process.env.NEXT_PUBLIC_SOCKET_URL || 'http://localhost:3001'
+    const socketUrl = process.env.NEXT_PUBLIC_SOCKET_URL || 'http://localhost:3457'
     
     console.log('Connecting to socket:', socketUrl)
     

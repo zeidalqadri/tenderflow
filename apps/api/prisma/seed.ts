@@ -1,5 +1,6 @@
 import { PrismaClient } from '../src/generated/prisma';
 import { TenderStatus, TenderCategory, UserRole, TenderRole, DocumentType, SubmissionMethod, NotificationType, AuditAction } from '../src/generated/prisma';
+import bcrypt from 'bcrypt';
 
 const prisma = new PrismaClient();
 
@@ -9,8 +10,30 @@ async function main() {
   // Skip cleaning for fresh database
   console.log('🧹 Using fresh database - no cleanup needed...');
 
+  // Hash default password for all test users
+  const defaultPassword = 'password123';
+  const hashedPassword = await bcrypt.hash(defaultPassword, 10);
+  console.log('🔐 Default password for all test users: password123');
+
   // Create tenants
   console.log('🏢 Creating tenants...');
+  
+  // Create development tenant (used by auth bypass)
+  const devTenant = await prisma.tenant.create({
+    data: {
+      id: 'dev-tenant-001', // Specific ID for development auth bypass
+      name: 'Development Tenant',
+      subdomain: 'dev',
+      settings: {
+        timezone: 'UTC',
+        currency: 'USD',
+        autoAssignTenders: true,
+        emailNotifications: false
+      },
+      isActive: true
+    }
+  });
+  
   const tenant1 = await prisma.tenant.create({
     data: {
       name: 'TechCorp Solutions',
@@ -41,10 +64,53 @@ async function main() {
 
   // Create users for tenant1
   console.log('👥 Creating users...');
+  
+  // Create development user (used by auth bypass)
+  const devUser = await prisma.user.create({
+    data: {
+      id: 'dev-user-001', // Specific ID for development auth bypass
+      tenantId: devTenant.id,
+      email: 'dev@tenderflow.com',
+      passwordHash: await bcrypt.hash('dev123', 10),
+      firstName: 'Dev',
+      lastName: 'User',
+      role: UserRole.admin,
+      isActive: true,
+      settings: {
+        emailPreferences: {
+          tenderAssigned: false,
+          statusChanges: false,
+          deadlineReminders: false
+        }
+      }
+    }
+  });
+  
+  // Create demo admin user for easy testing
+  const demoAdmin = await prisma.user.create({
+    data: {
+      tenantId: tenant1.id,
+      email: 'admin@tenderflow.com',
+      passwordHash: await bcrypt.hash('admin123', 10),
+      firstName: 'Demo',
+      lastName: 'Admin',
+      role: UserRole.admin,
+      isActive: true,
+      settings: {
+        emailPreferences: {
+          tenderAssigned: true,
+          statusChanges: true,
+          deadlineReminders: true
+        }
+      }
+    }
+  });
+  
   const adminUser = await prisma.user.create({
     data: {
       tenantId: tenant1.id,
       email: 'admin@techcorp.com',
+      passwordHash: hashedPassword,
       firstName: 'Sarah',
       lastName: 'Johnson',
       role: UserRole.admin,
@@ -63,6 +129,7 @@ async function main() {
     data: {
       tenantId: tenant1.id,
       email: 'john.smith@techcorp.com',
+      passwordHash: hashedPassword,
       firstName: 'John',
       lastName: 'Smith',
       role: UserRole.member,
@@ -81,6 +148,7 @@ async function main() {
     data: {
       tenantId: tenant1.id,
       email: 'emma.wilson@techcorp.com',
+      passwordHash: hashedPassword,
       firstName: 'Emma',
       lastName: 'Wilson',
       role: UserRole.member,
@@ -99,6 +167,7 @@ async function main() {
     data: {
       tenantId: tenant1.id,
       email: 'viewer@techcorp.com',
+      passwordHash: hashedPassword,
       firstName: 'Mike',
       lastName: 'Brown',
       role: UserRole.viewer,
@@ -112,6 +181,7 @@ async function main() {
     data: {
       tenantId: tenant2.id,
       email: 'admin@globalconsulting.com',
+      passwordHash: hashedPassword,
       firstName: 'Lisa',
       lastName: 'Davis',
       role: UserRole.admin,

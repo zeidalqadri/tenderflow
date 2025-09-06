@@ -5,7 +5,7 @@ import helmet from '@fastify/helmet';
 import rateLimit from '@fastify/rate-limit';
 import swagger from '@fastify/swagger';
 import swaggerUi from '@fastify/swagger-ui';
-import websocket from '@fastify/websocket';
+import fastifySocketIO from 'fastify-socket.io';
 import multipart from '@fastify/multipart';
 
 import jwtPlugin from './plugins/jwt';
@@ -26,6 +26,8 @@ import submissionRoutes from './routes/submissions';
 import outcomeRoutes from './routes/outcomes';
 import exportRoutes from './routes/exports';
 import { scraperRoutes } from './routes/scraper';
+import securityRoutes from './routes/security';
+import queueRoutes from './routes/queues';
 
 export interface ServerConfig {
   port: number;
@@ -132,8 +134,14 @@ export async function createServer(config: ServerConfig) {
     },
   });
 
-  // WebSocket support
-  await fastify.register(websocket);
+  // Socket.IO support
+  await fastify.register(fastifySocketIO, {
+    cors: {
+      origin: config.corsOrigin,
+      credentials: true,
+    },
+    path: '/ws',
+  });
 
   // Swagger documentation
   await fastify.register(swagger, {
@@ -192,6 +200,12 @@ export async function createServer(config: ServerConfig) {
   await fastify.register(tenantPlugin);
   await fastify.register(aclPlugin);
   await fastify.register(auditPlugin);
+  
+  // Development: Conditionally load auth bypass for development
+  if (config.nodeEnv === 'development' && process.env.DISABLE_AUTH === 'true') {
+    const devAuthBypass = await import('./plugins/dev-auth-bypass');
+    await fastify.register(devAuthBypass.default, { disableAuth: true });
+  }
 
   // Health check routes
   fastify.get('/health', {
@@ -290,6 +304,9 @@ export async function createServer(config: ServerConfig) {
     };
   });
 
+  // Security monitoring routes (registered first for priority)
+  await fastify.register(securityRoutes, { prefix: '/api/v1' });
+
   // API routes
   await fastify.register(authRoutes, { prefix: '/api/v1/auth' });
   await fastify.register(tenderRoutes, { prefix: '/api/v1/tenders' });
@@ -302,14 +319,14 @@ export async function createServer(config: ServerConfig) {
   await fastify.register(outcomeRoutes, { prefix: '/api/v1/outcomes' });
   await fastify.register(exportRoutes, { prefix: '/api/v1/exports' });
   await fastify.register(scraperRoutes, { prefix: '/api/v1/scraper' });
+  await fastify.register(queueRoutes);
 
-  // WebSocket service setup
-  const WebSocketService = (await import('./services/websocket')).WebSocketService;
-  const webSocketService = new WebSocketService(fastify);
-  webSocketService.registerRoutes();
+  // Socket.IO service setup
+  const SocketIOService = (await import('./services/socketio')).SocketIOService;
+  const socketIOService = new SocketIOService(fastify);
 
-  // Store WebSocket service in fastify instance for access in routes
-  fastify.decorate('websocket', webSocketService);
+  // Store Socket.IO service in fastify instance for access in routes
+  fastify.decorate('socketio', socketIOService);
 
   // Global error handling
   fastify.setNotFoundHandler({

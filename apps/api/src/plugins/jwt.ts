@@ -9,6 +9,7 @@ export interface JwtPayload {
   tenantId: string;
   role: 'admin' | 'member' | 'viewer';
   email: string;
+  tokenVersion: number;
   iat: number;
   exp: number;
 }
@@ -29,6 +30,7 @@ declare module 'fastify' {
       refreshToken: string;
     }>;
     verifyRefreshToken: (token: string) => Promise<RefreshPayload>;
+    validateTokenVersion: (userId: string, tokenVersion: number) => Promise<boolean>;
   }
 
   interface FastifyRequest {
@@ -63,27 +65,51 @@ const jwtPlugin: FastifyPluginAsync<JwtPluginOptions> = async (
     },
   });
 
-  // Generate both access and refresh tokens
+  // Generate both access and refresh tokens with proper versioning
   fastify.decorate('generateTokens', async function (payload: Omit<JwtPayload, 'iat' | 'exp'>) {
-    const accessToken = await this.jwt.sign(payload, { expiresIn: accessTokenExpiry });
+    // Access tokens now include token version for revocation capability
+    const accessTokenPayload = {
+      ...payload,
+      tokenVersion: payload.tokenVersion || 1, // Default version 1 for new tokens
+    };
+    
+    const accessToken = await this.jwt.sign(accessTokenPayload, { expiresIn: accessTokenExpiry });
     
     const refreshPayload: Omit<RefreshPayload, 'iat' | 'exp'> = {
       userId: payload.userId,
       tenantId: payload.tenantId,
-      tokenVersion: 1, // TODO: Implement token versioning for security
+      tokenVersion: payload.tokenVersion || 1, // Use same version for refresh token
     };
     
-    const refreshToken = await this.jwt.sign(refreshPayload, { expiresIn: refreshTokenExpiry });
+    const refreshToken = await this.jwt.sign(refreshPayload, { 
+      expiresIn: refreshTokenExpiry,
+      // Use different secret for refresh tokens for added security
+      secret: process.env.JWT_REFRESH_SECRET || secret
+    });
 
     return { accessToken, refreshToken };
   });
 
-  // Verify refresh token
+  // Verify refresh token with dedicated secret
   fastify.decorate('verifyRefreshToken', async function (token: string): Promise<RefreshPayload> {
     try {
-      const payload = await this.jwt.verify(token) as RefreshPayload;
+      const refreshSecret = process.env.JWT_REFRESH_SECRET || secret;
+      const payload = await this.jwt.verify(token, { secret: refreshSecret }) as RefreshPayload;
+      
+      // Validate token version if validation is enabled
+      if (fastify.validateTokenVersion) {
+        const isValidVersion = await fastify.validateTokenVersion(payload.userId, payload.tokenVersion);
+        if (!isValidVersion) {
+          throw new AuthenticationError('Token has been revoked');
+        }
+      }
+      
       return payload;
     } catch (error) {
+      if (error instanceof AuthenticationError) {
+        throw error;
+      }
+      fastify.log.error(error, 'Refresh token verification failed');
       throw new AuthenticationError('Invalid refresh token');
     }
   });
@@ -109,6 +135,14 @@ const jwtPlugin: FastifyPluginAsync<JwtPluginOptions> = async (
       // Validate payload structure
       if (!payload.userId || !payload.tenantId || !payload.role || !payload.email) {
         throw new AuthenticationError('Invalid token payload');
+      }
+
+      // Validate token version for revocation capability
+      if (fastify.validateTokenVersion && payload.tokenVersion) {
+        const isValidVersion = await fastify.validateTokenVersion(payload.userId, payload.tokenVersion);
+        if (!isValidVersion) {
+          throw new AuthenticationError('Token has been revoked');
+        }
       }
 
       // Add user to request
@@ -138,6 +172,50 @@ const jwtPlugin: FastifyPluginAsync<JwtPluginOptions> = async (
 
       fastify.log.error(error, 'JWT verification error');
       throw new AuthenticationError('Authentication failed');
+    }
+  });
+
+  // Token version validation for revocation capability
+  fastify.decorate('validateTokenVersion', async function (userId: string, tokenVersion: number): Promise<boolean> {
+    try {
+      // Validate input parameters
+      if (!userId || !tokenVersion || tokenVersion < 1) {
+        fastify.log.warn({ userId, tokenVersion }, 'Invalid token version parameters');
+        return false;
+      }
+      
+      // Import Prisma client for database lookup
+      const { prisma } = await import('../database/client');
+      
+      // Query database to verify user's current token version
+      const user = await prisma.user.findUnique({
+        where: { id: userId },
+        select: { 
+          tokenVersion: true,
+          isActive: true 
+        }
+      });
+      
+      // Check if user exists and is active
+      if (!user || !user.isActive) {
+        fastify.log.warn({ userId }, 'User not found or inactive');
+        return false;
+      }
+      
+      // Verify token version matches current user version
+      if (user.tokenVersion !== tokenVersion) {
+        fastify.log.warn({ 
+          userId, 
+          tokenVersion, 
+          expectedVersion: user.tokenVersion 
+        }, 'Token version mismatch - token has been revoked');
+        return false;
+      }
+      
+      return true;
+    } catch (error) {
+      fastify.log.error(error, 'Token version validation failed');
+      return false;
     }
   });
 

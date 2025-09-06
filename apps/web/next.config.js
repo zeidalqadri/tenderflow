@@ -3,18 +3,15 @@ const nextConfig = {
   reactStrictMode: true,
   swcMinify: true,
   
-  // Enable experimental features
-  experimental: {
-    // appDir is now stable in Next.js 14 - remove this deprecated option
-  },
+  // Experimental features removed as appDir is stable in Next.js 14
   
   // Transpile shared packages
   transpilePackages: ['@tenderflow/shared', '@tenderflow/ui'],
   
   // Environment variables
   env: {
-    NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001',
-    NEXT_PUBLIC_SOCKET_URL: process.env.NEXT_PUBLIC_SOCKET_URL || 'http://localhost:3001',
+    NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3457',
+    NEXT_PUBLIC_SOCKET_URL: process.env.NEXT_PUBLIC_SOCKET_URL || 'http://localhost:3457',
   },
   
   // Image optimization
@@ -75,25 +72,8 @@ const nextConfig = {
       )
     }
     
-    // Optimize bundle size
-    config.optimization = {
-      ...config.optimization,
-      splitChunks: {
-        chunks: 'all',
-        cacheGroups: {
-          vendor: {
-            test: /[\\/]node_modules[\\/]/,
-            name: 'vendors',
-            chunks: 'all',
-          },
-          common: {
-            name: 'common',
-            minChunks: 2,
-            chunks: 'all',
-          },
-        },
-      },
-    }
+    // Let Next.js handle chunk optimization automatically
+    // Removed custom splitChunks to fix vendors.js syntax error
     
     return config
   },

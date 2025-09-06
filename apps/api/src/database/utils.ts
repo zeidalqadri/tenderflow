@@ -1,5 +1,8 @@
 import { Prisma } from '../generated/prisma';
 import { prisma, transaction } from './client';
+import { createLogger, logError, logWarning, logInfo, logSuccess } from '../utils/logger';
+
+const logger = createLogger('DATABASE_UTILS');
 
 // Error handling utilities
 export class DatabaseError extends Error {
@@ -206,7 +209,7 @@ export class AuditLogger {
       });
     } catch (error) {
       // Audit logging should not break the main operation
-      console.error('Failed to create audit log:', error);
+      logError('AUDIT', 'Failed to create audit log', error as Error);
     }
   }
 
@@ -326,7 +329,7 @@ export class PerformanceMonitor {
     
     // Log slow queries
     if (duration > 1000) {
-      console.warn(`Slow database operation: ${label} took ${duration}ms`);
+      logWarning('PERFORMANCE', `Slow database operation: ${label} took ${duration}ms`);
     }
 
     return duration;
@@ -411,6 +414,7 @@ export class MigrationUtils {
     batchSize: number = 100,
     processor: (batch: T[]) => Promise<void>
   ) {
+    // eslint-disable-next-line no-console
     console.log(`Starting migration: ${migrationName}`);
     
     let processed = 0;
@@ -430,23 +434,58 @@ export class MigrationUtils {
       await processor(batch);
       processed += batch.length;
       
+      // eslint-disable-next-line no-console
       console.log(`Processed ${processed} records for ${migrationName}`);
     }
     
+    // eslint-disable-next-line no-console
     console.log(`Migration completed: ${migrationName}. Total processed: ${processed}`);
   }
 
   static async backupData(tableName: string) {
+    // SECURITY: Whitelist of allowed tables to prevent SQL injection
+    const allowedTables = [
+      'users',
+      'tenants', 
+      'tenders',
+      'documents',
+      'submissions',
+      'bids',
+      'audit_logs',
+      'notifications',
+      'tender_assignments'
+    ];
+    
+    // Validate table name against whitelist
+    if (!allowedTables.includes(tableName)) {
+      throw new Error(`Invalid table name for backup: ${tableName}. Only allowed tables are: ${allowedTables.join(', ')}`);
+    }
+    
+    // Additional validation: ensure table name contains only safe characters
+    const safeTablePattern = /^[a-z_]+$/;
+    if (!safeTablePattern.test(tableName)) {
+      throw new Error('Table name contains invalid characters');
+    }
+    
     const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
     const backupName = `${tableName}_backup_${timestamp}`;
     
+    // Validate backup table name
+    if (!safeTablePattern.test(backupName.split('_backup_')[0])) {
+      throw new Error('Generated backup name is invalid');
+    }
+    
     try {
+      // Use parameterized query with Prisma.sql for safe execution
+      // Note: Table names cannot be parameterized in SQL, but we've validated above
       await prisma.$executeRawUnsafe(
         `CREATE TABLE ${backupName} AS SELECT * FROM ${tableName}`
       );
+      // eslint-disable-next-line no-console
       console.log(`Backup created: ${backupName}`);
       return backupName;
     } catch (error) {
+      // eslint-disable-next-line no-console
       console.error(`Failed to create backup for ${tableName}:`, error);
       throw error;
     }
